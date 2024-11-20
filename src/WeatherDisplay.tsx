@@ -70,7 +70,7 @@ const WeatherDisplay: React.FC = () => {
       >
         <div style={{ fontSize: "40px" }}>
           <p className="m-0">
-            <b>19°C</b>
+            <b>24°C</b>
           </p>
         </div>
       </div>
