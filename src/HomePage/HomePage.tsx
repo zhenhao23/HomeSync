@@ -3,13 +3,15 @@ import LivingRoomImage from "../assets/rooms/livingroom.svg";
 import BedRoomImage from "../assets/rooms/bedroom.svg";
 import KitchenImage from "../assets/rooms/kitchen.svg";
 import GardenImage from "../assets/rooms/garden.svg";
+import BathroomImage from "../assets/rooms/bathroom.svg";
 
 const HomePage: React.FC = () => {
   const rooms = [
     { image: LivingRoomImage, title: "Living Room", devices: 1 },
     { image: BedRoomImage, title: "Bedroom", devices: 3 },
     { image: KitchenImage, title: "Kitchen", devices: 0 },
-    { image: GardenImage, title: "Bathroom", devices: 1 },
+    { image: GardenImage, title: "Garden", devices: 1 },
+    { image: BathroomImage, title: "Bathroom", devices: 0 },
   ];
 
   return (
@@ -43,7 +45,12 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="container-fluid h-100">
+      <div
+        className="container-fluid overflow-auto"
+        style={{
+          height: "calc(100% - 100px)",
+        }}
+      >
         <div className="row g-3">
           {rooms.map((room, index) => (
             <div key={index} className="col-6 my-2">
