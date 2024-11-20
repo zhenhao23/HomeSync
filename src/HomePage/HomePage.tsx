@@ -11,7 +11,7 @@ const HomePage: React.FC = () => {
     { image: BedRoomImage, title: "Bedroom", devices: 3 },
     { image: KitchenImage, title: "Kitchen", devices: 0 },
     { image: GardenImage, title: "Garden", devices: 1 },
-    { image: BathroomImage, title: "Bathroom", devices: 0 },
+    { image: BathroomImage, title: "Bathroom", devices: 5 },
   ];
 
   return (
@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
         borderRadius: "18px",
       }}
     >
-      <div className="container-fluid p-3">
+      <div className="container-fluid p-3 pb-2">
         <div className="row align-items-center mb-3">
           <div className="col-4 text-start">
             <h5 className="mb-0 ms-3">Edit</h5>
@@ -48,12 +48,12 @@ const HomePage: React.FC = () => {
       <div
         className="container-fluid overflow-auto"
         style={{
-          height: "calc(100% - 100px)",
+          height: "calc(100% - 320px)",
         }}
       >
-        <div className="row g-3">
+        <div className="row g-3 pb-5">
           {rooms.map((room, index) => (
-            <div key={index} className="col-6 my-2">
+            <div key={index} className="col-6 mt-3">
               <div
                 className="p-2 py-5 text-center"
                 style={{
