@@ -45,14 +45,17 @@ const BottomNavbar: React.FC = () => {
 
   return (
     <nav
-      className="fixed-bottom d-flex justify-content-around align-items-center py-2"
-      style={{ backgroundColor: "#204160" }}
+      className="fixed-bottom d-flex justify-content-between align-items-center px-3 py-2"
+      style={{
+        backgroundColor: "#204160",
+        gap: "8px", // Add gap property to control spacing between buttons
+      }}
     >
       {navItems.map((item) => (
         <button
           key={item.id}
           onClick={() => handleNavClick(item.id)}
-          className={`btn d-flex align-items-center ${
+          className={`btn d-flex align-items-center flex-grow-0 ${
             activeTab === item.id ? "active" : ""
           }`}
           style={{
@@ -60,9 +63,10 @@ const BottomNavbar: React.FC = () => {
             color: "#204160",
             borderRadius: "8px",
             height: "40px",
-            padding: activeTab === item.id ? "0 16px" : "0 12px",
-            transition: "all 0.3s ease",
+            padding: activeTab === item.id ? "0 20px" : "0 12px",
+            transition: "all 0.2s ease",
             minWidth: activeTab === item.id ? "110px" : "auto",
+            flexShrink: 1, // Allow buttons to shrink
           }}
         >
           <div className="d-flex align-items-center">
