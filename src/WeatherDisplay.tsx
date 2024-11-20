@@ -7,8 +7,8 @@ const WeatherDisplay: React.FC = () => {
     <div
       className="position-fixed start-50 translate-middle-x w-100 d-flex flex-row"
       style={{
-        top: "22%",
-        height: "15%",
+        top: "15%",
+        height: "10%",
       }}
     >
       {/* Weather Vectors */}
