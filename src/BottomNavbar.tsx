@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaHome, FaBolt, FaSun, FaUser } from "react-icons/fa";
 
 interface NavItem {
@@ -9,7 +9,9 @@ interface NavItem {
 }
 
 const BottomNavbar: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("home");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const activeTab = location.pathname;
 
   const navItems: NavItem[] = [
     {
@@ -38,9 +40,8 @@ const BottomNavbar: React.FC = () => {
     },
   ];
 
-  const handleNavClick = (id: string) => {
-    setActiveTab(id);
-    // Add your navigation logic here
+  const handleNavClick = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -48,30 +49,30 @@ const BottomNavbar: React.FC = () => {
       className="fixed-bottom d-flex justify-content-between align-items-center px-3 py-2"
       style={{
         backgroundColor: "#204160",
-        gap: "8px", // Add gap property to control spacing between buttons
+        gap: "8px",
       }}
     >
       {navItems.map((item) => (
         <button
           key={item.id}
-          onClick={() => handleNavClick(item.id)}
+          onClick={() => handleNavClick(item.path)}
           className={`btn d-flex align-items-center flex-grow-0 ${
-            activeTab === item.id ? "active" : ""
+            activeTab === item.path ? "active" : ""
           }`}
           style={{
             backgroundColor: "#ffffff",
             color: "#204160",
             borderRadius: "8px",
             height: "40px",
-            padding: activeTab === item.id ? "0 20px" : "0 12px",
+            padding: activeTab === item.path ? "0 20px" : "0 12px",
             transition: "all 0.2s ease",
-            minWidth: activeTab === item.id ? "110px" : "auto",
-            flexShrink: 1, // Allow buttons to shrink
+            minWidth: activeTab === item.path ? "110px" : "auto",
+            flexShrink: 1,
           }}
         >
           <div className="d-flex align-items-center">
             {item.icon}
-            {activeTab === item.id && (
+            {activeTab === item.path && (
               <span className="ms-2 fw-medium" style={{ fontSize: "14px" }}>
                 {item.label}
               </span>
