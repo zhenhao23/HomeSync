@@ -74,6 +74,7 @@ const EnergyPage: React.FC = () => {
                     color: "white",
                     fontSize: "16px",
                     paddingBottom: "2px",
+                    paddingTop: "2px",
                   }}
                 >
                   5
