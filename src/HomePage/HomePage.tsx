@@ -4,7 +4,8 @@ import BedRoomImage from "../assets/rooms/bedroom.svg";
 import KitchenImage from "../assets/rooms/kitchen.svg";
 import GardenImage from "../assets/rooms/garden.svg";
 import BathroomImage from "../assets/rooms/bathroom.svg";
-import WeatherDisplay from "../WeatherDisplay.tsx";
+import WeatherDisplay from "./WeatherDisplay.tsx";
+import LogoNotif from "./LogoNotif.tsx";
 
 const HomePage: React.FC = () => {
   const rooms = [
@@ -17,6 +18,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      <LogoNotif />
       <WeatherDisplay />
       <div
         className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"

@@ -1,6 +1,6 @@
-import Vector4 from "./assets/weather/Vector4.svg";
-import Vector5 from "./assets/weather/Vector5.svg";
-import Vector6 from "./assets/weather/Vector6.svg";
+import Vector4 from "../assets/weather/Vector4.svg";
+import Vector5 from "../assets/weather/Vector5.svg";
+import Vector6 from "../assets/weather/Vector6.svg";
 
 const WeatherDisplay: React.FC = () => {
   return (
