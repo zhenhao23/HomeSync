@@ -17,7 +17,7 @@ const Background: React.FC = () => {
   return (
     <div
       className="container-fluid"
-      style={{ transform: "translateX(0%) translateY(28%)" }}
+      style={{ transform: "translateX(0%) translateY(24%)" }}
     >
       {/* Header */}
       <div className="row mb-0 ms-3">
@@ -55,7 +55,7 @@ const Background: React.FC = () => {
         </div>
       </div>
 
-      <div className="row align-items-center">
+      <div className="row align-items-center mb-0">
         {/* Left side - Pie Chart */}
         <div className="col-6 p-0">
           <PieChart width={200} height={200}>
@@ -115,6 +115,33 @@ const Background: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+      {/* Pagination Dots */}
+      <div className="col-12 p-0 d-flex justify-content-center mt-0 ms-0">
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              backgroundColor: "white",
+            }}
+          />
+          <div
+            style={{
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+            }}
+          />
         </div>
       </div>
     </div>

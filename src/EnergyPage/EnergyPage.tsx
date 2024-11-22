@@ -1,5 +1,5 @@
 import { FaPlus, FaCaretUp, FaCaretDown } from "react-icons/fa";
-import PieChart from "./PieChart.tsx";
+import SwipeableCharts from "./SwipeableCharts.tsx";
 import LampImage from "../assets/devices/lamp.svg";
 import AirCondImage from "../assets/devices/aircond.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
@@ -52,7 +52,9 @@ const EnergyPage: React.FC = () => {
 
   return (
     <>
-      <PieChart />
+      {/* <PieChart /> */}
+      {/* <LineChart /> */}
+      <SwipeableCharts />
       <div
         className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
         style={{
