@@ -44,6 +44,10 @@ const BottomNavbar: React.FC = () => {
     navigate(path);
   };
 
+  // Check if the current path is either "/energy" or "/energy-limit"
+  const isEnergyActive =
+    activeTab === "/energy" || activeTab === "/energy-limit";
+
   return (
     <nav
       className="fixed-bottom d-flex justify-content-between align-items-center px-3 py-2"
@@ -57,22 +61,34 @@ const BottomNavbar: React.FC = () => {
           key={item.id}
           onClick={() => handleNavClick(item.path)}
           className={`btn d-flex align-items-center flex-grow-0 ${
-            activeTab === item.path ? "active" : ""
+            (item.path === "/energy" ? isEnergyActive : activeTab === item.path)
+              ? "active"
+              : ""
           }`}
           style={{
             backgroundColor: "#ffffff",
             color: "#204160",
             borderRadius: "8px",
             height: "40px",
-            padding: activeTab === item.path ? "0 20px" : "0 12px",
+            padding: (
+              item.path === "/energy" ? isEnergyActive : activeTab === item.path
+            )
+              ? "0 20px"
+              : "0 12px",
             transition: "all 0.2s ease",
-            minWidth: activeTab === item.path ? "110px" : "auto",
+            minWidth: (
+              item.path === "/energy" ? isEnergyActive : activeTab === item.path
+            )
+              ? "110px"
+              : "auto",
             flexShrink: 1,
           }}
         >
           <div className="d-flex align-items-center">
             {item.icon}
-            {activeTab === item.path && (
+            {(item.path === "/energy"
+              ? isEnergyActive
+              : activeTab === item.path) && (
               <span className="ms-2 fw-medium" style={{ fontSize: "14px" }}>
                 {item.label}
               </span>

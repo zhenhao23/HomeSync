@@ -3,6 +3,7 @@ import Background from "./Background.tsx";
 import BottomNavbar from "./BottomNavbar.tsx";
 import HomePage from "./HomePage/HomePage.tsx";
 import EnergyPage from "./EnergyPage/EnergyPage.tsx";
+import EnergyLimit from "./EnergyPage/EnergyLimit.tsx";
 import SolarPage from "./SolarPage/SolarPage.tsx";
 import ProfilePage from "./ProfilePage/ProfilePage.tsx";
 // import WelcomePage from "./LoginRegisterPage/WelcomePage.tsx";
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/energy" element={<EnergyPage />} />
+          <Route path="/energy-limit" element={<EnergyLimit />} />
           <Route path="/solar" element={<SolarPage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>

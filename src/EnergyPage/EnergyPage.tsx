@@ -52,8 +52,6 @@ const EnergyPage: React.FC = () => {
 
   return (
     <>
-      {/* <PieChart /> */}
-      {/* <LineChart /> */}
       <SwipeableCharts />
       <div
         className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"

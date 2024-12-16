@@ -13,6 +13,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
 
 // Custom hook for swipe detection
 const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
@@ -50,6 +51,7 @@ const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
 };
 
 const PieChartComponent: React.FC = () => {
+  const navigate = useNavigate();
   const data = [
     { name: "Lamp", value: 1000 },
     { name: "Air Cond", value: 700 },
@@ -93,6 +95,7 @@ const PieChartComponent: React.FC = () => {
               height: "32px",
               boxShadow: "3px 3px 4px rgba(0, 0, 0, 1)",
             }}
+            onClick={() => navigate("/energy-limit")}
           >
             <IoFilterSharp style={{ color: "black" }} size={16} />
           </button>
@@ -161,6 +164,7 @@ const PieChartComponent: React.FC = () => {
 };
 
 const LineChartComponent: React.FC = () => {
+  const navigate = useNavigate();
   const data = [
     { day: "Mon", total: 100 },
     { day: "Tue", total: 200 },
@@ -203,6 +207,7 @@ const LineChartComponent: React.FC = () => {
               height: "32px",
               boxShadow: "3px 3px 4px rgba(0, 0, 0, 1)",
             }}
+            onClick={() => navigate("/energy-limit")}
           >
             <IoFilterSharp style={{ color: "black" }} size={16} />
           </button>
