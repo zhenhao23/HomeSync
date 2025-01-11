@@ -8,7 +8,7 @@ import SolarPage from "./SolarPage/SolarPage.tsx";
 import ProfilePage from "./ProfilePage/ProfilePage.tsx";
 // import WelcomePage from "./LoginRegisterPage/WelcomePage.tsx";
 // import WelcomeBackground from "./LoginRegisterPage/WelcomeBackground.tsx";
-// hello
+// hello 2
 
 function App() {
   return (
