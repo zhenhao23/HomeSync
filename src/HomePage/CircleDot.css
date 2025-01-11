@@ -1,0 +1,23 @@
+.small_circle {
+    width: 10px;
+    height: 10px;
+    background-color: #4c7380; /* Inner circle color */
+    border-radius: 50%; /* Make it circular */
+    border: 2px solid white; /* White border */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+  }
+
+  .big_circle {
+    width: 30px;
+    height: 30px;
+    background-color: #4c7380; /* Inner circle color */
+    border-radius: 50%; /* Make it circular */
+    border: 3px solid white; /* White border */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+  }

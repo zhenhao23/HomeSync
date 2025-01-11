@@ -1,0 +1,29 @@
+
+.lamp-glow {
+    position: absolute;
+    top: calc(100% - 70%);
+    left: calc(100% - 44%);
+    width: calc(100% - 70%);
+    height: calc(100% - 60%);
+    background-color: rgba(255, 255, 0, 0.5); /* Soft yellow glow */
+    border-radius: 50%; /* Circular glow */
+    box-shadow: 0px 0px 20px 10px rgba(255, 255, 0, 0.8); /* Strong initial glow */
+    z-index: -1; /* Behind the lamp icon */
+    transition: box-shadow 1s ease-in-out, background-color 1s ease-in-out; 
+    filter: blur(60px); 
+  }
+
+
+.aircond-glow {
+    position: absolute;
+    top: calc(100% - 65%);
+    left: calc(100% - 43%);
+    width: calc(100% - 70%);
+    height: calc(100% - 70%);
+    background-color: rgba(255, 255, 255, 0.5); /* Soft white glow */
+    border-radius: 50%; /* Circular glow */
+    box-shadow: 0px 0px 20px 10px rgba(255, 255, 255, 0.8); /* Strong initial white glow */
+    z-index: -1; /* Behind the lamp icon */
+    transition: box-shadow 1s ease-in-out, background-color 1s ease-in-out;
+    filter: blur(60px);
+}
