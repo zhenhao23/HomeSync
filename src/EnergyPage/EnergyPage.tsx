@@ -1,7 +1,7 @@
 import { FaPlus, FaCaretUp, FaCaretDown } from "react-icons/fa";
 import SwipeableCharts from "./SwipeableCharts.tsx";
 import LampImage from "../assets/devices/lamp.svg";
-import AirCondImage from "../assets/devices/aircond.svg";
+import AirCondImage from "../assets/devices/aircond1.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
 import IrrigationImage from "../assets/devices/irrigation.svg";
 import SecurityImage from "../assets/devices/security.svg";

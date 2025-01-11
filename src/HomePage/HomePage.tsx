@@ -39,10 +39,10 @@ import fridgeIcon from "../assets/devicesSettingIcon/fridge.svg";
 import doorBellIcon from "../assets/devicesSettingIcon/door-bell.svg";
 import smokeDetectorIcon from "../assets/devicesSettingIcon/smoke-detector.svg";
 import robotVacuumIcon from "../assets/devicesSettingIcon/robot-vacuum.svg";
-import airCondIcon from "../assets/viewDeviceStatus/aircond.svg"; //test vercel
+import airCondIcon from "../assets/viewDeviceStatus/aircond3.svg"; //test vercel
 import manageLamp from "../assets/manageDevice/light.svg";
 import managePetfeeder from "../assets/manageDevice/petfeeder.svg";
-import manageAircond from "../assets/manageDevice/aircond.svg";
+import manageAircond from "../assets/manageDevice/aircond2.svg";
 import manageIrrigation from "../assets/manageDevice/irrigation.svg";
 import bulbOn from "../assets/manageDevice/bulbOn.svg";
 import bulbOff from "../assets/manageDevice/bulbOff.svg";
