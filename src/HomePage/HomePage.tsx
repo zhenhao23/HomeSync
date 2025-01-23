@@ -55,6 +55,7 @@ import irrigationOn from "../assets/manageDevice/irrigationOn.svg";
 import airConditionerOff from "../assets/manageDevice/airConditionerOff.svg";
 import airConditionerOn from "../assets/manageDevice/airConditionerOn.svg";
 
+// homepage
 const HomePage: React.FC = () => {
   const addDevice: Device[] = [
     {
