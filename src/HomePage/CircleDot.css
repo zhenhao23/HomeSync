@@ -11,8 +11,8 @@
   }
 
   .big_circle {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     background-color: #4c7380; /* Inner circle color */
     border-radius: 50%; /* Make it circular */
     border: 3px solid white; /* White border */
@@ -20,4 +20,5 @@
     justify-content: center;
     align-items: center;
     position: absolute;
+    z-index: 100;
   }
