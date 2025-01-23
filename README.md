@@ -4,13 +4,13 @@ HomeSync is an advanced home control system designed to manage energy usage, sma
 
 ## Visit The WebApp 
 - **Responsive to iphone 12 mobile view currently, working on laptop and tablet view**
-- Check out [HomeSync WebApp here!](https://home-sync-pi.vercel.app/).
-- Check out [Figma Design here!](https://www.figma.com/design/W3FPejD6VRh1GWy3pmzwC1/HomeSync?node-id=0-1&t=w9eVRHdZmQbCFdXo-1).
+- Check out [HomeSync WebApp here!](https://home-sync-pi.vercel.app/)
+- Check out [Figma Design here!](https://www.figma.com/design/W3FPejD6VRh1GWy3pmzwC1/HomeSync?node-id=0-1&t=w9eVRHdZmQbCFdXo-1)
 
 ![HomeSync Screenshot](src/assets/HomeSync_Screenshot.png)
 
 ## Features
-- Check out [Database Schema here!](src/assets/Database_Schema.png).
+- Check out [Database Schema here!](src/assets/Database_Schema.svg)
 - **PostgreSQL Database**: Stores comprehensive information on device statuses, energy consumption, and user configurations.
 - **Node.js with Express Backend**: Provides a robust RESTful API for managing and integrating energy usage and smart device data.
 - **ReactJS Frontend**: A user-friendly interface for controlling devices, monitoring energy consumption, and managing user permissions.
