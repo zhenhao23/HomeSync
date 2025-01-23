@@ -1,10 +1,10 @@
-# HomeSync
+![image](https://github.com/user-attachments/assets/0f620d5e-370d-42ee-bc5c-853391beaef1)# HomeSync
 
 HomeSync is an advanced home control system designed to manage energy usage, smart devices, and robotics in a smart home. The system prioritizes security, accessibility, and an intuitive user experience while offering real-time monitoring and control of connected devices.
 
 ## Visit The WebApp
 Check out HomeSync [here](https://home-sync-pi.vercel.app/).
-![HomeSync Screenshot](src/assets/logo.svg)
+![HomeSync Screenshot](src/assets/HomeSync_Screenshot.png)
 
 ## Features
 - **PostgreSQL Database**: Stores comprehensive information on device statuses, energy consumption, and user configurations.
