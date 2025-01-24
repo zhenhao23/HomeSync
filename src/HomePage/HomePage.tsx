@@ -1,4 +1,4 @@
-import { FaMinusCircle, FaPlus } from "react-icons/fa";
+import { FaMinusCircle, FaPlus, FaMinus } from "react-icons/fa";
 import LivingRoomImage from "../assets/rooms/livingroom.svg";
 import BedRoomImage from "../assets/rooms/bedroom.svg";
 import KitchenImage from "../assets/rooms/kitchen.svg";
@@ -69,6 +69,7 @@ const HomePage: React.FC = () => {
       devData: {
         iconImage: managePetfeeder,
         percentage: 60,
+        celsius: 0,
       },
       content: {
         feature: "Every Monday",
@@ -89,7 +90,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: 20,
+        percentage: 0,
+        celsius: 24,
       },
       content: {
         feature: "Auto AirCond",
@@ -111,6 +113,7 @@ const HomePage: React.FC = () => {
       devData: {
         iconImage: manageLamp,
         percentage: 40,
+        celsius: 0,
       },
       content: {
         feature: "Auto Lighting",
@@ -179,6 +182,7 @@ const HomePage: React.FC = () => {
       devData: {
         iconImage: managePetfeeder,
         percentage: 0,
+        celsius: 0,
       },
       content: {
         feature: "Every Monday",
@@ -199,7 +203,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: 20,
+        percentage: 0,
+        celsius: 30,
       },
       content: {
         feature: "Auto AirCond",
@@ -221,6 +226,7 @@ const HomePage: React.FC = () => {
       devData: {
         iconImage: manageLamp,
         percentage: 40,
+        celsius: 0,
       },
       content: {
         feature: "Auto Lighting",
@@ -242,6 +248,7 @@ const HomePage: React.FC = () => {
       devData: {
         iconImage: manageLamp,
         percentage: 60,
+        celsius: 0,
       },
       content: {
         feature: "Auto Lighting",
@@ -263,6 +270,7 @@ const HomePage: React.FC = () => {
       devData: {
         iconImage: manageIrrigation,
         percentage: 80,
+        celsius: 0,
       },
       content: {
         feature: "Auto Irrigation",
@@ -283,7 +291,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: 100,
+        percentage: 0,
+        celsius: 16,
       },
       content: {
         feature: "Auto AirCond",
@@ -305,6 +314,7 @@ const HomePage: React.FC = () => {
       devData: {
         iconImage: manageAircond,
         percentage: 0,
+        celsius: 18,
       },
       content: {
         feature: "Auto AirCond",
@@ -325,7 +335,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: 20,
+        percentage: 0,
+        celsius: 20,
       },
       content: {
         feature: "Auto AirCond",
@@ -346,7 +357,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: 40,
+        percentage: 0,
+        celsius: 25,
       },
       content: {
         feature: "Auto AirCond",
@@ -367,7 +379,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: 60,
+        percentage: 0,
+        celsius: 28,
       },
       content: {
         feature: "Auto AirCond",
@@ -391,6 +404,7 @@ const HomePage: React.FC = () => {
     devData: {
       iconImage: string;
       percentage: number;
+      celsius: number;
     };
     content: {
       feature: string;
@@ -413,6 +427,7 @@ const HomePage: React.FC = () => {
     devData: {
       iconImage: manageLamp,
       percentage: 80,
+      celsius: 0,
     },
     content: {
       feature: "Auto Lighting",
@@ -815,7 +830,7 @@ const HomePage: React.FC = () => {
       const parentRect = parent.getBoundingClientRect();
 
       // Movement of the touch from start position
-      const moveX = e.touches[0].clientX - startXCircle;
+      const moveX = e.touches[0].clientX - startXCircle - 50;
 
       // Calculate the new position as a percentage of the container's width
       let newPosition = ((moveX + startXCircle) / parentRect.width) * 100;
@@ -1055,6 +1070,49 @@ const HomePage: React.FC = () => {
       default:
         return "";
     }
+  };
+
+  // Handle Increase Celsius
+  const handleIncreaseCelsius = () => {
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === getDevice().device_id
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                celsius: device.devData.celsius + 1,
+              },
+            }
+          : device
+      )
+    );
+  };
+
+  const handleDecreaseCelsius = () => {
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === getDevice().device_id
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                celsius: device.devData.celsius - 1,
+              },
+            }
+          : device
+      )
+    );
+  };
+
+  const handleSmallCircleClick = (index: number) => {
+    setCirclePosition(smallCircles[index]);
+  };
+
+  const [period, setPeriod] = useState("AM"); // Tracks the selected option
+
+  const toggleTime = (time: string) => {
+    setPeriod(time); // Update the selected state
   };
 
   // effect to updates changes
@@ -1967,7 +2025,14 @@ const HomePage: React.FC = () => {
                         }}
                       >
                         {/* Find the current device from the updated devicesState */}
-                        {getDevice().devData.percentage}
+                        {getDevice().deviceType === "aircond"
+                          ? getDevice().devData.celsius
+                          : getDevice().devData.percentage}
+
+                        {/* If it's aircon, show the mapped Celsius value; otherwise, show percentage */}
+                        {/* {getDevice().deviceType === "aircond"
+                          ? getTemperature() // Assuming percentage represents the scroll position
+                          : getDevice().devData.percentage} */}
                       </b>
                       {getDevice().deviceType === "aircond" ? (
                         <b style={{ fontSize: "30px", color: "white" }}>°C</b>
@@ -2037,95 +2102,139 @@ const HomePage: React.FC = () => {
                     }}
                   />
                 </div>
-                <div className="ms-4 me-4">
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      color: "white",
-                      fontWeight: "600",
-                    }}
+
+                {/* Display button for different device */}
+                {getDevice().deviceType === "aircond" ? (
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ height: "90px" }}
                   >
-                    {getIntensityLabel(getDevice().deviceType)}
-                  </p>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <img src={getIntensityIcon(getDevice().deviceType).off} />
-
-                    {/* Static Small Circles */}
-                    {smallCircles.map((pos, index) => (
-                      <div
-                        key={index}
-                        className="small_circle"
-                        style={{ marginLeft: `${pos}%` }}
-                      ></div>
-                    ))}
-
-                    {/* Draggable Big Circle */}
-                    <div
-                      className="big_circle"
+                    <button
+                      className="me-5 btn p-2 d-flex align-items-center justify-content-center"
                       style={{
-                        left: `${circlePosition + 3.5}%`,
-                        cursor: dragging ? "grabbing" : "grab",
+                        backgroundColor: "#ffffff",
+                        width: "70px",
+                        height: "50px",
+                        borderRadius: "15px",
                       }}
-                      onTouchStart={handleTouchStartCircle}
-                      onTouchMove={(e) => handleTouchMoveCircle(e)}
-                      onTouchEnd={handleTouchEndCircle}
-                    ></div>
+                      onClick={handleDecreaseCelsius}
+                      disabled={getDevice().devData.celsius === 14}
+                    >
+                      <FaMinus color="black" size={"18"} />
+                    </button>
 
-                    <div
+                    <button
+                      className="me-2 btn p-2 d-flex align-items-center justify-content-center"
                       style={{
-                        borderTop: "1px solid #cdcdcd",
-                        width: "calc(100% - 30%)",
+                        backgroundColor: "#ffffff",
+                        width: "70px",
+                        height: "50px",
+                        borderRadius: "15px",
                       }}
-                    ></div>
-
-                    <img src={getIntensityIcon(getDevice().deviceType).on} />
+                      onClick={handleIncreaseCelsius}
+                      disabled={getDevice().devData.celsius === 30}
+                    >
+                      <FaPlus color="black" size={"18"} />
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <div className="ms-4 me-4">
+                    <p
+                      style={{
+                        fontSize: "16px",
+                        color: "white",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {getIntensityLabel(getDevice().deviceType)}
+                    </p>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <img src={getIntensityIcon(getDevice().deviceType).off} />
+
+                      {/* Static Small Circles */}
+                      {smallCircles.map((pos, index) => (
+                        <div
+                          key={index}
+                          className="small_circle"
+                          style={{ marginLeft: `${pos}%` }}
+                          onClick={() => handleSmallCircleClick(index)}
+                        ></div>
+                      ))}
+
+                      {/* Draggable Big Circle */}
+                      <div
+                        className="big_circle"
+                        style={{
+                          marginLeft: "3.5%",
+                          left: `${circlePosition}%`,
+                          cursor: dragging ? "grabbing" : "grab",
+                        }}
+                        onTouchStart={handleTouchStartCircle}
+                        onTouchMove={(e) => handleTouchMoveCircle(e)}
+                        onTouchEnd={handleTouchEndCircle}
+                      ></div>
+
+                      <div
+                        style={{
+                          borderTop: "1px solid #cdcdcd",
+                          width: "calc(100% - 30%)",
+                        }}
+                      ></div>
+
+                      <img src={getIntensityIcon(getDevice().deviceType).on} />
+                    </div>
+                  </div>
+                )}
               </div>
               {/* White container */}
               <div
                 className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column overflow-auto"
                 style={{
                   top: "50%",
-                  height: "100%",
+                  height: "45%",
                   borderRadius: "18px",
+                  paddingBottom: "15%",
                 }}
               >
-                <div className="d-flex justify-content-between p-4">
-                  <div className="text-start">
+                <div className="d-flex justify-content-between align-items-center p-4">
+                  <div className="text-start ms-3">
                     <h3 className="mb-0 fw-bold" style={{ color: "#204160" }}>
                       Smart Features
                     </h3>
                   </div>
                   <div className="text-end d-flex justify-content-end">
-                    <button
-                      className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
-                      style={{
-                        backgroundColor: "#204160",
-                        width: "30px",
-                        height: "30px",
-                      }}
-                      onClick={handleAddFeature}
-                    >
-                      {addFeature ? (
-                        <div
-                          style={{
-                            backgroundColor: "#204160",
-                            color: "#ffffff",
-                            padding: "8px 12px",
-                            borderRadius: "20px",
-                            border: "none",
-                            cursor: "pointer",
-                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-                            fontWeight: "600",
-                          }}
-                        >
-                          Done
-                        </div>
-                      ) : (
+                    {addFeature ? (
+                      <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{
+                          backgroundColor: "#204160",
+                          color: "#ffffff",
+                          padding: "8px 14px",
+                          borderRadius: "90px",
+                          border: "none",
+                          cursor: "pointer",
+                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                          fontWeight: "500",
+                          width: "65px",
+                          height: "35px",
+                        }}
+                        onClick={handleAddFeature}
+                      >
+                        Done
+                      </div>
+                    ) : (
+                      <button
+                        className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
+                        style={{
+                          backgroundColor: "#204160",
+                          width: "35px",
+                          height: "35px",
+                        }}
+                        onClick={handleAddFeature}
+                      >
                         <FaPlus color="white" />
-                      )}
-                    </button>
+                      </button>
+                    )}
                   </div>
                 </div>
                 {/* Smart Feature */}
@@ -2142,7 +2251,7 @@ const HomePage: React.FC = () => {
                       className="p-3 mb-4"
                       style={{
                         borderRadius: "14px",
-                        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                        boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.2)",
                         width: "calc(100% - 15%)",
                         backgroundColor: "#f5f5f5",
                       }}
@@ -2166,7 +2275,6 @@ const HomePage: React.FC = () => {
                                 activeDay?.name === day.name
                                   ? "#204160"
                                   : "#ffffff",
-                              fontFamily: "'Montagu Slab', serif",
                               border: "1px solid #204160",
                             }}
                             onClick={() => handleDayClick(day)}
@@ -2176,33 +2284,107 @@ const HomePage: React.FC = () => {
                         ))}
                       </div>
                       {/* Border Container */}
-                      <div style={{ fontFamily: "'Montagu Slab', serif" }}>
-                        <div className="border border-3 d-flex justify-content-start">
-                          <span className="fw-bold">Turn On:</span>
+                      <div>
+                        <div className="d-flex justify-content-start align-items-center p-1 mt-2">
+                          <span
+                            className="fw-bold"
+                            style={{ color: "#979797" }}
+                          >
+                            Turn On:
+                          </span>
                           <div
-                            className="ms-2 d-flex justify-content-center"
+                            className="ms-2 d-flex justify-content-center align-items-center fw-bold"
                             style={{
                               borderRadius: "5px",
-                              width: "60px",
+                              width: "70px",
+                              height: "35px",
                               backgroundColor: "#ffffff",
                               border: "1px solid #979797",
+                              fontSize: "16px",
                             }}
                           >
                             <span>08:20</span>
                           </div>
                         </div>
-                        <div className="border border-3 d-flex justify-content-start">
-                          <span className="fw-bold">Turn Off:</span>
+                        <div className="d-flex justify-content-start align-items-center p-1">
+                          <span
+                            className="fw-bold"
+                            style={{ color: "#979797" }}
+                          >
+                            Turn Off:
+                          </span>
                           <div
-                            className="ms-2 d-flex justify-content-center"
+                            className="ms-2 d-flex justify-content-center align-items-center fw-bold"
                             style={{
                               borderRadius: "5px",
-                              width: "60px",
+                              width: "70px",
+                              height: "35px",
                               backgroundColor: "#ffffff",
                               border: "1px solid #979797",
+                              fontSize: "16px",
                             }}
                           >
                             <span>11:20</span>
+                          </div>
+                        </div>
+
+                        <div
+                          className="d-flex border rounded"
+                          style={{
+                            width: "100px",
+                            height: "35px",
+                            overflow: "hidden",
+                            borderColor: "#ccc",
+                          }}
+                        >
+                          {/* AM Button  */}
+                          <button
+                            className={`btn w-50 d-flex justify-content-center align-items-center ${
+                              period === "AM" ? "active" : ""
+                            }`}
+                            style={{
+                              backgroundColor:
+                                period === "AM" ? "#204160" : "#f2f2f2",
+                              color: period === "AM" ? "white" : "#333",
+                              border: "none",
+                            }}
+                            onClick={() => toggleTime("AM")}
+                          >
+                            AM
+                          </button>
+                          {/* PM Button  */}
+                          <button
+                            className={`btn w-50 d-flex justify-content-center align-items-center ${
+                              period === "PM" ? "active" : ""
+                            }`}
+                            style={{
+                              backgroundColor:
+                                period === "PM" ? "#204160" : "#f2f2f2",
+                              color: period === "PM" ? "white" : "#333",
+                              border: "none",
+                            }}
+                            onClick={() => toggleTime("PM")}
+                          >
+                            PM
+                          </button>
+                        </div>
+
+                        <div className="mt-3">
+                          <div
+                            className="d-flex justify-content-center justify-content-between fw-bold p-1"
+                            style={{
+                              borderRadius: "5px",
+                              width: "100%",
+                              height: "35px",
+                              backgroundColor: "#ffffff",
+                              border: "1px solid #979797",
+                              fontSize: "16px",
+                            }}
+                          >
+                            <span className="ms-2">Repeat</span>
+                            <span className="me-2">
+                              Never<IoIosArrowForward></IoIosArrowForward>
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -2230,7 +2412,7 @@ const HomePage: React.FC = () => {
                         ? "#e3ebee" // Use light grey if toggle1 is true
                         : "#ffffff", // Use white if toggle1 is false
                       borderRadius: "14px",
-                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                      boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.2)",
                       width: "calc(100% - 15%)",
                       transition: "background-color 0.3s ease",
                     }}
@@ -2298,7 +2480,7 @@ const HomePage: React.FC = () => {
                         ? "#e3ebee" // Use light grey if toggle1 is true
                         : "#ffffff", // Use white if toggle1 is false
                       borderRadius: "14px",
-                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                      boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.2)",
                       width: "calc(100% - 15%)",
                       transition: "background-color 0.3s ease",
                     }}
@@ -2401,7 +2583,7 @@ const HomePage: React.FC = () => {
             }}
           >
             {/* Total collaborators */}
-            <div className="d-flex justify-content-between p-4">
+            {/* <div className="col-6 d-flex justify-content-between p-4 border border-3">
               <div className="d-flex align-items-center justify-content-center">
                 <h5 style={{ color: "#404040", margin: "0" }}>Total&nbsp;</h5>
                 <span
@@ -2414,6 +2596,48 @@ const HomePage: React.FC = () => {
                 >
                   3
                 </span>
+              </div>
+            </div>
+            <div className="col-6 d-flex justify-content-end border border-3">
+              <button
+                className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
+                style={{
+                  backgroundColor: "#204160",
+                  width: "30px",
+                  height: "30px",
+                }}
+                //onClick={() => handleButtonClick("addRoom")}
+                disabled={isRoomEditing}
+              >
+                <FaPlus color="white" />
+              </button>
+            </div> */}
+
+            <div className="row align-items-center mb-2 p-4">
+              <div className="col-6 d-flex align-items-center justify-content-start">
+                <h5 style={{ color: "#404040", margin: "0" }}>Total&nbsp;</h5>
+                <span
+                  className="px-2 fw-semibold"
+                  style={{
+                    backgroundColor: "#4c7380",
+                    borderRadius: "4px",
+                    color: "#f9fbfb",
+                  }}
+                >
+                  3
+                </span>
+              </div>
+              <div className="col-6 d-flex justify-content-end">
+                <button
+                  className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
+                  style={{
+                    backgroundColor: "#204160",
+                    width: "30px",
+                    height: "30px",
+                  }}
+                >
+                  <FaPlus color="white" />
+                </button>
               </div>
             </div>
           </div>
