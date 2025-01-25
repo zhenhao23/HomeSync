@@ -54,6 +54,7 @@ import irrigationOff from "../assets/manageDevice/irrigationOff.svg";
 import irrigationOn from "../assets/manageDevice/irrigationOn.svg";
 import airConditionerOff from "../assets/manageDevice/airConditionerOff.svg";
 import airConditionerOn from "../assets/manageDevice/airConditionerOn.svg";
+import collaborator from "../assets/collaborators/collaboratorProfile.svg";
 
 // homepage
 const HomePage: React.FC = () => {
@@ -662,7 +663,7 @@ const HomePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false); // State to manage edit mode or exit mode
   const [tempTitle, setTempTitle] = useState(getRoom().title); // Temporary title during editing
 
-  const [editingType, setEditingType] = useState(""); // "room" or "device"
+  const [editingType, setEditingType] = useState<string | null>(null); // "room" or "device"
 
   const handleEditRoomClick = () => {
     setIsEditing(true); // Open the edit modal
@@ -674,6 +675,12 @@ const HomePage: React.FC = () => {
     setIsEditing(true); // Open the edit modal
     setEditingType("device"); // Set to "device" when editing a device
     setTempTitle(getDevice().title); // Set temp title to the current device title
+  };
+
+  const handleEditTimeClick = () => {
+    toggleEditTime();
+    setEditingType("time"); // Set to "device" when editing a device
+    setTempTitle("Wanna edit time"); // Set temp title to the current device title
   };
 
   const handleConfirm = () => {
@@ -707,16 +714,23 @@ const HomePage: React.FC = () => {
       }));
     }
 
+    setEditingType(null);
     setIsEditing(false); // Exit edit mode after confirming
   };
 
   const handleCancel = () => {
     if (editingType === "room") {
       setTempTitle(getRoom().title); // Reset temp title to the original room title
+      setIsEditing(false); // Exit edit mode
     } else if (editingType === "device") {
-      setTempTitle(getDevice().title); // Reset temp title to the original device title
+      setTempTitle(getDevice().title);
+      setIsEditing(false);
+    } else if (editingType === "time") {
+      setTempTitle("time");
+      setIsEditTime(false);
     }
-    setIsEditing(false); // Exit edit mode
+
+    setEditingType(null);
   };
 
   // If devicesState doesn't change, devicesMap is reused from the previous render
@@ -1076,7 +1090,8 @@ const HomePage: React.FC = () => {
   const handleIncreaseCelsius = () => {
     setDevicesState((prevDevices) =>
       prevDevices.map((device) =>
-        device.device_id === getDevice().device_id
+        device.device_id === getDevice().device_id &&
+        device.devData.celsius < 30
           ? {
               ...device,
               devData: {
@@ -1092,7 +1107,8 @@ const HomePage: React.FC = () => {
   const handleDecreaseCelsius = () => {
     setDevicesState((prevDevices) =>
       prevDevices.map((device) =>
-        device.device_id === getDevice().device_id
+        device.device_id === getDevice().device_id &&
+        device.devData.celsius > 14
           ? {
               ...device,
               devData: {
@@ -1110,10 +1126,39 @@ const HomePage: React.FC = () => {
   };
 
   const [period, setPeriod] = useState("AM"); // Tracks the selected option
+  const [isEditTime, setIsEditTime] = useState(false);
 
   const toggleTime = (time: string) => {
     setPeriod(time); // Update the selected state
   };
+
+  const toggleEditTime = () => {
+    setIsEditTime((prev) => !prev);
+  };
+
+  const [intervalId, setIntervalId] = useState<any>(null); // Track the interval ID (use any to avoid type issues)
+
+  // Start increasing/decreasing when the button is pressed
+  const startChangingTemperature = (action: () => void) => {
+    const id = setInterval(() => {
+      action();
+    }, 300);
+    setIntervalId(id); // Save the interval ID to stop it later
+  };
+
+  // Stop changing when the button is released
+  const stopChangingTemperature = () => {
+    if (intervalId) {
+      clearInterval(intervalId); // Clear the interval
+      setIntervalId(null); // Reset the interval ID state
+    }
+  };
+
+  const collaborators = [
+    { name: "Alvin", type: "Owner", image: collaborator },
+    { name: "Alice", type: "Dweller", image: collaborator },
+    { name: "Anna", type: "Dweller", image: collaborator },
+  ];
 
   // effect to updates changes
   useEffect(() => {
@@ -1161,6 +1206,7 @@ const HomePage: React.FC = () => {
                       backgroundColor: "#204160",
                       width: "30px",
                       height: "30px",
+                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
                     }}
                     onClick={() => handleButtonClick("addRoom")}
                     disabled={isRoomEditing}
@@ -1523,6 +1569,7 @@ const HomePage: React.FC = () => {
                     backgroundColor: "#204160",
                     width: "30px",
                     height: "30px",
+                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
                   }}
                   onClick={(e) => {
                     if (swipedDevice[getDevice().device_id]) {
@@ -2119,6 +2166,14 @@ const HomePage: React.FC = () => {
                       }}
                       onClick={handleDecreaseCelsius}
                       disabled={getDevice().devData.celsius === 14}
+                      onTouchStart={() =>
+                        startChangingTemperature(handleDecreaseCelsius)
+                      }
+                      onTouchEnd={stopChangingTemperature}
+                      onMouseDown={() =>
+                        startChangingTemperature(handleDecreaseCelsius)
+                      }
+                      onMouseUp={stopChangingTemperature}
                     >
                       <FaMinus color="black" size={"18"} />
                     </button>
@@ -2133,6 +2188,14 @@ const HomePage: React.FC = () => {
                       }}
                       onClick={handleIncreaseCelsius}
                       disabled={getDevice().devData.celsius === 30}
+                      onTouchStart={() =>
+                        startChangingTemperature(handleIncreaseCelsius)
+                      }
+                      onTouchEnd={stopChangingTemperature}
+                      onMouseDown={() =>
+                        startChangingTemperature(handleIncreaseCelsius)
+                      }
+                      onMouseUp={stopChangingTemperature}
                     >
                       <FaPlus color="black" size={"18"} />
                     </button>
@@ -2205,18 +2268,18 @@ const HomePage: React.FC = () => {
                   <div className="text-end d-flex justify-content-end">
                     {addFeature ? (
                       <div
-                        className="d-flex justify-content-center align-items-center"
+                        className="d-flex justify-content-center align-items-center me-2"
                         style={{
                           backgroundColor: "#204160",
                           color: "#ffffff",
-                          padding: "8px 14px",
                           borderRadius: "90px",
                           border: "none",
                           cursor: "pointer",
                           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
                           fontWeight: "500",
                           width: "65px",
-                          height: "35px",
+                          height: "30px",
+                          fontSize: "15px",
                         }}
                         onClick={handleAddFeature}
                       >
@@ -2227,8 +2290,9 @@ const HomePage: React.FC = () => {
                         className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
                         style={{
                           backgroundColor: "#204160",
-                          width: "35px",
-                          height: "35px",
+                          width: "30px",
+                          height: "30px",
+                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
                         }}
                         onClick={handleAddFeature}
                       >
@@ -2251,7 +2315,7 @@ const HomePage: React.FC = () => {
                       className="p-3 mb-4"
                       style={{
                         borderRadius: "14px",
-                        boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.2)",
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
                         width: "calc(100% - 15%)",
                         backgroundColor: "#f5f5f5",
                       }}
@@ -2290,20 +2354,68 @@ const HomePage: React.FC = () => {
                             className="fw-bold"
                             style={{ color: "#979797" }}
                           >
-                            Turn On:
+                            Turn On:&nbsp;
                           </span>
                           <div
                             className="ms-2 d-flex justify-content-center align-items-center fw-bold"
                             style={{
                               borderRadius: "5px",
                               width: "70px",
-                              height: "35px",
+                              height: "32px",
                               backgroundColor: "#ffffff",
                               border: "1px solid #979797",
                               fontSize: "16px",
                             }}
+                            onClick={handleEditTimeClick}
                           >
-                            <span>08:20</span>
+                            <span>8: 20</span>
+                          </div>
+                          <div
+                            className="d-flex ms-3"
+                            style={{
+                              width: "80px",
+                              height: "32px",
+                              border: "1px solid #bbbbbb",
+                              borderRadius: "5px",
+                            }}
+                          >
+                            {/* AM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center me-0 p-2 ${
+                                period === "AM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "AM" ? "#204160" : "#f2f2f2",
+                                color: period === "AM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("AM")}
+                            >
+                              AM
+                            </button>
+
+                            {/* PM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center ms-0 p-2 ${
+                                period === "PM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "PM" ? "#204160" : "#f2f2f2",
+                                color: period === "PM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("PM")}
+                            >
+                              PM
+                            </button>
                           </div>
                         </div>
                         <div className="d-flex justify-content-start align-items-center p-1">
@@ -2318,55 +2430,62 @@ const HomePage: React.FC = () => {
                             style={{
                               borderRadius: "5px",
                               width: "70px",
-                              height: "35px",
+                              height: "32px",
                               backgroundColor: "#ffffff",
                               border: "1px solid #979797",
                               fontSize: "16px",
                             }}
+                            onClick={handleEditTimeClick}
                           >
-                            <span>11:20</span>
+                            <span>11: 20</span>
                           </div>
-                        </div>
+                          <div
+                            className="d-flex ms-3"
+                            style={{
+                              width: "80px",
+                              height: "32px",
+                              border: "1px solid #bbbbbb",
+                              borderRadius: "5px",
+                            }}
+                          >
+                            {/* AM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center me-0 p-2 ${
+                                period === "AM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "AM" ? "#204160" : "#f2f2f2",
+                                color: period === "AM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("AM")}
+                            >
+                              AM
+                            </button>
 
-                        <div
-                          className="d-flex border rounded"
-                          style={{
-                            width: "100px",
-                            height: "35px",
-                            overflow: "hidden",
-                            borderColor: "#ccc",
-                          }}
-                        >
-                          {/* AM Button  */}
-                          <button
-                            className={`btn w-50 d-flex justify-content-center align-items-center ${
-                              period === "AM" ? "active" : ""
-                            }`}
-                            style={{
-                              backgroundColor:
-                                period === "AM" ? "#204160" : "#f2f2f2",
-                              color: period === "AM" ? "white" : "#333",
-                              border: "none",
-                            }}
-                            onClick={() => toggleTime("AM")}
-                          >
-                            AM
-                          </button>
-                          {/* PM Button  */}
-                          <button
-                            className={`btn w-50 d-flex justify-content-center align-items-center ${
-                              period === "PM" ? "active" : ""
-                            }`}
-                            style={{
-                              backgroundColor:
-                                period === "PM" ? "#204160" : "#f2f2f2",
-                              color: period === "PM" ? "white" : "#333",
-                              border: "none",
-                            }}
-                            onClick={() => toggleTime("PM")}
-                          >
-                            PM
-                          </button>
+                            {/* PM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center ms-0 p-2 ${
+                                period === "PM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "PM" ? "#204160" : "#f2f2f2",
+                                color: period === "PM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("PM")}
+                            >
+                              PM
+                            </button>
+                          </div>
                         </div>
 
                         <div className="mt-3">
@@ -2412,7 +2531,7 @@ const HomePage: React.FC = () => {
                         ? "#e3ebee" // Use light grey if toggle1 is true
                         : "#ffffff", // Use white if toggle1 is false
                       borderRadius: "14px",
-                      boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.2)",
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
                       width: "calc(100% - 15%)",
                       transition: "background-color 0.3s ease",
                     }}
@@ -2480,7 +2599,7 @@ const HomePage: React.FC = () => {
                         ? "#e3ebee" // Use light grey if toggle1 is true
                         : "#ffffff", // Use white if toggle1 is false
                       borderRadius: "14px",
-                      boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.2)",
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
                       width: "calc(100% - 15%)",
                       transition: "background-color 0.3s ease",
                     }}
@@ -2582,37 +2701,7 @@ const HomePage: React.FC = () => {
               borderRadius: "18px",
             }}
           >
-            {/* Total collaborators */}
-            {/* <div className="col-6 d-flex justify-content-between p-4 border border-3">
-              <div className="d-flex align-items-center justify-content-center">
-                <h5 style={{ color: "#404040", margin: "0" }}>Total&nbsp;</h5>
-                <span
-                  className="px-2 fw-semibold"
-                  style={{
-                    backgroundColor: "#4c7380",
-                    borderRadius: "4px",
-                    color: "#f9fbfb",
-                  }}
-                >
-                  3
-                </span>
-              </div>
-            </div>
-            <div className="col-6 d-flex justify-content-end border border-3">
-              <button
-                className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
-                style={{
-                  backgroundColor: "#204160",
-                  width: "30px",
-                  height: "30px",
-                }}
-                //onClick={() => handleButtonClick("addRoom")}
-                disabled={isRoomEditing}
-              >
-                <FaPlus color="white" />
-              </button>
-            </div> */}
-
+            {/* Total collaborators and plus button */}
             <div className="row align-items-center mb-2 p-4">
               <div className="col-6 d-flex align-items-center justify-content-start">
                 <h5 style={{ color: "#404040", margin: "0" }}>Total&nbsp;</h5>
@@ -2639,6 +2728,73 @@ const HomePage: React.FC = () => {
                   <FaPlus color="white" />
                 </button>
               </div>
+            </div>
+
+            {/* Collaborators */}
+            <div
+              className="d-flex flex-column overflow-auto"
+              style={{ height: "calc(100% - 260px)" }}
+            >
+              {/* Render collaborators */}
+              {collaborators.map((person) => (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100vw",
+                    }}
+                  >
+                    <div
+                      className="p-3 mb-4 d-flex justify-content-between"
+                      style={{
+                        backgroundColor: "#f5f5f5",
+                        borderRadius: "16px",
+                        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                        width: "calc(100% - 15%)",
+                        height: "76px",
+                        transition: "transform 0.3s ease",
+                        transform: swipedDevice[device.device_id]
+                          ? "translateX(-50px)"
+                          : "translateX(0)",
+                      }}
+                      onTouchStart={(e) => handleTouchStart(e, device)}
+                      onTouchMove={(e) => handleTouchMove(e, device.device_id)}
+                      onClick={() => handleSelectDevice(device)}
+                    >
+                      <div className="d-flex align-items-center">
+                        <img src={person.image} className="img-fluid" />
+                        <span className="ms-3">
+                          {person.name}{" "}
+                          {person.type === "Owner" ? "(Owner)" : ""}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      {swipedDevice[device.device_id] && (
+                        <button
+                          style={{
+                            backgroundColor: "red",
+                            padding: "10px",
+                            display: "flex",
+                            borderRadius: "50%",
+                            border: "none",
+                            transform: "translate(-50%, -30%)",
+                          }}
+                        >
+                          <FaTrashAlt
+                            color="white"
+                            size={18}
+                            onClick={handleRemoveDevice}
+                          />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </>
@@ -2817,6 +2973,97 @@ const HomePage: React.FC = () => {
                 }}
               >
                 Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Time */}
+      {isEditTime && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: "200",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              padding: "20px",
+              borderRadius: "8px",
+              width: "300px",
+              height: "160px",
+              textAlign: "center",
+            }}
+          >
+            <h4 style={{ color: "#000000", fontSize: "20px" }}>Edit Time</h4>
+            <input
+              className="mb-3"
+              type="text"
+              value={tempTitle}
+              onChange={(e) => setTempTitle(e.target.value)}
+              style={{
+                width: "100%",
+                marginBottom: "10px",
+                padding: "8px",
+                border: "none",
+                borderRadius: "10px",
+                fontSize: "15px",
+                color: "#000000",
+                backgroundColor: "#eeeeee",
+                boxShadow: "inset 4px 4px 8px rgba(0, 0, 0, 0.1)",
+              }}
+            />
+
+            <div
+              style={{
+                borderTop: "1px solid #979797",
+                width: "100%",
+              }}
+            ></div>
+            <div className="p-1 d-flex justify-content-around">
+              <button
+                onClick={handleConfirm}
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#4285f4",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
+                }}
+              >
+                Confirm
+              </button>
+              <div
+                style={{
+                  borderLeft: "1px solid #979797",
+                  height: "40px",
+                }}
+              ></div>
+              <button
+                onClick={handleCancel}
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#f34235",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
+                }}
+              >
+                Cancel
               </button>
             </div>
           </div>
