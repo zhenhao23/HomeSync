@@ -1,54 +1,117 @@
+import React, { useEffect, useState } from "react";
 import { FaPlus, FaCaretUp, FaCaretDown } from "react-icons/fa";
-import SwipeableCharts from "./SwipeableCharts.tsx";
+import SwipeableCharts from "./SwipeableCharts";
 import LampImage from "../assets/devices/lamp.svg";
 import AirCondImage from "../assets/devices/aircond1.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
 import IrrigationImage from "../assets/devices/irrigation.svg";
 import SecurityImage from "../assets/devices/security.svg";
 
+interface EnergyBreakdown {
+  device: {
+    displayName: string;
+    type: string;
+    room: {
+      name: string;
+    };
+  };
+  energyUsed: number;
+  activeHours: number;
+  timestamp: string;
+}
+
+interface ProcessedDevice {
+  image: string;
+  title: string;
+  usage: string;
+  room: string;
+  hours: string;
+  trend: number;
+}
+
 const EnergyPage: React.FC = () => {
-  const devices = [
-    {
-      image: LampImage,
-      title: "Lamp",
-      usage: "1000 Kw/h",
-      room: "Living Room",
-      hours: "20 hours",
-      trend: 11.2,
-    },
-    {
-      image: AirCondImage,
-      title: "Air Cond",
-      usage: "700 Kw/h",
-      room: "Bedroom",
-      hours: "12 hours",
-      trend: -10.8,
-    },
-    {
-      image: PetFeederImage,
-      title: "Pet Feeder",
-      usage: "300 Kw/h",
-      room: "Living Room",
-      hours: "3 hours",
-      trend: 8.5,
-    },
-    {
-      image: IrrigationImage,
-      title: "Irrigation",
-      usage: "400 Kw/h",
-      room: "Garden",
-      hours: "3 hours",
-      trend: -5.2,
-    },
-    {
-      image: SecurityImage,
-      title: "Home Security",
-      usage: "1200 Kw/h",
-      room: "Living Room",
-      hours: "12 hours",
-      trend: 15.3,
-    },
-  ];
+  const [devices, setDevices] = useState<ProcessedDevice[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const deviceImages: { [key: string]: string } = {
+    LIGHT: LampImage,
+    AC: AirCondImage,
+    PET_FEEDER: PetFeederImage,
+    IRRIGATION: IrrigationImage,
+    SECURITY: SecurityImage,
+  };
+
+  const processEnergyData = (rawData: EnergyBreakdown[]): ProcessedDevice[] => {
+    // Group breakdowns by device
+    const deviceGroups = rawData.reduce((acc, entry) => {
+      const key = entry.device.displayName;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(entry);
+      return acc;
+    }, {} as Record<string, EnergyBreakdown[]>);
+
+    return Object.entries(deviceGroups).map(([deviceName, entries]) => {
+      const sortedEntries = entries.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+
+      const latestEntry = sortedEntries[0];
+      const previousEntry = sortedEntries[1];
+
+      const todayEnergy = Number(latestEntry.energyUsed) / 1000; // Convert to kWh
+      const yesterdayEnergy = previousEntry
+        ? Number(previousEntry.energyUsed) / 1000
+        : 0;
+
+      const trend = previousEntry
+        ? ((todayEnergy - yesterdayEnergy) / yesterdayEnergy) * 100
+        : 0;
+
+      return {
+        image: deviceImages[latestEntry.device.type] || SecurityImage,
+        title: deviceName,
+        usage: `${todayEnergy.toFixed(1)} kWh`,
+        room: latestEntry.device.room.name,
+        hours: `${Math.round(latestEntry.activeHours)} hours`,
+        trend: Number(trend.toFixed(1)),
+      };
+    });
+  };
+
+  useEffect(() => {
+    const fetchEnergyData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          "http://localhost:5000/api/devices/energy/breakdown"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch energy breakdown");
+        }
+        const data: EnergyBreakdown[] = await response.json();
+        setDevices(processEnergyData(data));
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEnergyData();
+  }, []);
+
+  if (isLoading) {
+    return <div className="text-center p-4">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center p-4 text-danger">Error: {error}</div>;
+  }
 
   return (
     <>
@@ -77,7 +140,7 @@ const EnergyPage: React.FC = () => {
                     paddingTop: "2px",
                   }}
                 >
-                  5
+                  {devices.length}
                 </span>
               </h5>
             </div>
@@ -97,7 +160,6 @@ const EnergyPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Devices List */}
         <div
           className="container-fluid overflow-auto px-4"
           style={{

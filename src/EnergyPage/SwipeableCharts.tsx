@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
 import {
@@ -14,6 +14,18 @@ import {
   Cell,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+
+// Types for our data
+interface EnergyData {
+  deviceTotals: Array<{
+    name: string;
+    value: number;
+  }>;
+  dailyTotals: Array<{
+    day: string;
+    total: number;
+  }>;
+}
 
 // Custom hook for swipe detection
 const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
@@ -50,16 +62,8 @@ const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
   };
 };
 
-const PieChartComponent: React.FC = () => {
+const PieChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
   const navigate = useNavigate();
-  const data = [
-    { name: "Lamp", value: 1000 },
-    { name: "Air Cond", value: 700 },
-    { name: "Pet Feeder", value: 300 },
-    { name: "Irrigation", value: 400 },
-    { name: "Home Security", value: 1200 },
-  ];
-
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF69B4"];
 
   return (
@@ -106,7 +110,7 @@ const PieChartComponent: React.FC = () => {
         <div className="col-6 p-0">
           <RechartsPieChart width={200} height={200}>
             <Pie
-              data={data}
+              data={data.deviceTotals}
               cx="50%"
               cy="50%"
               labelLine={false}
@@ -114,7 +118,7 @@ const PieChartComponent: React.FC = () => {
               fill="#8884d8"
               dataKey="value"
             >
-              {data.map((_, index) => (
+              {data.deviceTotals.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
@@ -127,7 +131,7 @@ const PieChartComponent: React.FC = () => {
 
         <div className="col-6 p-0">
           <div className="list-group bg-transparent">
-            {data.map((item, index) => (
+            {data.deviceTotals.map((item, index) => (
               <div
                 key={`category-${index}`}
                 className="list-group-item d-flex justify-content-between align-items-center border-0 bg-transparent"
@@ -152,7 +156,7 @@ const PieChartComponent: React.FC = () => {
                     fontWeight: "100",
                   }}
                 >
-                  {item.value} Kw/h
+                  {item.value.toFixed(0)} kWh
                 </span>
               </div>
             ))}
@@ -163,16 +167,16 @@ const PieChartComponent: React.FC = () => {
   );
 };
 
-const LineChartComponent: React.FC = () => {
+const LineChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
   const navigate = useNavigate();
-  const data = [
-    { day: "Mon", total: 100 },
-    { day: "Tue", total: 200 },
-    { day: "Wed", total: 150 },
-    { day: "Thu", total: 100 },
-    { day: "Fri", total: 200 },
-    { day: "Sat", total: 250 },
-    { day: "Sun", total: 200 },
+
+  // Calculate the domain for Y-axis based on the data
+  const maxTotal = Math.ceil(Math.max(...data.dailyTotals.map((d) => d.total)));
+  const yAxisTicks = [
+    0,
+    Math.round(maxTotal / 3),
+    Math.round((maxTotal * 2) / 3),
+    Math.round(maxTotal),
   ];
 
   return (
@@ -219,13 +223,13 @@ const LineChartComponent: React.FC = () => {
         style={{ transform: "translateX(-4%) translateY(0%)" }}
       >
         <div className="col-12 p-0 mb-0 ms-5">
-          <span style={{ color: "white", fontSize: "11px" }}>kW/h</span>
+          <span style={{ color: "white", fontSize: "11px" }}>kWh</span>
         </div>
 
         <div className="col-12 p-0" style={{ height: "180px" }}>
           <ResponsiveContainer width="100%" height="100%">
             <RechartsLineChart
-              data={data}
+              data={data.dailyTotals}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid
@@ -241,8 +245,8 @@ const LineChartComponent: React.FC = () => {
               <YAxis
                 stroke="white"
                 tick={{ fill: "white" }}
-                ticks={[0, 100, 200, 300]}
-                domain={[0, 300]}
+                ticks={yAxisTicks}
+                domain={[0, maxTotal]}
                 style={{ color: "white", fontSize: "12px" }}
               />
               <Tooltip
@@ -251,7 +255,10 @@ const LineChartComponent: React.FC = () => {
                   border: "none",
                   color: "white",
                 }}
-                formatter={(value: number) => [`${value} kW/h`, "Total Usage"]}
+                formatter={(value: number) => [
+                  `${value.toFixed(2)} kWh`,
+                  "Total Usage",
+                ]}
               />
               <Line
                 type="monotone"
@@ -271,20 +278,56 @@ const LineChartComponent: React.FC = () => {
 
 const SwipeableCharts: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [energyData, setEnergyData] = useState<EnergyData>({
+    deviceTotals: [],
+    dailyTotals: [],
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/devices/energy/aggregated"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch energy data");
+        }
+        const data = await response.json();
+        setEnergyData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSwipeLeft = () => {
+    setActiveIndex((current) => (current + 1) % 2);
+  };
+
+  const handleSwipeRight = () => {
+    setActiveIndex((current) => (current - 1 + 2) % 2);
+  };
+
+  const swipeHandlers = useSwipe(handleSwipeLeft, handleSwipeRight);
+
+  if (isLoading) {
+    return <div className="text-center text-white p-4">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-white p-4">Error: {error}</div>;
+  }
+
   const charts = [
     { component: PieChartComponent, id: "pie" },
     { component: LineChartComponent, id: "line" },
   ];
-
-  const handleSwipeLeft = () => {
-    setActiveIndex((current) => (current + 1) % charts.length);
-  };
-
-  const handleSwipeRight = () => {
-    setActiveIndex((current) => (current - 1 + charts.length) % charts.length);
-  };
-
-  const swipeHandlers = useSwipe(handleSwipeLeft, handleSwipeRight);
 
   return (
     <div
@@ -292,7 +335,7 @@ const SwipeableCharts: React.FC = () => {
       className="position-relative"
       style={{
         touchAction: "pan-y pinch-zoom",
-        height: "380px", // Add fixed height to contain the charts
+        height: "380px",
         overflow: "hidden",
       }}
     >
@@ -309,12 +352,11 @@ const SwipeableCharts: React.FC = () => {
             className="w-100 flex-shrink-0"
             style={{ minWidth: "100%" }}
           >
-            <ChartComponent />
+            <ChartComponent data={energyData} />
           </div>
         ))}
       </div>
 
-      {/* Pagination dots */}
       <div
         style={{
           position: "absolute",
