@@ -103,26 +103,19 @@
 
 .on-text {
   left: 10px;
+  display: none; /* Default hidden */
 }
-
+  
 .off-text {
   right: 10px;
+  display: block; /* Default visible */
 }
 
-/* Show the 'ON' text when the switch is checked */
-input:checked + .slider + .on-text {
-    display: block;
-  }
-  
-  input:checked + .slider + .off-text {
-    display: none;
-  }
-  
-  /* Show the 'OFF' text when the switch is unchecked */
-  input:not(:checked) + .slider + .on-text {
-    display: none;
-  }
-  
-  input:not(:checked) + .slider + .off-text {
-    display: block;
-  }
+  /* Show "ON" when checked and hide "OFF" */
+input:checked ~ .on-text {
+  display: block;
+}
+
+input:checked ~ .off-text {
+  display: none;
+}

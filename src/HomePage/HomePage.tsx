@@ -1,4 +1,4 @@
-import { FaPlus } from "react-icons/fa";
+import { FaMinusCircle, FaPlus, FaMinus } from "react-icons/fa";
 import LivingRoomImage from "../assets/rooms/livingroom.svg";
 import BedRoomImage from "../assets/rooms/bedroom.svg";
 import KitchenImage from "../assets/rooms/kitchen.svg";
@@ -15,6 +15,7 @@ import carIcon from "../assets/addRoomIcon/car.svg";
 import bookShelfIcon from "../assets/addRoomIcon/bookshelf.svg";
 import coatHangerIcon from "../assets/addRoomIcon/coat-hanger.svg";
 import { FaTrashAlt } from "react-icons/fa";
+import { FaExclamationCircle } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import { FaSync } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
@@ -25,12 +26,13 @@ import "./RadioButton.css";
 import "./CircleDot.css";
 import "./glowingEffect.css";
 import "./Alert.css";
+import "./SyncButton.css";
 import { useMemo } from "react";
 import { useEffect, useState } from "react";
 import lampIcon from "../assets/devicesSettingIcon/lamp.svg";
 import airConditionerIcon from "../assets/devicesSettingIcon/air-conditioner.svg";
 import sprinklerIcon from "../assets/devicesSettingIcon/sprinkler.svg";
-import cookerIcon from "../assets/devicesSettingIcon/cooker.svg";
+import petfeederIcon from "../assets/devicesSettingIcon/cooker.svg";
 import smartLockIcon from "../assets/devicesSettingIcon/smart-lock.svg";
 import fanIcon from "../assets/devicesSettingIcon/fan.svg";
 import TVIcon from "../assets/devicesSettingIcon/tv.svg";
@@ -46,12 +48,83 @@ import manageAircond from "../assets/manageDevice/aircond2.svg";
 import manageIrrigation from "../assets/manageDevice/irrigation.svg";
 import bulbOn from "../assets/manageDevice/bulbOn.svg";
 import bulbOff from "../assets/manageDevice/bulbOff.svg";
+import foodOff from "../assets/manageDevice/petFoodOff.svg";
+import foodOn from "../assets/manageDevice/petFoodOn.svg";
+import irrigationOff from "../assets/manageDevice/irrigationOff.svg";
+import irrigationOn from "../assets/manageDevice/irrigationOn.svg";
+import airConditionerOff from "../assets/manageDevice/airConditionerOff.svg";
+import airConditionerOn from "../assets/manageDevice/airConditionerOn.svg";
+import collaborator from "../assets/collaborators/collaboratorProfile.svg";
 
+// homepage
 const HomePage: React.FC = () => {
-  const addDevice = [
-    "Pet Feeder 02134",
-    "Air conditioner 31837",
-    "Lights 1221",
+  const addDevice: Device[] = [
+    {
+      device_id: 0,
+      room_id: 0,
+      image: airCondIcon,
+      title: "Pet Feeder 02134",
+      deviceType: "petfeeder",
+      status: false,
+      swiped: false,
+      devData: {
+        iconImage: managePetfeeder,
+        percentage: 60,
+        celsius: 0,
+      },
+      content: {
+        feature: "Every Monday",
+        smartFeature: "8:00am",
+        toggle1: false,
+        featurePeriod: "Daily",
+        featureDetail: "8:00am, 12:00pm, 7:00pm",
+        toggle2: false,
+      },
+    },
+    {
+      device_id: 1,
+      room_id: 1,
+      image: airCondIcon,
+      title: "Air Conditioner 31837",
+      deviceType: "aircond",
+      status: false,
+      swiped: false,
+      devData: {
+        iconImage: manageAircond,
+        percentage: 0,
+        celsius: 24,
+      },
+      content: {
+        feature: "Auto AirCond",
+        smartFeature: "Turn on when room temp > 25°C",
+        toggle1: false,
+        featurePeriod: "Daily",
+        featureDetail: "9:00pm to 4:00am",
+        toggle2: false,
+      },
+    },
+    {
+      device_id: 2,
+      room_id: 1,
+      image: lampIcon,
+      title: "Lights 1221",
+      deviceType: "light",
+      status: false,
+      swiped: false,
+      devData: {
+        iconImage: manageLamp,
+        percentage: 40,
+        celsius: 0,
+      },
+      content: {
+        feature: "Auto Lighting",
+        smartFeature: "Infrared Detection",
+        toggle1: false,
+        featurePeriod: "Daily",
+        featureDetail: "8:00pm to 7:00am",
+        toggle2: false,
+      },
+    },
   ];
 
   // Icons array to manage the 8 icons
@@ -59,7 +132,7 @@ const HomePage: React.FC = () => {
     { image: lampIcon, title: "Lamp" },
     { image: airConditionerIcon, title: "Air Conditioner" },
     { image: sprinklerIcon, title: "Sprinkler" },
-    { image: cookerIcon, title: "Cooker" },
+    { image: petfeederIcon, title: "Cooker" },
     { image: smartLockIcon, title: "Smart Lock" },
     { image: fanIcon, title: "Fan" },
     { image: TVIcon, title: "TV" },
@@ -72,6 +145,9 @@ const HomePage: React.FC = () => {
 
   // Handle button click to set active content
   const handleButtonClick = (content: string) => {
+    if (content === "viewDeviceStatus") {
+      setConnectDevice(false); // Reset connectDevice when navigating back
+    }
     setActiveContent(content); // Set the content based on the clicked button
   };
 
@@ -85,13 +161,13 @@ const HomePage: React.FC = () => {
 
   const [room, setRoom] = useState<{
     id: number;
-    title: string;
     image: string;
+    title: string;
     devices: number;
   }>({
     id: 0,
-    title: "Default",
     image: LivingRoomImage,
+    title: "Default",
     devices: 0,
   });
 
@@ -99,16 +175,15 @@ const HomePage: React.FC = () => {
     {
       device_id: 0,
       room_id: 0,
-      image: airCondIcon,
+      image: petfeederIcon,
       title: "Pet Feeder 1",
       deviceType: "petfeeder",
       status: false,
       swiped: false,
       devData: {
         iconImage: managePetfeeder,
-        percentage: "10",
-        unit: "Amount",
-        intensity: 1,
+        percentage: 0,
+        celsius: 0,
       },
       content: {
         feature: "Every Monday",
@@ -129,9 +204,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: "20",
-        unit: "Temperature",
-        intensity: 1,
+        percentage: 0,
+        celsius: 30,
       },
       content: {
         feature: "Auto AirCond",
@@ -152,9 +226,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageLamp,
-        percentage: "30",
-        unit: "Brightness",
-        intensity: 1,
+        percentage: 40,
+        celsius: 0,
       },
       content: {
         feature: "Auto Lighting",
@@ -175,9 +248,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageLamp,
-        percentage: "40",
-        unit: "Brightness",
-        intensity: 1,
+        percentage: 60,
+        celsius: 0,
       },
       content: {
         feature: "Auto Lighting",
@@ -191,16 +263,15 @@ const HomePage: React.FC = () => {
     {
       device_id: 4,
       room_id: 3,
-      image: airCondIcon,
+      image: sprinklerIcon,
       title: "Irrigation 1",
       deviceType: "irrigation",
       status: false,
       swiped: false,
       devData: {
         iconImage: manageIrrigation,
-        percentage: "50",
-        unit: "Amount",
-        intensity: 1,
+        percentage: 80,
+        celsius: 0,
       },
       content: {
         feature: "Auto Irrigation",
@@ -221,9 +292,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: "60",
-        unit: "Brightness",
-        intensity: 1,
+        percentage: 0,
+        celsius: 16,
       },
       content: {
         feature: "Auto AirCond",
@@ -244,9 +314,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: "70",
-        unit: "Brightness",
-        intensity: 1,
+        percentage: 0,
+        celsius: 18,
       },
       content: {
         feature: "Auto AirCond",
@@ -267,9 +336,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: "80",
-        unit: "Brightness",
-        intensity: 1,
+        percentage: 0,
+        celsius: 20,
       },
       content: {
         feature: "Auto AirCond",
@@ -290,9 +358,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: "90",
-        unit: "Brightness",
-        intensity: 1,
+        percentage: 0,
+        celsius: 25,
       },
       content: {
         feature: "Auto AirCond",
@@ -313,9 +380,8 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageAircond,
-        percentage: "10",
-        unit: "Brightness",
-        intensity: 1,
+        percentage: 0,
+        celsius: 28,
       },
       content: {
         feature: "Auto AirCond",
@@ -338,9 +404,8 @@ const HomePage: React.FC = () => {
     swiped: boolean;
     devData: {
       iconImage: string;
-      percentage: string;
-      unit: string;
-      intensity: number;
+      percentage: number;
+      celsius: number;
     };
     content: {
       feature: string;
@@ -362,9 +427,8 @@ const HomePage: React.FC = () => {
     swiped: false,
     devData: {
       iconImage: manageLamp,
-      percentage: "80%",
-      unit: "Brightness",
-      intensity: 1,
+      percentage: 80,
+      celsius: 0,
     },
     content: {
       feature: "Auto Lighting",
@@ -426,13 +490,40 @@ const HomePage: React.FC = () => {
     );
   };
 
-  const [roomTitle, setRoomTitle] = useState(rooms);
-  const [devTitle, setDevTitle] = useState(devices);
+  const [roomsState, setRoomsState] = useState(rooms);
 
   const [startX, setStartX] = useState(0);
 
+  // State to store the currently selected/swiped device to remove
+  const [removeDevice, setRemoveDevice] = useState<Device | null>(null);
+
+  // Function to remove device if swiped
+  const handleRemoveDevice = () => {
+    //console.log("Removing device:", removeDevice);
+    if (removeDevice) {
+      // Remove the device from the devicesState based on removeDevice's device_id
+      setDevicesState((prevDevicesState) =>
+        prevDevicesState.filter(
+          (device) => device.device_id !== removeDevice.device_id
+        )
+      );
+
+      // Update the room's devices count in roomsState
+      setRoomsState((prevRoomsState) =>
+        prevRoomsState.map((room) =>
+          room.id === removeDevice.room_id
+            ? { ...room, devices: Math.max(0, room.devices - 1) }
+            : room
+        )
+      );
+
+      setRemoveDevice(null); // Reset after removal
+    }
+  };
+
   // Handle touch start (when swiping begins)
   const handleTouchStart = (e: React.TouchEvent, device: Device) => {
+    setRemoveDevice(device); // Store device for removal
     setSwipedDevice(device); // Store the device being swiped
     setStartX(e.touches[0].clientX); // Store the initial touch position
   };
@@ -488,10 +579,7 @@ const HomePage: React.FC = () => {
   const [selectedIcon, setSelectedIcon] = useState<{
     image: string; // Assuming image is a string (URL or image path)
     title: string;
-  } | null>({
-    image: "None", // Default image
-    title: "None", // Default title
-  });
+  } | null>(null);
 
   // Handle click on an icon
   const handleIconClick = (icon: { image: string; title: string }) => {
@@ -500,32 +588,45 @@ const HomePage: React.FC = () => {
 
   // State to track the room name input
   const [roomName, setRoomName] = useState<string | null>(null);
-  const [addRoom, setAddRoom] = useState(rooms);
+  const [devName, setDevName] = useState<string | null>(null);
+
+  const [roomNameAlert, setRoomNameAlert] = useState(false);
+  const [iconAlert, setIconAlert] = useState(false);
+  const [devNameAlert, setDevNameAlert] = useState(false);
 
   const handleAddRoom = () => {
-    if (!roomName?.trim()) {
-      setAlertVisible(true);
+    if (selectedIcon === null && !roomName?.trim()) {
+      setRoomNameAlert(true);
+      setIconAlert(true);
       return;
     }
 
-    if (selectedIcon === null || selectedIcon.image === "None") {
-      setAlertVisible(true);
+    if (!roomName?.trim()) {
+      setRoomNameAlert(true);
+      return;
+    }
+
+    if (selectedIcon === null) {
+      setIconAlert(true);
       return;
     }
 
     // new room
     const newRoom = {
-      id: addRoom.length + 1,
+      id: roomsState.length + 1,
       image: selectedIcon.image,
       title: roomName,
       devices: 0,
     };
 
     // Add new room to the rooms list
-    setAddRoom((prevRooms) => [...prevRooms, newRoom]);
+    setRoomsState((prevRooms) => [...prevRooms, newRoom]);
+    // Update the room's devices count in roomsState
 
     setRoomName(null); // Reset the room name input
     setSelectedIcon(null); // Reset selected icon
+    setRoomNameAlert(false); // Reset room Alert to false state
+    setIconAlert(false); // Reset icon alert to false state
 
     // Navigate back to home page
     setActiveContent("home");
@@ -533,6 +634,20 @@ const HomePage: React.FC = () => {
 
   const handleBackToHomePage = () => {
     setActiveContent("home");
+    // to ensure the flow of homepage when navigate back
+    setRoomNameAlert(false);
+    setIconAlert(false);
+    setSelectedIcon(null);
+    setRoomName(null);
+  };
+
+  const handleBackToAddDevice = () => {
+    setActiveContent("addDevice");
+    // to ensure the flow of homepage when navigate back
+    setDevNameAlert(false);
+    setIconAlert(false);
+    setSelectedIcon(null);
+    setDevName(null);
   };
 
   const handleRoomClick = (selectedRoom: {
@@ -548,7 +663,7 @@ const HomePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false); // State to manage edit mode or exit mode
   const [tempTitle, setTempTitle] = useState(getRoom().title); // Temporary title during editing
 
-  const [editingType, setEditingType] = useState(""); // "room" or "device"
+  const [editingType, setEditingType] = useState<string | null>(null); // "room" or "device"
 
   const handleEditRoomClick = () => {
     setIsEditing(true); // Open the edit modal
@@ -562,16 +677,22 @@ const HomePage: React.FC = () => {
     setTempTitle(getDevice().title); // Set temp title to the current device title
   };
 
+  const handleEditTimeClick = () => {
+    toggleEditTime();
+    setEditingType("time"); // Set to "device" when editing a device
+    setTempTitle("Wanna edit time"); // Set temp title to the current device title
+  };
+
   const handleConfirm = () => {
     if (editingType === "room") {
       // Update the room title
-      const updatedTitles = roomTitle.map((r) => {
+      const updatedRoomTitle = roomsState.map((r) => {
         if (r.id === getRoom().id) {
           return { ...r, title: tempTitle }; // Update room title
         }
         return r;
       });
-      setRoomTitle(updatedTitles); // Update the state with the new title for the room
+      setRoomsState(updatedRoomTitle); // Update the state with the new title for the room
 
       setRoom((prevRoom) => ({
         ...prevRoom,
@@ -579,13 +700,13 @@ const HomePage: React.FC = () => {
       }));
     } else if (editingType === "device") {
       // Update the device title
-      const updatedDevices = devTitle.map((d) => {
+      const updatedDeviceTitle = devicesState.map((d) => {
         if (d.device_id === getDevice().device_id) {
           return { ...d, title: tempTitle }; // Update device title
         }
         return d;
       });
-      setDevTitle(updatedDevices); // Update the state with the new title for the device
+      setDevicesState(updatedDeviceTitle); // Update the state with the new title for the device
 
       setDevice((prevDevice) => ({
         ...prevDevice,
@@ -593,16 +714,23 @@ const HomePage: React.FC = () => {
       }));
     }
 
+    setEditingType(null);
     setIsEditing(false); // Exit edit mode after confirming
   };
 
   const handleCancel = () => {
     if (editingType === "room") {
       setTempTitle(getRoom().title); // Reset temp title to the original room title
+      setIsEditing(false); // Exit edit mode
     } else if (editingType === "device") {
-      setTempTitle(getDevice().title); // Reset temp title to the original device title
+      setTempTitle(getDevice().title);
+      setIsEditing(false);
+    } else if (editingType === "time") {
+      setTempTitle("time");
+      setIsEditTime(false);
     }
-    setIsEditing(false); // Exit edit mode
+
+    setEditingType(null);
   };
 
   // If devicesState doesn't change, devicesMap is reused from the previous render
@@ -657,11 +785,388 @@ const HomePage: React.FC = () => {
     );
   };
 
-  const [alertVisible, setAlertVisible] = useState(false);
+  // Static small circles positions (percentage values)
+  const smallCircles = [14, 25.8, 37.6, 49.4, 61.2, 73];
 
+  // Create a position map
+  const positionMap = (perct: number) => {
+    const index = Math.min(Math.floor(perct / 20), smallCircles.length - 1); // Mapping to index of small circles
+    return smallCircles[index];
+  };
+
+  const [circlePosition, setCirclePosition] = useState(
+    positionMap(getDevice().devData.percentage)
+  ); // Default position (start of progress bar
+
+  useEffect(() => {
+    const devicePercentage = getDevice().devData.percentage;
+    const position = positionMap(devicePercentage);
+    setCirclePosition(position); // Update position when the percentage changes
+  }, [getDevice().devData.percentage]);
+
+  // Map the snapped position to one of the predefined positions
+  const percentageMap = smallCircles.reduce((acc, value, index) => {
+    const percentage = index * 20; // Mapping to 0, 20, 40, 60, 80, 100
+    acc[value] = percentage;
+    return acc;
+  }, {} as { [key: number]: number });
+
+  // Find the closest percentage based on the snapped position
+  const mapToPercentage = (snappedPosition: number): number => {
+    // Find the closest value in smallCircles to the snapped position
+    const closestValue = smallCircles.reduce((prev, curr) =>
+      Math.abs(curr - snappedPosition) < Math.abs(prev - snappedPosition)
+        ? curr
+        : prev
+    );
+
+    // Return the corresponding percentage from the percentageMap
+    return percentageMap[closestValue];
+  };
+
+  // State for storing the current position of the big circle
+  const [dragging, setDragging] = useState(false);
+  const [startXCircle, setStartXCircle] = useState(0); // Initial touch position
+
+  // Event handler for when touch starts (touchstart)
+  const handleTouchStartCircle = () => {
+    setDragging(true);
+    // Set to the starting point, then to the latest position when dragged
+    setStartXCircle(circlePosition);
+  };
+
+  // Event handler for touch move
+  const handleTouchMoveCircle = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (dragging) {
+      // Get the movement relative to the parent container
+      const target = e.target as HTMLElement;
+      const parent = target.parentElement as HTMLElement;
+      const parentRect = parent.getBoundingClientRect();
+
+      // Movement of the touch from start position
+      const moveX = e.touches[0].clientX - startXCircle - 50;
+
+      // Calculate the new position as a percentage of the container's width
+      let newPosition = ((moveX + startXCircle) / parentRect.width) * 100;
+
+      // Ensure that the new position is between 14% and 73% (in smallCircles)
+      let circlepos = Math.max(
+        smallCircles[0],
+        Math.min(newPosition, smallCircles[smallCircles.length - 1])
+      );
+      // Find the closest value in smallCircles to snap to
+      circlepos = smallCircles.reduce((prev, curr) =>
+        Math.abs(curr - circlepos) < Math.abs(prev - circlepos) ? curr : prev
+      );
+
+      // Update the circle position based on the constrained position
+      setCirclePosition(circlepos);
+
+      // Update mapped percentage when dragged
+      const newPercentage = mapToPercentage(circlepos);
+
+      // Update the state for the specific device
+      setDevicesState((prevDevices) => {
+        return prevDevices.map((device) =>
+          device.device_id === getDevice().device_id
+            ? {
+                ...device,
+                devData: { ...device.devData, percentage: newPercentage },
+              }
+            : device
+        );
+      });
+    }
+  };
+
+  // Event handler for touch end (touchend)
+  const handleTouchEndCircle = () => {
+    setDragging(false); // End the dragging when touch ends
+  };
+
+  // // Add event listeners when dragging starts
+  // useEffect(() => {
+  //   if (dragging) {
+  //     window.addEventListener("touchstart", handleTouchStartCircle);
+  //     window.addEventListener("touchmove", handleTouchMoveCircle);
+  //     window.addEventListener("touchend", handleTouchEndCircle);
+  //   }
+
+  //   // Cleanup event listener
+  //   return () => {
+  //     window.removeEventListener("touchstart", handleTouchStartCircle);
+  //     window.removeEventListener("touchmove", handleTouchMoveCircle);
+  //     window.removeEventListener("touchend", handleTouchEndCircle);
+  //   };
+  // }, [dragging]);
+
+  // State to store selected device
+  const [addSelectDevice, setAddSelectDevice] = useState<Device | null>(null);
+
+  // Handle device selection
+  const handleDeviceSelect = (device: Device) => {
+    setAddSelectDevice(device); // Set selected device
+  };
+
+  const [connectDevice, setConnectDevice] = useState(false);
+
+  const handleConnectClick = (activeContent: string) => {
+    if (!addSelectDevice) {
+      // Show error message if no device is selected
+      setConnectDevice(true);
+    } else {
+      handleButtonClick(activeContent); // Change the active content to device settings
+    }
+  };
+
+  const handleAddDevice = () => {
+    if (!addSelectDevice) {
+      // Handle case if no device is selected
+      return;
+    }
+
+    if (selectedIcon === null && !devName?.trim()) {
+      setDevNameAlert(true);
+      setIconAlert(true);
+      return;
+    }
+
+    if (!devName?.trim()) {
+      setDevNameAlert(true);
+      return;
+    }
+
+    if (selectedIcon === null) {
+      setIconAlert(true);
+      return;
+    }
+
+    // Calculate the next device_id
+    const nextDeviceId =
+      devicesState.length > 0
+        ? Math.max(...devicesState.map((device) => device.device_id)) + 1
+        : 0; // Start from 0 if no devices exist
+
+    // Create a new device object with the current room ID
+    const newDevice = {
+      ...addSelectDevice,
+      room_id: getRoom().id, // Assign the current room ID
+      device_id: nextDeviceId,
+    };
+
+    // Add the new device to the devices state
+    const updatedDevicesState = [...devicesState, newDevice];
+
+    // Update the room state count
+    setRoomsState((prevRoomsState) =>
+      prevRoomsState.map((room) =>
+        room.id === getRoom().id ? { ...room, devices: room.devices + 1 } : room
+      )
+    );
+
+    setDevName(null); // Reset the dev name input
+    setSelectedIcon(null); // Reset selected icon
+    setDevNameAlert(false); // Reset dev Alert to false state
+    setIconAlert(false); // Reset icon alert to false state
+
+    // Update the devicesState with the new device
+    setDevicesState(updatedDevicesState);
+    // Navigate back to view device status page
+    setActiveContent("viewDeviceStatus");
+  };
+
+  const [isSpinning, setIsSpinning] = useState(false);
+
+  const handleSpinClick = () => {
+    setIsSpinning(true);
+    setTimeout(() => {
+      setIsSpinning(false);
+    }, 2000);
+  };
+
+  const [isRoomEditing, setRoomEditing] = useState(false); // To track if in edit mode
+
+  // Toggle edit mode
+  const handleRoomEdit = () => {
+    setRoomEditing((prev) => !prev); // Toggle edit mode
+  };
+
+  const handleRemoveRoom = (roomId: number, e: React.MouseEvent) => {
+    // Stop the event propagation to prevent triggering the parent click
+    e.stopPropagation();
+    // Remove room by filtering out the room with the specified ID
+    const updatedRooms = roomsState.filter((room) => room.id !== roomId);
+    setRoomsState(updatedRooms); // Update the state with the remaining rooms
+  };
+
+  const [addFeature, setAddFeature] = useState(false);
+
+  const handleAddFeature = () => {
+    setAddFeature((prev) => !prev);
+  };
+
+  const currentDevice = devicesState.find(
+    (device) => device.device_id === getDevice().device_id
+  );
+
+  useEffect(() => {
+    if (currentDevice) {
+      setDevice(currentDevice);
+    }
+  }, [devicesState]);
+
+  type Day = { name: string; letter: string };
+
+  const days = [
+    { name: "Monday", letter: "M" },
+    { name: "Tuesday", letter: "T" },
+    { name: "Wednesday", letter: "W" },
+    { name: "Thursday", letter: "T" },
+    { name: "Friday", letter: "F" },
+    { name: "Saturday", letter: "S" },
+    { name: "Sunday", letter: "S" },
+  ];
+
+  const [activeDay, setActiveDay] = useState<Day | null>(null);
+
+  const handleDayClick = (day: { name: string; letter: string }) => {
+    setActiveDay(day);
+  };
+
+  const getIntensityIcon = (
+    deviceType: string
+  ): { on: string; off: string } => {
+    const iconMap: { [key: string]: { on: string; off: string } } = {
+      petfeeder: {
+        on: foodOff,
+        off: foodOn,
+      },
+      aircond: {
+        on: airConditionerOn,
+        off: airConditionerOff,
+      },
+      light: {
+        on: bulbOn,
+        off: bulbOff,
+      },
+      irrigation: {
+        on: irrigationOn,
+        off: irrigationOff,
+      },
+    };
+
+    return iconMap[deviceType];
+  };
+
+  const getIntensityLabel = (deviceType: string): string => {
+    switch (deviceType) {
+      case "aircond":
+      case "light":
+        return "Intensity";
+      case "irrigation":
+        return "Water Intensity";
+      case "petfeeder":
+        return "Portion";
+      default:
+        return "";
+    }
+  };
+
+  const getUnitLabel = (deviceType: string): string => {
+    switch (deviceType) {
+      case "irrigation":
+      case "petfeeder":
+        return "Amount";
+      case "aircond":
+        return "Temperature";
+      case "light":
+        return "Brightness";
+      default:
+        return "";
+    }
+  };
+
+  // Handle Increase Celsius
+  const handleIncreaseCelsius = () => {
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === getDevice().device_id &&
+        device.devData.celsius < 30
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                celsius: device.devData.celsius + 1,
+              },
+            }
+          : device
+      )
+    );
+  };
+
+  const handleDecreaseCelsius = () => {
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === getDevice().device_id &&
+        device.devData.celsius > 14
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                celsius: device.devData.celsius - 1,
+              },
+            }
+          : device
+      )
+    );
+  };
+
+  const handleSmallCircleClick = (index: number) => {
+    setCirclePosition(smallCircles[index]);
+  };
+
+  const [period, setPeriod] = useState("AM"); // Tracks the selected option
+  const [isEditTime, setIsEditTime] = useState(false);
+
+  const toggleTime = (time: string) => {
+    setPeriod(time); // Update the selected state
+  };
+
+  const toggleEditTime = () => {
+    setIsEditTime((prev) => !prev);
+  };
+
+  const [intervalId, setIntervalId] = useState<any>(null); // Track the interval ID (use any to avoid type issues)
+
+  // Start increasing/decreasing when the button is pressed
+  const startChangingTemperature = (action: () => void) => {
+    const id = setInterval(() => {
+      action();
+    }, 300);
+    setIntervalId(id); // Save the interval ID to stop it later
+  };
+
+  // Stop changing when the button is released
+  const stopChangingTemperature = () => {
+    if (intervalId) {
+      clearInterval(intervalId); // Clear the interval
+      setIntervalId(null); // Reset the interval ID state
+    }
+  };
+
+  const collaborators = [
+    { name: "Alvin", type: "Owner", image: collaborator },
+    { name: "Alice", type: "Dweller", image: collaborator },
+    { name: "Anna", type: "Dweller", image: collaborator },
+  ];
+
+  // effect to updates changes
   useEffect(() => {
     console.log("Updated devicesState:", devicesState);
   }, [devicesState]);
+  useEffect(() => {
+    console.log("Updated roomsState:", roomsState);
+  }, [roomsState]);
 
   return (
     <>
@@ -679,13 +1184,14 @@ const HomePage: React.FC = () => {
             }}
           >
             <div className="container-fluid p-3 pb-2">
-              <div className="row align-items-center mb-3">
+              <div className="row align-items-center mb-2">
                 <div className="col-4 text-start">
                   <h5
                     className="mb-0 ms-3 fw-semibold"
                     style={{ color: "#204160" }}
+                    onClick={handleRoomEdit}
                   >
-                    Edit
+                    {isRoomEditing ? "Done" : "Edit"}
                   </h5>
                 </div>
                 <div className="col-4 text-center">
@@ -700,8 +1206,10 @@ const HomePage: React.FC = () => {
                       backgroundColor: "#204160",
                       width: "30px",
                       height: "30px",
+                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
                     }}
                     onClick={() => handleButtonClick("addRoom")}
+                    disabled={isRoomEditing}
                   >
                     <FaPlus color="white" />
                   </button>
@@ -714,22 +1222,49 @@ const HomePage: React.FC = () => {
                 height: "calc(100% - 320px)",
               }}
             >
-              <div className="row g-3 pb-5">
-                {addRoom.map((r, index) => (
+              <div className="row g-3 pb-5 p-1">
+                {roomsState.map((r, index) => (
                   <div
                     key={index}
                     className="col-6 mt-3"
                     onClick={() => handleRoomClick(r)}
+                    style={{
+                      pointerEvents: isRoomEditing ? "none" : "auto",
+                    }}
                   >
                     <div
-                      className="p-2 py-5 text-center"
+                      className="p-2 py-5"
                       style={{
                         backgroundColor: "#eeeeee",
-                        borderRadius: "8px",
+                        borderRadius: "16px",
                         height: "100%",
                         boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                        position: "relative",
                       }}
                     >
+                      {isRoomEditing ? (
+                        <div
+                          style={{
+                            pointerEvents: isRoomEditing ? "auto" : "none",
+                            opacity: 1,
+                          }}
+                        >
+                          <FaMinusCircle
+                            color="red"
+                            size={18}
+                            className="d-flex flex-start"
+                            style={{
+                              cursor: "pointer",
+                              position: "absolute",
+                              top: "-4px",
+                              left: "-4px",
+                              width: "28px",
+                              height: "28px",
+                            }}
+                            onClick={(e) => handleRemoveRoom(r.id, e)}
+                          />
+                        </div>
+                      ) : null}
                       <div
                         className="d-flex flex-column justify-content-end align-items-center"
                         style={{
@@ -741,7 +1276,7 @@ const HomePage: React.FC = () => {
                           alt={r.title}
                           className="img-fluid mb-2"
                           style={{
-                            width: "40%",
+                            width: "calc(100% - 60%)",
                           }}
                         />
                       </div>
@@ -779,10 +1314,10 @@ const HomePage: React.FC = () => {
           <LogoNotif />
           <WeatherDisplay />
           <div
-            className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column overflow-auto"
+            className="bg-white position-fixed start-50 translate-middle-x w-100 overflow-auto"
             style={{
               top: "27%",
-              height: "100%",
+              height: "calc(100% - 30%)",
               borderRadius: "18px",
             }}
           >
@@ -808,9 +1343,13 @@ const HomePage: React.FC = () => {
                 </h3>
               </div>
               <div className="container-fluid">
-                <p className="mb-3 fw-normal" style={{ color: "#204160" }}>
+                <p
+                  className="mb-3 fw-normal"
+                  style={{ color: "#204160", fontSize: "18px" }}
+                >
                   Name:
                 </p>
+
                 <div
                   style={{
                     display: "flex",
@@ -818,66 +1357,110 @@ const HomePage: React.FC = () => {
                     alignItems: "center",
                   }}
                 >
-                  <input
-                    className="border-0"
-                    type="text"
-                    placeholder="Enter a name for your room"
+                  <div
                     style={{
-                      backgroundColor: "#eeeeee",
-                      borderRadius: "10px",
+                      position: "relative",
                       width: "80vw",
-                      height: "40px",
-                      boxShadow: "inset 3px 3px 2px rgba(0, 0, 0, 0.1)",
-                      textAlign: "left",
-                      paddingLeft: "15px",
-                      lineHeight: "40px",
                     }}
-                    onChange={(e) => setRoomName(e.target.value)}
-                  />
+                  >
+                    <input
+                      type="text"
+                      placeholder="Enter a name for your room"
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        borderRadius: "10px",
+                        width: "80vw",
+                        height: "40px",
+                        boxShadow: "inset 3px 3px 2px rgba(0, 0, 0, 0.1)",
+                        textAlign: "left",
+                        paddingLeft: "15px",
+                        fontSize: "17px",
+                        border: "2px solid",
+                        borderColor:
+                          !roomName && roomNameAlert ? "red" : "#eeeeee",
+                      }}
+                      onChange={(e) => setRoomName(e.target.value)}
+                    />
+                    {roomNameAlert && !roomName && (
+                      <FaExclamationCircle
+                        color="red"
+                        size={20}
+                        style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          pointerEvents: "none",
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="pt-3 pb-2 container-fluid">
-                <span className="mb-3 fw-normal" style={{ color: "#204160" }}>
+                <span
+                  className="mb-3 fw-normal"
+                  style={{ color: "#204160", fontSize: "18px" }}
+                >
                   Icon:
                 </span>
-                <div className="d-flex flex-wrap justify-content-start">
-                  {addRoomIcons.map((i, index) => (
+                <div>
+                  <div className="d-flex flex-wrap justify-content-start">
+                    {addRoomIcons.map((i, index) => (
+                      <div
+                        key={index}
+                        className="col-3"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div
+                          className="p-3 text-center mt-4"
+                          style={{
+                            backgroundColor:
+                              selectedIcon?.title === i.title
+                                ? "#d9d9d9"
+                                : "#f5f5f5",
+                            borderRadius: "50%",
+                            maxWidth: "calc(100% - 20%)",
+                            maxHeight: "calc(100% - 20%)",
+                          }}
+                          onClick={() => handleIconClick(i)}
+                        >
+                          <img
+                            src={i.image}
+                            alt={i.title}
+                            className="img-fluid"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {!selectedIcon && iconAlert ? (
                     <div
-                      key={index}
-                      className="col-3"
+                      className="p-1"
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translateX(-50%)",
                       }}
                     >
-                      <div
-                        className="p-3 text-center mt-4"
-                        style={{
-                          backgroundColor:
-                            selectedIcon?.title === i.title
-                              ? "#d9d9d9"
-                              : "#f5f5f5",
-                          borderRadius: "50%",
-                          maxWidth: "calc(100% - 20%)",
-                          maxHeight: "calc(100% - 20%)",
-                        }}
-                        onClick={() => handleIconClick(i)}
-                      >
-                        <img
-                          src={i.image}
-                          alt={i.title}
-                          className="img-fluid"
-                        />
-                      </div>
+                      <span style={{ color: "red", fontSize: "15px" }}>
+                        Please select a room type!
+                      </span>
                     </div>
-                  ))}
+                  ) : (
+                    ""
+                  )}
                 </div>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    paddingTop: "calc(100% - 90%)",
                   }}
                 >
                   <button
@@ -936,14 +1519,20 @@ const HomePage: React.FC = () => {
                 className="fw-bold me-2"
                 style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
               >
-                {getRoom().title} {/* {title} */}
+                {getRoom().title}
               </h3>
               {/* Edit Icon */}
               <FaPen
                 className="mb-1"
                 size={15}
                 color="white"
-                onClick={handleEditRoomClick} // Enable edit mode when clicked
+                onClick={(e) => {
+                  if (swipedDevice[getDevice().device_id]) {
+                    e.stopPropagation(); // Prevent device selection in swipe mode
+                  } else {
+                    handleEditRoomClick(); // Proceed to select the device if not swiped
+                  }
+                }}
                 style={{ cursor: "pointer" }}
               />
             </div>
@@ -959,17 +1548,18 @@ const HomePage: React.FC = () => {
             }}
           >
             <div className="d-flex justify-content-between p-4">
-              <div className="text-start">
-                <img
-                  src={profile1Icon}
-                  //alt={room.title}
-                  className="img-fluid mb-1 pe-2"
-                />
-                <img
-                  src={profile2Icon}
-                  //alt={room.title}
-                  className="img-fluid mb-1"
-                />
+              <div
+                className="text-start"
+                onClick={(e) => {
+                  if (swipedDevice[getDevice().device_id]) {
+                    e.stopPropagation(); // Prevent device selection in swipe mode
+                  } else {
+                    handleButtonClick("viewCollaborators"); // Proceed to select the device if not swiped
+                  }
+                }}
+              >
+                <img src={profile1Icon} className="img-fluid mb-1 pe-2" />
+                <img src={profile2Icon} className="img-fluid mb-1" />
                 <IoIosArrowForward size={22} color="#748188" />
               </div>
               <div className="text-end d-flex justify-content-end">
@@ -979,8 +1569,15 @@ const HomePage: React.FC = () => {
                     backgroundColor: "#204160",
                     width: "30px",
                     height: "30px",
+                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
                   }}
-                  onClick={() => handleButtonClick("addDevice")}
+                  onClick={(e) => {
+                    if (swipedDevice[getDevice().device_id]) {
+                      e.stopPropagation(); // Prevent device selection in swipe mode
+                    } else {
+                      handleButtonClick("addDevice"); // Proceed to select the device if not swiped
+                    }
+                  }}
                 >
                   <FaPlus color="white" />
                 </button>
@@ -993,93 +1590,92 @@ const HomePage: React.FC = () => {
               style={{ height: "calc(100% - 260px)" }}
             >
               {/* Render devices for the selected room */}
-              {getRoom() !== null && rooms[getRoom().id] && (
+              {getRoom() !== null && roomsState[getRoom().id] && (
                 <div key={getRoom().id}>
-                  {rooms[getRoom().id].devices > 0 ? (
-                    Array.from(
-                      { length: rooms[getRoom().id].devices },
-                      (_, deviceIndex) => {
-                        // Find the device in the filtered list
-                        const roomDevices = devTitle.filter(
-                          (d) => d.room_id === getRoom().id
-                        );
-
-                        const device = roomDevices[deviceIndex];
-
-                        return (
+                  {roomsState[getRoom().id].devices > 0 ? (
+                    // Filter devices for the current room and map over them
+                    devicesState
+                      .filter((device) => device.room_id === getRoom().id)
+                      .map((device) => (
+                        <div
+                          key={device.device_id}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100vw",
+                          }}
+                        >
                           <div
-                            key={device.device_id}
+                            className="p-3 mb-4 d-flex justify-content-between"
                             style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              width: "100vw",
+                              backgroundColor: "#f5f5f5",
+                              borderRadius: "16px",
+                              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                              width: "calc(100% - 15%)",
+                              height: "76px",
+                              transition: "transform 0.3s ease",
+                              transform: swipedDevice[device.device_id]
+                                ? "translateX(-50px)"
+                                : "translateX(0)",
                             }}
+                            onTouchStart={(e) => handleTouchStart(e, device)}
+                            onTouchMove={(e) =>
+                              handleTouchMove(e, device.device_id)
+                            }
+                            onClick={() => handleSelectDevice(device)}
                           >
+                            <div className="d-flex align-items-center">
+                              <img src={device.image} className="img-fluid" />
+                              <span className="ms-3">{device.title}</span>
+                            </div>
                             <div
-                              className="p-3 text-start mb-4 d-flex justify-content-between"
-                              style={{
-                                backgroundColor: "#f0f0f0",
-                                borderRadius: "8px",
-                                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-                                width: "calc(100% - 15%)",
-                                transition: "transform 0.3s ease",
-                                transform: swipedDevice[device.device_id]
-                                  ? "translateX(-50px)"
-                                  : "translateX(0)", // Apply transform based on swipe status
-                              }}
-                              onTouchStart={(e) => handleTouchStart(e, device)} // Start tracking the device
-                              onTouchMove={
-                                (e) => handleTouchMove(e, device.device_id) // Only update the specific device
-                              }
-                              onClick={() => handleSelectDevice(device)} // Select the correct device
+                              className="text-end d-flex align-items-center"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              <span>{device.title}</span>
-                              <div
-                                className="text-end"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <label className="switch">
-                                  <input
-                                    type="checkbox"
-                                    checked={getSelectedDeviceStatus(
+                              <label className="switch">
+                                <input
+                                  type="checkbox"
+                                  checked={getSelectedDeviceStatus(
+                                    getRoom().id,
+                                    device.device_id
+                                  )} // Access the state for the specific device
+                                  onChange={() => {
+                                    handleToggle(
                                       getRoom().id,
                                       device.device_id
-                                    )} // Access the state for the specific device
-                                    onChange={() => {
-                                      handleToggle(
-                                        getRoom().id,
-                                        device.device_id
-                                      ); // Toggle state for the specific device
-                                    }}
-                                  />
-                                  <span className="slider round"></span>
-                                  <span className="on-text">ON</span>
-                                  <span className="off-text">OFF</span>
-                                </label>
-                              </div>
-                            </div>
-
-                            <div>
-                              {swipedDevice[device.device_id] && (
-                                <button
-                                  style={{
-                                    backgroundColor: "red",
-                                    padding: "10px",
-                                    display: "flex",
-                                    borderRadius: "50%",
-                                    border: "none",
-                                    transform: "translate(-50%, -30%)",
+                                    ); // Toggle state for the specific device
                                   }}
-                                >
-                                  <FaTrashAlt color="white" size={18} />
-                                </button>
-                              )}
+                                />
+                                <span className="slider round"></span>
+                                <span className="on-text">ON</span>
+                                <span className="off-text">OFF</span>
+                              </label>
                             </div>
                           </div>
-                        );
-                      }
-                    )
+
+                          <div>
+                            {swipedDevice[device.device_id] && (
+                              <button
+                                style={{
+                                  backgroundColor: "red",
+                                  padding: "10px",
+                                  display: "flex",
+                                  borderRadius: "50%",
+                                  border: "none",
+                                  transform: "translate(-50%, -30%)",
+                                }}
+                              >
+                                <FaTrashAlt
+                                  color="white"
+                                  size={18}
+                                  onClick={handleRemoveDevice}
+                                />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))
                   ) : (
                     <p></p>
                   )}
@@ -1145,8 +1741,12 @@ const HomePage: React.FC = () => {
                   cursor: "pointer",
                   borderRadius: "8px",
                 }}
+                onClick={handleSpinClick}
               >
-                <FaSync color="#748188" />
+                <FaSync
+                  color="#748188"
+                  className={isSpinning ? "spinning" : ""}
+                />
               </button>
             </div>
           </div>
@@ -1168,18 +1768,28 @@ const HomePage: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <div
                     className="col-8"
-                    style={{ marginLeft: "calc(100% - 90%)" }}
+                    style={{
+                      marginLeft: "calc(100% - 90%)",
+                      fontSize: "18px",
+                    }}
                   >
-                    {device}
+                    {device.title}
                   </div>
                   <label className="container col-1">
-                    <input type="radio" name="radio" />
+                    <input
+                      type="radio"
+                      checked={addSelectDevice?.device_id === device.device_id}
+                      onChange={() => handleDeviceSelect(device)}
+                    />
                     <span className="checkmark"></span>
                   </label>
                 </div>
-                <hr
-                  style={{ border: "1px solid #000000", margin: "18px 30px" }}
-                />
+                <div
+                  style={{
+                    borderTop: "1px solid #000000",
+                    margin: "18px 30px",
+                  }}
+                ></div>
               </div>
             ))}
             <div
@@ -1190,18 +1800,29 @@ const HomePage: React.FC = () => {
                 justifyContent: "center",
               }}
             >
-              <button
-                className="btn p-2 px-5"
-                style={{
-                  backgroundColor: "#204160",
-                  color: "white",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                }}
-                onClick={() => handleButtonClick("deviceSetting")}
-              >
-                <h6>Connect</h6>
-              </button>
+              <div className="text-center">
+                {!addSelectDevice && connectDevice ? (
+                  <div className="p-4">
+                    <span style={{ color: "red", fontSize: "15px" }}>
+                      Please select a device to connect!
+                    </span>
+                  </div>
+                ) : (
+                  ""
+                )}
+                <button
+                  className="btn p-2 px-5"
+                  style={{
+                    backgroundColor: "#204160",
+                    color: "white",
+                    borderRadius: "12px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleConnectClick("deviceSetting")}
+                >
+                  <h6>Connect</h6>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1214,7 +1835,7 @@ const HomePage: React.FC = () => {
           >
             {/* Back Button */}
             <div
-              onClick={() => handleButtonClick("addDevice")}
+              onClick={handleBackToAddDevice}
               style={{
                 padding: "8px 15px",
                 cursor: "pointer",
@@ -1257,70 +1878,110 @@ const HomePage: React.FC = () => {
             <div className="pb-2 p-3" style={{ width: "100vw" }}>
               <div className="text-left pb-3 container-fluid"></div>
               <div className="container-fluid">
-                <p className="mb-3 fw-normal" style={{ color: "#204160" }}>
+                <p
+                  className="mb-3 fw-normal"
+                  style={{ color: "#204160", fontSize: "18px" }}
+                >
                   Name:
                 </p>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <input
-                    className="border-0"
-                    type="text"
-                    id="roomName"
-                    placeholder="Enter a name for your device"
+                <div className="d-flex justify-content-center">
+                  <div
                     style={{
-                      backgroundColor: "#eeeeee",
-                      borderRadius: "10px",
+                      position: "relative",
                       width: "80vw",
-                      height: "40px",
-                      boxShadow: "inset 3px 3px 2px rgba(0, 0, 0, 0.1)",
-                      textAlign: "left",
-                      paddingLeft: "15px",
-                      lineHeight: "40px",
                     }}
-                  />
+                  >
+                    <input
+                      type="text"
+                      placeholder="Enter a name for your device"
+                      style={{
+                        backgroundColor: "#eeeeee",
+                        borderRadius: "10px",
+                        width: "80vw",
+                        height: "40px",
+                        boxShadow: "inset 3px 3px 2px rgba(0, 0, 0, 0.1)",
+                        textAlign: "left",
+                        paddingLeft: "15px",
+                        fontSize: "17px",
+                        border: "2px solid",
+                        borderColor:
+                          !devName && devNameAlert ? "red" : "#eeeeee",
+                      }}
+                      onChange={(e) => setDevName(e.target.value)}
+                    />
+                    {devNameAlert && !devName && (
+                      <FaExclamationCircle
+                        color="red"
+                        size={20}
+                        style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          pointerEvents: "none",
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="pt-3 container-fluid">
-                <span className="mb-3 fw-normal" style={{ color: "#204160" }}>
+                <span
+                  className="mb-3 fw-normal"
+                  style={{ color: "#204160", fontSize: "18px" }}
+                >
                   Icon:
                 </span>
-                <div className="d-flex flex-wrap justify-content-start">
-                  {icons.map((icon, index) => (
+                <div>
+                  <div className="d-flex flex-wrap justify-content-start">
+                    {icons.map((icon, index) => (
+                      <div
+                        key={index}
+                        className="col-3"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div
+                          className="p-3 text-center mt-4"
+                          style={{
+                            backgroundColor:
+                              selectedIcon?.title === icon.title
+                                ? "#d9d9d9"
+                                : "#f5f5f5",
+                            borderRadius: "50%",
+                            maxWidth: "calc(100% - 20%)",
+                            maxHeight: "calc(100% - 20%)",
+                          }}
+                          onClick={() => handleIconClick(icon)}
+                        >
+                          <img
+                            src={icon.image}
+                            alt={icon.title}
+                            className="img-fluid"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {!selectedIcon && iconAlert ? (
                     <div
-                      key={index}
-                      className="col-3"
+                      className="p-1 mt-1"
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        position: "absolute",
+                        left: "50%",
+                        transform: "translateX(-50%)",
                       }}
                     >
-                      <div
-                        className="p-3 text-center mt-4"
-                        style={{
-                          backgroundColor:
-                            selectedIcon?.title === icon.title
-                              ? "#d9d9d9"
-                              : "#f5f5f5",
-                          borderRadius: "50%",
-                          maxWidth: "calc(100% - 20%)",
-                          maxHeight: "calc(100% - 20%)",
-                        }}
-                        onClick={() => handleIconClick(icon)}
-                      >
-                        <img
-                          src={icon.image}
-                          alt={icon.title}
-                          className="img-fluid"
-                        />
-                      </div>
+                      <span style={{ color: "red", fontSize: "15px" }}>
+                        Please select a device type!
+                      </span>
                     </div>
-                  ))}
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
               <div
@@ -1339,6 +2000,7 @@ const HomePage: React.FC = () => {
                     borderRadius: "12px",
                     cursor: "pointer",
                   }}
+                  onClick={handleAddDevice}
                 >
                   <h6>Confirm</h6>
                 </button>
@@ -1350,7 +2012,7 @@ const HomePage: React.FC = () => {
         <>
           {/* Purple Container */}
           {devType === "light" || "aircond" || "petfeeder" || "irrigation" ? (
-            <div>
+            <>
               <div style={{ position: "relative", top: "60px" }}>
                 {/* Back Button */}
                 <div
@@ -1409,9 +2071,21 @@ const HomePage: React.FC = () => {
                           marginRight: "4px",
                         }}
                       >
-                        {getDevice().devData.percentage}
+                        {/* Find the current device from the updated devicesState */}
+                        {getDevice().deviceType === "aircond"
+                          ? getDevice().devData.celsius
+                          : getDevice().devData.percentage}
+
+                        {/* If it's aircon, show the mapped Celsius value; otherwise, show percentage */}
+                        {/* {getDevice().deviceType === "aircond"
+                          ? getTemperature() // Assuming percentage represents the scroll position
+                          : getDevice().devData.percentage} */}
                       </b>
-                      <b style={{ fontSize: "30px", color: "white" }}>%</b>
+                      {getDevice().deviceType === "aircond" ? (
+                        <b style={{ fontSize: "30px", color: "white" }}>°C</b>
+                      ) : (
+                        <b style={{ fontSize: "30px", color: "white" }}>%</b>
+                      )}
                       <p
                         className="text-start"
                         style={{
@@ -1419,7 +2093,7 @@ const HomePage: React.FC = () => {
                           color: "white",
                         }}
                       >
-                        {getDevice().devData.unit}
+                        {getUnitLabel(getDevice().deviceType)}
                       </p>
                     </div>
                     <div className="text-start pt-2">
@@ -1465,11 +2139,6 @@ const HomePage: React.FC = () => {
                       src={getDevice().devData.iconImage}
                       alt={"Lamp"}
                       className="img-fluid"
-                      style={
-                        {
-                          //boxShadow: "0px 0px 15px 5px rgba(255, 255, 0, 0.7)", // Adds glowing effect
-                        }
-                      }
                     />
                   </div>
                 </div>
@@ -1480,84 +2149,367 @@ const HomePage: React.FC = () => {
                     }}
                   />
                 </div>
-                <div className="ms-4 me-4">
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      color: "white",
-                      fontWeight: "600",
-                    }}
+
+                {/* Display button for different device */}
+                {getDevice().deviceType === "aircond" ? (
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ height: "90px" }}
                   >
-                    Intensity
-                  </p>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <img src={bulbOff} />
-
-                    <div
-                      className="small_circle"
-                      style={{ marginLeft: "calc(100% - 86%)" }}
-                    ></div>
-                    <div
-                      className="small_circle"
-                      style={{ marginLeft: "calc(100% - 74.4%)" }}
-                    ></div>
-                    <div
-                      className="small_circle"
-                      style={{ marginLeft: "calc(100% - 62.8%)" }}
-                    ></div>
-                    <div
-                      className="small_circle"
-                      style={{ marginLeft: "calc(100% - 51.2%)" }}
-                    ></div>
-                    <div
-                      className="big_circle"
-                      style={{ marginLeft: "calc(100% - 39.6%)" }}
-                    ></div>
-                    <div
-                      className="small_circle"
-                      style={{ marginLeft: "calc(100% - 28%)" }}
-                    ></div>
-
-                    <hr
+                    <button
+                      className="me-5 btn p-2 d-flex align-items-center justify-content-center"
                       style={{
-                        border: "1px solid #cdcdcd",
-                        width: "calc(100% - 30%)",
+                        backgroundColor: "#ffffff",
+                        width: "70px",
+                        height: "50px",
+                        borderRadius: "15px",
                       }}
-                    />
-                    <img src={bulbOn} />
+                      onClick={handleDecreaseCelsius}
+                      disabled={getDevice().devData.celsius === 14}
+                      onTouchStart={() =>
+                        startChangingTemperature(handleDecreaseCelsius)
+                      }
+                      onTouchEnd={stopChangingTemperature}
+                      onMouseDown={() =>
+                        startChangingTemperature(handleDecreaseCelsius)
+                      }
+                      onMouseUp={stopChangingTemperature}
+                    >
+                      <FaMinus color="black" size={"18"} />
+                    </button>
+
+                    <button
+                      className="me-2 btn p-2 d-flex align-items-center justify-content-center"
+                      style={{
+                        backgroundColor: "#ffffff",
+                        width: "70px",
+                        height: "50px",
+                        borderRadius: "15px",
+                      }}
+                      onClick={handleIncreaseCelsius}
+                      disabled={getDevice().devData.celsius === 30}
+                      onTouchStart={() =>
+                        startChangingTemperature(handleIncreaseCelsius)
+                      }
+                      onTouchEnd={stopChangingTemperature}
+                      onMouseDown={() =>
+                        startChangingTemperature(handleIncreaseCelsius)
+                      }
+                      onMouseUp={stopChangingTemperature}
+                    >
+                      <FaPlus color="black" size={"18"} />
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <div className="ms-4 me-4">
+                    <p
+                      style={{
+                        fontSize: "16px",
+                        color: "white",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {getIntensityLabel(getDevice().deviceType)}
+                    </p>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <img src={getIntensityIcon(getDevice().deviceType).off} />
+
+                      {/* Static Small Circles */}
+                      {smallCircles.map((pos, index) => (
+                        <div
+                          key={index}
+                          className="small_circle"
+                          style={{ marginLeft: `${pos}%` }}
+                          onClick={() => handleSmallCircleClick(index)}
+                        ></div>
+                      ))}
+
+                      {/* Draggable Big Circle */}
+                      <div
+                        className="big_circle"
+                        style={{
+                          marginLeft: "3.5%",
+                          left: `${circlePosition}%`,
+                          cursor: dragging ? "grabbing" : "grab",
+                        }}
+                        onTouchStart={handleTouchStartCircle}
+                        onTouchMove={(e) => handleTouchMoveCircle(e)}
+                        onTouchEnd={handleTouchEndCircle}
+                      ></div>
+
+                      <div
+                        style={{
+                          borderTop: "1px solid #cdcdcd",
+                          width: "calc(100% - 30%)",
+                        }}
+                      ></div>
+
+                      <img src={getIntensityIcon(getDevice().deviceType).on} />
+                    </div>
+                  </div>
+                )}
               </div>
               {/* White container */}
               <div
                 className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column overflow-auto"
                 style={{
                   top: "50%",
-                  height: "100%",
+                  height: "45%",
                   borderRadius: "18px",
+                  paddingBottom: "15%",
                 }}
               >
-                <div className="d-flex justify-content-between p-4">
-                  <div className="text-start">
+                <div className="d-flex justify-content-between align-items-center p-4">
+                  <div className="text-start ms-3">
                     <h3 className="mb-0 fw-bold" style={{ color: "#204160" }}>
                       Smart Features
                     </h3>
                   </div>
                   <div className="text-end d-flex justify-content-end">
-                    <button
-                      className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
-                      style={{
-                        backgroundColor: "#204160",
-                        width: "30px",
-                        height: "30px",
-                      }}
-                      //onClick={() => handleButtonClick("addDevice")}
-                    >
-                      <FaPlus color="white" />
-                    </button>
+                    {addFeature ? (
+                      <div
+                        className="d-flex justify-content-center align-items-center me-2"
+                        style={{
+                          backgroundColor: "#204160",
+                          color: "#ffffff",
+                          borderRadius: "90px",
+                          border: "none",
+                          cursor: "pointer",
+                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                          fontWeight: "500",
+                          width: "65px",
+                          height: "30px",
+                          fontSize: "15px",
+                        }}
+                        onClick={handleAddFeature}
+                      >
+                        Done
+                      </div>
+                    ) : (
+                      <button
+                        className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
+                        style={{
+                          backgroundColor: "#204160",
+                          width: "30px",
+                          height: "30px",
+                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                        }}
+                        onClick={handleAddFeature}
+                      >
+                        <FaPlus color="white" />
+                      </button>
+                    )}
                   </div>
                 </div>
+                {/* Smart Feature */}
+                {addFeature && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100vw",
+                    }}
+                  >
+                    <div
+                      className="p-3 mb-4"
+                      style={{
+                        borderRadius: "14px",
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                        width: "calc(100% - 15%)",
+                        backgroundColor: "#f5f5f5",
+                      }}
+                    >
+                      <div className="d-flex justify-content-between col-12">
+                        {days.map((day, index) => (
+                          <button
+                            key={index}
+                            className="d-flex justify-content-center fw-bold"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              borderRadius: "50%",
+                              width: "30px",
+                              height: "30px",
+                              color:
+                                activeDay?.name === day.name
+                                  ? "#ffffff"
+                                  : "#204160",
+                              backgroundColor:
+                                activeDay?.name === day.name
+                                  ? "#204160"
+                                  : "#ffffff",
+                              border: "1px solid #204160",
+                            }}
+                            onClick={() => handleDayClick(day)}
+                          >
+                            {day.letter}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Border Container */}
+                      <div>
+                        <div className="d-flex justify-content-start align-items-center p-1 mt-2">
+                          <span
+                            className="fw-bold"
+                            style={{ color: "#979797" }}
+                          >
+                            Turn On:&nbsp;
+                          </span>
+                          <div
+                            className="ms-2 d-flex justify-content-center align-items-center fw-bold"
+                            style={{
+                              borderRadius: "5px",
+                              width: "70px",
+                              height: "32px",
+                              backgroundColor: "#ffffff",
+                              border: "1px solid #979797",
+                              fontSize: "16px",
+                            }}
+                            onClick={handleEditTimeClick}
+                          >
+                            <span>8: 20</span>
+                          </div>
+                          <div
+                            className="d-flex ms-3"
+                            style={{
+                              width: "80px",
+                              height: "32px",
+                              border: "1px solid #bbbbbb",
+                              borderRadius: "5px",
+                            }}
+                          >
+                            {/* AM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center me-0 p-2 ${
+                                period === "AM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "AM" ? "#204160" : "#f2f2f2",
+                                color: period === "AM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("AM")}
+                            >
+                              AM
+                            </button>
 
+                            {/* PM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center ms-0 p-2 ${
+                                period === "PM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "PM" ? "#204160" : "#f2f2f2",
+                                color: period === "PM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("PM")}
+                            >
+                              PM
+                            </button>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-start align-items-center p-1">
+                          <span
+                            className="fw-bold"
+                            style={{ color: "#979797" }}
+                          >
+                            Turn Off:
+                          </span>
+                          <div
+                            className="ms-2 d-flex justify-content-center align-items-center fw-bold"
+                            style={{
+                              borderRadius: "5px",
+                              width: "70px",
+                              height: "32px",
+                              backgroundColor: "#ffffff",
+                              border: "1px solid #979797",
+                              fontSize: "16px",
+                            }}
+                            onClick={handleEditTimeClick}
+                          >
+                            <span>11: 20</span>
+                          </div>
+                          <div
+                            className="d-flex ms-3"
+                            style={{
+                              width: "80px",
+                              height: "32px",
+                              border: "1px solid #bbbbbb",
+                              borderRadius: "5px",
+                            }}
+                          >
+                            {/* AM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center me-0 p-2 ${
+                                period === "AM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "AM" ? "#204160" : "#f2f2f2",
+                                color: period === "AM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("AM")}
+                            >
+                              AM
+                            </button>
+
+                            {/* PM Button  */}
+                            <button
+                              className={`d-flex w-50 justify-content-center align-items-center ms-0 p-2 ${
+                                period === "PM" ? "active" : ""
+                              }`}
+                              style={{
+                                backgroundColor:
+                                  period === "PM" ? "#204160" : "#f2f2f2",
+                                color: period === "PM" ? "white" : "#333",
+                                border: "none",
+                                borderRadius: "5px",
+                                fontSize: "12px",
+                                margin: "2px",
+                              }}
+                              onClick={() => toggleTime("PM")}
+                            >
+                              PM
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mt-3">
+                          <div
+                            className="d-flex justify-content-center justify-content-between fw-bold p-1"
+                            style={{
+                              borderRadius: "5px",
+                              width: "100%",
+                              height: "35px",
+                              backgroundColor: "#ffffff",
+                              border: "1px solid #979797",
+                              fontSize: "16px",
+                            }}
+                          >
+                            <span className="ms-2">Repeat</span>
+                            <span className="me-2">
+                              Never<IoIosArrowForward></IoIosArrowForward>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {/* Content 1 */}
                 <div
                   className="mb-4"
@@ -1579,7 +2531,7 @@ const HomePage: React.FC = () => {
                         ? "#e3ebee" // Use light grey if toggle1 is true
                         : "#ffffff", // Use white if toggle1 is false
                       borderRadius: "14px",
-                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
                       width: "calc(100% - 15%)",
                       transition: "background-color 0.3s ease",
                     }}
@@ -1647,7 +2599,7 @@ const HomePage: React.FC = () => {
                         ? "#e3ebee" // Use light grey if toggle1 is true
                         : "#ffffff", // Use white if toggle1 is false
                       borderRadius: "14px",
-                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
                       width: "calc(100% - 15%)",
                       transition: "background-color 0.3s ease",
                     }}
@@ -1695,8 +2647,156 @@ const HomePage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </>
           ) : null}
+        </>
+      ) : activeContent === "viewCollaborators" ? (
+        <>
+          <div style={{ position: "relative", top: "60px" }}>
+            {/* Back Button */}
+            <div
+              onClick={() => handleButtonClick("viewDeviceStatus")}
+              style={{
+                padding: "8px 15px",
+                cursor: "pointer",
+                position: "absolute",
+              }}
+            >
+              <IoIosArrowBack size={22} color="#FFFFFF" />
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: "#FFFFFF",
+                  fontSize: "16px",
+                }}
+              >
+                Back
+              </span>
+            </div>
+
+            {/* Room Title */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {/* Display the title normally when not in edit mode */}
+              <h3
+                className="fw-bold me-2"
+                style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+              >
+                Collaborators
+              </h3>
+            </div>
+          </div>
+
+          {/* White container  */}
+          <div
+            className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
+            style={{
+              top: "13%",
+              height: "100%",
+              borderRadius: "18px",
+            }}
+          >
+            {/* Total collaborators and plus button */}
+            <div className="row align-items-center mb-2 p-4">
+              <div className="col-6 d-flex align-items-center justify-content-start">
+                <h5 style={{ color: "#404040", margin: "0" }}>Total&nbsp;</h5>
+                <span
+                  className="px-2 fw-semibold"
+                  style={{
+                    backgroundColor: "#4c7380",
+                    borderRadius: "4px",
+                    color: "#f9fbfb",
+                  }}
+                >
+                  3
+                </span>
+              </div>
+              <div className="col-6 d-flex justify-content-end">
+                <button
+                  className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
+                  style={{
+                    backgroundColor: "#204160",
+                    width: "30px",
+                    height: "30px",
+                  }}
+                >
+                  <FaPlus color="white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Collaborators */}
+            <div
+              className="d-flex flex-column overflow-auto"
+              style={{ height: "calc(100% - 260px)" }}
+            >
+              {/* Render collaborators */}
+              {collaborators.map((person) => (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100vw",
+                    }}
+                  >
+                    <div
+                      className="p-3 mb-4 d-flex justify-content-between"
+                      style={{
+                        backgroundColor: "#f5f5f5",
+                        borderRadius: "16px",
+                        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                        width: "calc(100% - 15%)",
+                        height: "76px",
+                        transition: "transform 0.3s ease",
+                        transform: swipedDevice[device.device_id]
+                          ? "translateX(-50px)"
+                          : "translateX(0)",
+                      }}
+                      onTouchStart={(e) => handleTouchStart(e, device)}
+                      onTouchMove={(e) => handleTouchMove(e, device.device_id)}
+                      onClick={() => handleSelectDevice(device)}
+                    >
+                      <div className="d-flex align-items-center">
+                        <img src={person.image} className="img-fluid" />
+                        <span className="ms-3">
+                          {person.name}{" "}
+                          {person.type === "Owner" ? "(Owner)" : ""}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      {swipedDevice[device.device_id] && (
+                        <button
+                          style={{
+                            backgroundColor: "red",
+                            padding: "10px",
+                            display: "flex",
+                            borderRadius: "50%",
+                            border: "none",
+                            transform: "translate(-50%, -30%)",
+                          }}
+                        >
+                          <FaTrashAlt
+                            color="white"
+                            size={18}
+                            onClick={handleRemoveDevice}
+                          />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </>
       ) : null}
 
@@ -1709,23 +2809,28 @@ const HomePage: React.FC = () => {
             left: "0",
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            zIndex: "200",
           }}
         >
           <div
             style={{
-              backgroundColor: "white",
+              backgroundColor: "#ffffff",
               padding: "20px",
               borderRadius: "8px",
               width: "300px",
+              height: "160px",
               textAlign: "center",
             }}
           >
-            <h4>Edit {editingType === "room" ? "room" : "device"} title</h4>
+            <h4 style={{ color: "#000000", fontSize: "20px" }}>
+              Edit {editingType === "room" ? "Room" : "Device"} Title
+            </h4>
             <input
+              className="mb-3"
               type="text"
               value={tempTitle}
               onChange={(e) => setTempTitle(e.target.value)}
@@ -1733,34 +2838,52 @@ const HomePage: React.FC = () => {
                 width: "100%",
                 marginBottom: "10px",
                 padding: "8px",
-                border: "1px solid #b0b0b0",
-                borderRadius: "8px",
+                border: "none",
+                borderRadius: "10px",
+                fontSize: "15px",
+                color: "#000000",
+                backgroundColor: "#eeeeee",
+                boxShadow: "inset 4px 4px 8px rgba(0, 0, 0, 0.1)",
               }}
             />
-            <div>
+
+            <div
+              style={{
+                borderTop: "1px solid #979797",
+                width: "100%",
+              }}
+            ></div>
+            <div className="p-1 d-flex justify-content-around">
               <button
                 onClick={handleConfirm}
                 style={{
-                  marginRight: "10px",
-                  backgroundColor: "green",
-                  color: "white",
-                  padding: "8px 12px",
-                  borderRadius: "4px",
+                  backgroundColor: "#ffffff",
+                  color: "#4285f4",
                   border: "none",
                   cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
                 }}
               >
                 Confirm
               </button>
+              <div
+                style={{
+                  borderLeft: "1px solid #979797",
+                  height: "40px",
+                }}
+              ></div>
               <button
                 onClick={handleCancel}
                 style={{
-                  backgroundColor: "red",
-                  color: "white",
-                  padding: "8px 12px",
-                  borderRadius: "4px",
+                  backgroundColor: "#ffffff",
+                  color: "#f34235",
                   border: "none",
                   cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
                 }}
               >
                 Cancel
@@ -1770,13 +2893,180 @@ const HomePage: React.FC = () => {
         </div>
       )}
 
-      {alertVisible && (
-        <div className="alert">
-          <span className="closebtn" onClick={() => setAlertVisible(false)}>
-            &times;
-          </span>
-          <strong>Alert!</strong> Indicates a dangerous or potentially negative
-          action.
+      {/* Remove Room Display */}
+      {false && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: "200",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              padding: "20px",
+              borderRadius: "8px",
+              width: "300px",
+              height: "160px",
+              textAlign: "center",
+            }}
+          >
+            <h4 style={{ color: "#000000", fontSize: "20px" }}>
+              Remove {editingType === "room" ? "Room" : "Device"}
+            </h4>
+            <div className="pb-2">
+              <span
+                style={{
+                  fontSize: "15px",
+                  color: "#000000",
+                }}
+              >
+                Are you sure you want to remove this{" "}
+                {editingType === "room" ? "Room" : "Device"}?
+              </span>
+            </div>
+            <div
+              style={{
+                borderTop: "1px solid #979797",
+                width: "100%",
+              }}
+            ></div>
+            <div className="p-1 d-flex justify-content-around">
+              <button
+                //onClick={handleConfirm}
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#4285f4",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
+                }}
+              >
+                Cancel
+              </button>
+              <div
+                style={{
+                  borderLeft: "1px solid #979797",
+                  height: "40px",
+                }}
+              ></div>
+              <button
+                //onClick={handleCancel}
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#f34235",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Time */}
+      {isEditTime && (
+        <div
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: "200",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              padding: "20px",
+              borderRadius: "8px",
+              width: "300px",
+              height: "160px",
+              textAlign: "center",
+            }}
+          >
+            <h4 style={{ color: "#000000", fontSize: "20px" }}>Edit Time</h4>
+            <input
+              className="mb-3"
+              type="text"
+              value={tempTitle}
+              onChange={(e) => setTempTitle(e.target.value)}
+              style={{
+                width: "100%",
+                marginBottom: "10px",
+                padding: "8px",
+                border: "none",
+                borderRadius: "10px",
+                fontSize: "15px",
+                color: "#000000",
+                backgroundColor: "#eeeeee",
+                boxShadow: "inset 4px 4px 8px rgba(0, 0, 0, 0.1)",
+              }}
+            />
+
+            <div
+              style={{
+                borderTop: "1px solid #979797",
+                width: "100%",
+              }}
+            ></div>
+            <div className="p-1 d-flex justify-content-around">
+              <button
+                onClick={handleConfirm}
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#4285f4",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
+                }}
+              >
+                Confirm
+              </button>
+              <div
+                style={{
+                  borderLeft: "1px solid #979797",
+                  height: "40px",
+                }}
+              ></div>
+              <button
+                onClick={handleCancel}
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#f34235",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: "650",
+                  width: "49vw",
+                  fontSize: "18px",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>

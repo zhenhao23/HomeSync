@@ -23,7 +23,7 @@ const BottomNavbar: React.FC = () => {
     {
       id: "energy",
       icon: <FaBolt size={20} />,
-      label: "Energy",
+      label: "Usage",
       path: "/energy",
     },
     {
