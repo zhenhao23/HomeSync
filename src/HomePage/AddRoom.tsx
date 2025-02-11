@@ -126,14 +126,14 @@ const AddRoom: React.FC<AddRoomProps> = ({
               </span>
 
               <div
+                className="d-flex align-items-center"
                 style={{
-                  position: "absolute",
-                  width: "calc(100% - 10%)",
-                  height: "7%",
                   overflow: "hidden",
                   marginTop: "-7%",
+                  position: "absolute",
                   right: "0",
-                  paddingTop: "3px",
+                  width: "145px",
+                  height: "45px",
                 }}
               >
                 <div
