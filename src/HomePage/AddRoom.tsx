@@ -2,33 +2,126 @@ import { IoIosArrowBack } from "react-icons/io";
 import LogoNotif from "./LogoNotif";
 import WeatherDisplay from "./WeatherDisplay";
 import { FaExclamationCircle } from "react-icons/fa";
-import { roomIcon } from "./HomePage";
+import livingRoomIcon from "../assets/addRoomIcon/livingroom.svg";
+import bedIcon from "../assets/addRoomIcon/bed.svg";
+import kitchenTableIcon from "../assets/addRoomIcon/kitchen-table.svg";
+import bathroomIcon from "../assets/addRoomIcon/bathroom.svg";
+import gardenIcon from "../assets/addRoomIcon/garden.svg";
+import carIcon from "../assets/addRoomIcon/car.svg";
+import bookShelfIcon from "../assets/addRoomIcon/bookshelf.svg";
+import coatHangerIcon from "../assets/addRoomIcon/coat-hanger.svg";
+import { useState } from "react";
+import { Room } from "./HomePage";
 
 interface AddRoomProps {
-  roomName: string | null;
-  roomNameAlert: boolean;
-  selectedIcon: { image: string; title: string } | null;
-  addRoomIcons: roomIcon[];
-  iconAlert: boolean;
-  isIconTextVisible: boolean;
-  setRoomName: (name: string | null) => void;
-  handleFromAddDeviceToHome: () => void;
-  handleIconClick: (icon: { image: string; title: string }) => void;
-  handleAddRoom: () => void;
+  roomsState: Room[];
+  setRoomsState: React.Dispatch<React.SetStateAction<Room[]>>;
+  setActiveContent: (content: string) => void;
 }
 
 const AddRoom: React.FC<AddRoomProps> = ({
-  roomName,
-  roomNameAlert,
-  selectedIcon,
-  addRoomIcons,
-  iconAlert,
-  isIconTextVisible,
-  setRoomName,
-  handleFromAddDeviceToHome,
-  handleIconClick,
-  handleAddRoom,
+  roomsState,
+  setRoomsState,
+  setActiveContent,
 }) => {
+  // Icons array to manage the 8 icons for add room
+  const addRoomIcons = [
+    { image: livingRoomIcon, title: "Living Room" },
+    { image: bedIcon, title: "Bedroom" },
+    { image: kitchenTableIcon, title: "Kitchen" },
+    { image: bathroomIcon, title: "Bathroom" },
+    { image: gardenIcon, title: "Garden" },
+    { image: carIcon, title: "Garage" },
+    { image: bookShelfIcon, title: "Study Room" },
+    { image: coatHangerIcon, title: "Closet" },
+  ];
+
+  // function handle navigate from add device page to home page
+  const goBackToHomePage = () => {
+    setIconTextVisible(false);
+    // to ensure the flow of homepage when navigate back
+    setRoomNameAlert(false);
+    setRoomIconAlert(false);
+    setSelectedRoomIcon(null);
+    setRoomName(null);
+    setActiveContent("home"); // Navigate to the previous page
+  };
+
+  // State to track the selected icon in add room page or add device page
+  const [selectedRoomIcon, setSelectedRoomIcon] = useState<{
+    image: string;
+    title: string;
+  } | null>(null);
+
+  // State to track if to display icon text label when user clicked on a device
+  const [isIconTextVisible, setIconTextVisible] = useState(false);
+
+  // Handle click on an icon
+  const handleRoomIconClick = (icon: { image: string; title: string }) => {
+    setSelectedRoomIcon(icon);
+    setIconTextVisible(false); // Reset the visibility before the new swipe-in animation
+    setTimeout(() => {
+      setIconTextVisible(true); // Trigger the swipe-in animation
+    }, 150); // Adjust this timeout based on your animation duration
+  };
+
+  // state to check the room name is inputed by user (error handling)
+  const [roomNameAlert, setRoomNameAlert] = useState(false);
+  // state to check the icon is selected by user in add room  (error handling)
+  const [roomIconAlert, setRoomIconAlert] = useState(false);
+  // State to track the room name input from user in add room page
+  const [roomName, setRoomName] = useState<string | null>(null);
+
+  // function to add a room
+  const handleAddRoom = () => {
+    // Case if user didn't input room name and icon in add room page
+    if (selectedRoomIcon === null && !roomName?.trim()) {
+      setRoomNameAlert(true);
+      setRoomIconAlert(true);
+      return;
+    }
+    // Case if user didn't input room name in add room page
+    if (!roomName?.trim()) {
+      setRoomNameAlert(true);
+      return;
+    }
+    // Case if user didn't input icon in add room page
+    if (selectedRoomIcon === null) {
+      setRoomIconAlert(true);
+      return;
+    }
+
+    // new room
+    const newRoom = {
+      id: roomsState.length,
+      image: selectedRoomIcon.image,
+      title: roomName,
+      devices: 0,
+    };
+
+    // Add new room to the rooms list
+    setRoomsState((prevRooms) => [...prevRooms, newRoom]);
+    // Update the room's devices count in roomsState
+
+    setRoomName(null); // Reset the room name input
+    setSelectedRoomIcon(null); // Reset selected icon
+    setRoomNameAlert(false); // Reset room Alert to false state
+    setRoomIconAlert(false); // Reset icon alert to false state
+
+    // Navigate back to home page
+    goBackToHomePage();
+  };
+
+  // function to handle general navigate back to home page
+  const handleBackToHomePage = () => {
+    goBackToHomePage();
+    // to ensure the flow of homepage when navigate back
+    setRoomNameAlert(false);
+    setRoomIconAlert(false);
+    setSelectedRoomIcon(null);
+    setRoomName(null);
+  };
+
   return (
     <>
       <LogoNotif />
@@ -42,7 +135,7 @@ const AddRoom: React.FC<AddRoomProps> = ({
         }}
       >
         <div
-          onClick={handleFromAddDeviceToHome}
+          onClick={handleBackToHomePage}
           style={{ width: "65px", height: "30px", cursor: "pointer" }}
           className="ms-3 mt-3"
         >
@@ -152,7 +245,7 @@ const AddRoom: React.FC<AddRoomProps> = ({
                       ? "translateX(0)"
                       : "translateX(105%)",
                     boxShadow: `0 0 3px 3px rgba(255, 255, 255, 0.4) inset,
-                              0 0 2px 2px rgba(0, 0, 0, 0.3)`,
+                  0 0 2px 2px rgba(0, 0, 0, 0.3)`,
                   }}
                 >
                   <span
@@ -161,7 +254,7 @@ const AddRoom: React.FC<AddRoomProps> = ({
                       fontSize: "15px",
                     }}
                   >
-                    {selectedIcon?.title}
+                    {selectedRoomIcon?.title}
                   </span>
                 </div>
               </div>
@@ -182,21 +275,21 @@ const AddRoom: React.FC<AddRoomProps> = ({
                       className="p-3 text-center mt-4"
                       style={{
                         backgroundColor:
-                          selectedIcon?.title === i.title
+                          selectedRoomIcon?.title === i.title
                             ? "#d9d9d9"
                             : "#f5f5f5",
                         borderRadius: "50%",
                         maxWidth: "calc(100% - 20%)",
                         maxHeight: "calc(100% - 20%)",
                       }}
-                      onClick={() => handleIconClick(i)}
+                      onClick={() => handleRoomIconClick(i)}
                     >
                       <img src={i.image} alt={i.title} className="img-fluid" />
                     </div>
                   </div>
                 ))}
               </div>
-              {!selectedIcon && iconAlert ? (
+              {!selectedRoomIcon && roomIconAlert ? (
                 <div
                   className="p-1"
                   style={{

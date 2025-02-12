@@ -1,8 +1,20 @@
-interface RemoveRoomModadlProps {
-  editingType: string | null;
+import { Device, Room } from "./HomePage";
+
+interface RemoveModalProps {
+  removeWhat: string;
+  removeItem: Device | Room | null;
+  handleRemove: () => void;
+  handleCancel: () => void;
 }
 
-const RemoveRoomModal: React.FC<RemoveRoomModadlProps> = ({ editingType }) => {
+const RemoveModal: React.FC<RemoveModalProps> = ({
+  removeWhat,
+  removeItem,
+  handleRemove,
+  handleCancel,
+}) => {
+  if (!removeItem) return null; // Ensure removeDevice is not null
+
   return (
     <div
       style={{
@@ -29,7 +41,7 @@ const RemoveRoomModal: React.FC<RemoveRoomModadlProps> = ({ editingType }) => {
         }}
       >
         <h4 style={{ color: "#000000", fontSize: "20px" }}>
-          Remove {editingType === "room" ? "Room" : "Device"}
+          Remove {removeWhat.charAt(0).toUpperCase() + removeWhat.slice(1)}
         </h4>
         <div className="pb-2">
           <span
@@ -38,8 +50,7 @@ const RemoveRoomModal: React.FC<RemoveRoomModadlProps> = ({ editingType }) => {
               color: "#000000",
             }}
           >
-            Are you sure you want to remove this{" "}
-            {editingType === "room" ? "Room" : "Device"}?
+            Are you sure you want to remove this {removeWhat}?
           </span>
         </div>
         <div
@@ -50,7 +61,7 @@ const RemoveRoomModal: React.FC<RemoveRoomModadlProps> = ({ editingType }) => {
         ></div>
         <div className="p-1 d-flex justify-content-around">
           <button
-            //onClick={handleConfirm}
+            onClick={handleCancel}
             style={{
               backgroundColor: "#ffffff",
               color: "#4285f4",
@@ -70,7 +81,7 @@ const RemoveRoomModal: React.FC<RemoveRoomModadlProps> = ({ editingType }) => {
             }}
           ></div>
           <button
-            //onClick={handleCancel}
+            onClick={handleRemove}
             style={{
               backgroundColor: "#ffffff",
               color: "#f34235",
@@ -89,4 +100,4 @@ const RemoveRoomModal: React.FC<RemoveRoomModadlProps> = ({ editingType }) => {
   );
 };
 
-export default RemoveRoomModal;
+export default RemoveModal;

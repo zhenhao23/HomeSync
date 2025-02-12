@@ -1,24 +1,109 @@
 import { FaPlus, FaTrashAlt } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { Collaborator } from "./HomePage";
+import { useState } from "react";
+import collaboratorIcon from "../assets/collaborators/collaboratorProfile.svg";
+import RemoveCollabModal from "./RemoveCollabModal";
 
 interface ViewCollaboratorProps {
   handleButtonClick: (content: string) => void;
-  collabState: Collaborator[];
-  swipedCollab: { [collabId: number]: boolean };
-  handleCollabTouchStart: (e: React.TouchEvent) => void;
-  handleCollabTouchMove: (e: React.TouchEvent, collabId: number) => void;
-  setRemoveCollab: React.Dispatch<React.SetStateAction<Collaborator | null>>;
 }
 
 const ViewCollaborator: React.FC<ViewCollaboratorProps> = ({
   handleButtonClick,
-  collabState,
-  swipedCollab,
-  handleCollabTouchStart,
-  handleCollabTouchMove,
-  setRemoveCollab,
 }) => {
+  // Predefined collaborator array
+  const collaborators: Collaborator[] = [
+    {
+      id: 0,
+      name: "Alvin",
+      image: collaboratorIcon,
+      type: "Owner",
+    },
+    {
+      id: 1,
+      name: "Alice",
+      image: collaboratorIcon,
+      type: "Dweller",
+    },
+    {
+      id: 2,
+      name: "Anna",
+      image: collaboratorIcon,
+      type: "Dweller",
+    },
+  ];
+
+  // state to store swipe status for each collaborator
+  const [swipedCollab, setSwipedCollab] = useState<{
+    [collabId: number]: boolean;
+  }>({});
+
+  // state to track the startX position when user swipe
+  const [startX, setStartX] = useState(0);
+
+  // Handle touch start for collaborators
+  const handleCollabTouchStart = (e: React.TouchEvent) => {
+    setStartX(e.touches[0].clientX); // Store the initial touch position
+  };
+
+  // Handle touch move for collaborators
+  const handleCollabTouchMove = (e: React.TouchEvent, collabId: number) => {
+    if (!swipedCollab) return; // Prevent move if no collab is swiped
+
+    const currentX = e.touches[0].clientX; // Get the current touch position
+    const deltaX = currentX - startX; // Calculate the change in position
+
+    // Update the swipe state based on deltaX
+    if (deltaX < -50) {
+      // If swiped to the left
+      setSwipedCollab((prev) => ({
+        ...prev,
+        [collabId]: true, // swiped
+      }));
+    } else if (deltaX > 50) {
+      // If swiped to the right
+      setSwipedCollab((prev) => ({
+        ...prev,
+        [collabId]: false, // not swiped
+      }));
+    }
+  };
+
+  // state to track the collaborator's state from collaborators array
+  const [collabState, setCollabState] = useState(collaborators);
+
+  // State to track the currently selected/swiped collaborator to remove
+  const [removeCollab, setRemoveCollab] = useState<Collaborator | null>(null);
+
+  // Function to remove collaborator from the CollabState
+  const handleRemoveCollab = (collab: Collaborator) => {
+    setRemoveCollab(collab); // Set the collaborator to be removed
+
+    if (removeCollab) {
+      // Remove the collaborator from the collaborators list based on the collaborator's id
+      setCollabState((prevCollaborators) =>
+        prevCollaborators.filter((collab) => collab.id !== removeCollab.id)
+      );
+
+      setRemoveCollab(null); // Reset after removal
+    }
+  };
+
+  // function to handle cancel action modal in collaborator page
+  const handleCollabCancel = () => {
+    if (removeCollab) {
+      // Reset the swiped state for the selected collaborator
+      setSwipedCollab((prevState) => ({
+        ...prevState,
+        [removeCollab.id]: false, // Set the specific collaborator's swipe state to false
+      }));
+    }
+
+    // Reset the removeCollab state to null
+    setRemoveCollab(null);
+  };
+
   return (
     <>
       <div style={{ position: "relative", top: "60px" }}>
@@ -161,6 +246,15 @@ const ViewCollaborator: React.FC<ViewCollaboratorProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Remove Collaborator */}
+      {removeCollab && (
+        <RemoveCollabModal
+          removeCollab={removeCollab}
+          handleCollabCancel={handleCollabCancel}
+          handleRemoveCollab={handleRemoveCollab}
+        />
+      )}
     </>
   );
 };

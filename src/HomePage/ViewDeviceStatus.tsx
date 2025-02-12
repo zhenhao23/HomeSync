@@ -3,47 +3,180 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { Device, Room } from "./HomePage";
 import profile1Icon from "../assets/viewDeviceProfile/profile1.svg";
 import profile2Icon from "../assets/viewDeviceProfile/profile2.svg";
+import { useState } from "react";
+import EditTitleModal from "./EditTitleModal";
+import RemoveModal from "./RemoveModal";
 
 interface ViewDeviceStatusProps {
-  swipedDevice: { [deviceId: number]: boolean };
-  handleBackToHomePage: () => void;
   getRoom: () => Room;
   getDevice: () => Device;
-  handleEditRoomClick: () => void;
-  handleButtonClick: (content: string) => void;
   roomsState: Room[];
+  setRoomsState: React.Dispatch<React.SetStateAction<Room[]>>;
   devicesState: Device[];
-  handleTouchStart: (e: React.TouchEvent, device: Device) => void;
-  handleTouchMove: (e: React.TouchEvent, deviceId: number) => void;
-  handleSelectDevice: (selectedDevice: Device) => void;
+  setDevicesState: React.Dispatch<React.SetStateAction<Device[]>>;
+  setRoom: React.Dispatch<React.SetStateAction<Room>>;
+  setDevice: React.Dispatch<React.SetStateAction<Device>>;
+  setDevType: React.Dispatch<React.SetStateAction<string | null>>;
+  setActiveContent: (content: string) => void;
   getSelectedDeviceStatus: (roomId: number, deviceId: number) => boolean;
   handleToggle: (roomId: number, deviceId: number) => void;
-  handleRemoveDevice: () => void;
 }
 
 const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
-  swipedDevice,
-  handleBackToHomePage,
   getRoom,
   getDevice,
-  handleEditRoomClick,
-  handleButtonClick,
   roomsState,
+  setRoomsState,
   devicesState,
-  handleTouchStart,
-  handleTouchMove,
-  handleSelectDevice,
+  setDevicesState,
+  setRoom,
+  setDevice,
+  setDevType,
+  setActiveContent,
   getSelectedDeviceStatus,
   handleToggle,
-  handleRemoveDevice,
 }) => {
+  const goBackToHomePage = () => {
+    setActiveContent("home");
+  };
+
+  //const [isSwiping, setIsSwiping] = useState(false);
+
+  // State to store the swipe status for a device
+  const [swipedDevice, setSwipedDevice] = useState<string | null>(null);
+  // state to track the startX position when user swipe
+  const [startX, setStartX] = useState(0);
+  // State to track the currently selected/swiped device to remove
+  const [removeDevice, setRemoveDevice] = useState<Device | null>(null);
+
+  // state to track if user is editing title
+  const [isEditing, setIsEditing] = useState(false); // State to manage edit mode or exit mode
+  // state to track the temporary title changed
+  const [tempTitle, setTempTitle] = useState(getRoom().title); // Temporary title during editing
+  // state to track the editing type is room for modal displaying
+  const [editingType, setEditingType] = useState<string | null>(null);
+
+  // function to handle if user click to edit room title in viewDeviceStatus page
+  const handleEditRoomClick = () => {
+    setIsEditing(true); // Open the edit modal
+    setEditingType("room"); // Set to "room" when editing a room
+    setTempTitle(getRoom().title); // Set temp title to the current room title
+  };
+
+  // Function to remove device if swiped
+  const handleRemoveDevice = () => {
+    if (removeDevice) {
+      // Remove the device from the devicesState based on removeDevice's device_id
+      setDevicesState((prevDevicesState) =>
+        prevDevicesState.filter(
+          (device) => device.device_id !== removeDevice.device_id
+        )
+      );
+
+      // Update the room's devices count in roomsState
+      setRoomsState((prevRoomsState) =>
+        prevRoomsState.map((room) =>
+          room.id === removeDevice.room_id
+            ? { ...room, devices: Math.max(0, room.devices - 1) }
+            : room
+        )
+      );
+
+      setSwipedDevice(null);
+      setRemoveDevice(null); // Reset after removal
+    }
+  };
+
+  // function to handle cancel action modal in viewDeviceStatus page
+  const handleDeviceCancel = () => {
+    if (removeDevice) {
+      // Reset the swiped state (un-swipe)
+      setSwipedDevice(null);
+    }
+
+    // Reset the removeCollab state to null
+    setRemoveDevice(null);
+  };
+
+  // State to track if a swipe is in progress
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  // Handle touch start (when swiping in device begins)
+  const handleTouchStart = (e: React.TouchEvent, deviceId: number) => {
+    setStartX(e.touches[0].clientX); // Store the initial touch position
+    setSwipedDevice(deviceId.toString()); // Track the swiped device
+  };
+
+  // Handle touch move (during swiping in device)
+  const handleTouchMove = (e: React.TouchEvent, deviceId: number) => {
+    if (!swipedDevice) return; // Prevent move if no device is swiped
+    setIsSwiping(true);
+
+    const currentX = e.touches[0].clientX; // Get the current touch position
+    const deltaX = currentX - startX; // Calculate the change in position
+
+    // Update the swipe state based on deltaX
+    if (deltaX < -50) {
+      // If swiped to the left
+      setSwipedDevice(deviceId.toString());
+    } else if (deltaX > 50) {
+      // If swiped to the right
+      setSwipedDevice(null);
+    }
+
+    // Update the devices state
+    setDevicesState((prevDevicesState) =>
+      prevDevicesState.map(
+        (device) =>
+          device.device_id === deviceId
+            ? { ...device, swiped: deviceId.toString() === swipedDevice } // Convert to string for comparison
+            : { ...device, swiped: false } // Reset others
+      )
+    );
+  };
+
+  // function to handle if user confirm for the changes in all modals
+  const handleConfirm = () => {
+    // Update the room title
+    const updatedRoomTitle = roomsState.map((r) => {
+      if (r.id === getRoom().id) {
+        return { ...r, title: tempTitle }; // Update room title
+      }
+      return r;
+    });
+    setRoomsState(updatedRoomTitle); // Update the state with the new title for the room
+
+    setRoom((prevRoom) => ({
+      ...prevRoom,
+      title: tempTitle, // Update the room title
+    }));
+
+    setEditingType(null);
+    setIsEditing(false); // Exit edit mode after confirming
+  };
+
+  // function to handle cancel if user wants to cancel their action
+  const handleCancel = () => {
+    setTempTitle(getRoom().title); // Reset temp title to the original room title
+    setIsEditing(false); // Exit edit mode
+    setEditingType(null);
+  };
+
+  // Function to select the device selected by user
+  const handleSelectDevice = (selectedDevice: Device) => {
+    setSwipedDevice(null);
+    setDevType(selectedDevice.deviceType);
+    setDevice(selectedDevice);
+    setActiveContent("manageDevice");
+  };
+
   return (
     <>
       {/* Container for Back Button and Title */}
       <div style={{ position: "relative", top: "60px" }}>
         {/* Back Button */}
         <div
-          onClick={handleBackToHomePage}
+          onClick={goBackToHomePage}
           style={{
             padding: "8px 15px",
             cursor: "pointer",
@@ -83,7 +216,7 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
             size={15}
             color="white"
             onClick={(e) => {
-              if (swipedDevice[getDevice().device_id]) {
+              if (swipedDevice === getDevice().device_id.toString()) {
                 e.stopPropagation(); // Prevent device selection in swipe mode
               } else {
                 handleEditRoomClick(); // Proceed to select the device if not swiped
@@ -107,10 +240,10 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
           <div
             className="text-start"
             onClick={(e) => {
-              if (swipedDevice[getDevice().device_id]) {
+              if (swipedDevice === getDevice().device_id.toString()) {
                 e.stopPropagation(); // Prevent device selection in swipe mode
               } else {
-                handleButtonClick("viewCollaborators"); // Proceed to select the device if not swiped
+                setActiveContent("viewCollaborators"); // Proceed to select the device if not swiped
               }
             }}
           >
@@ -128,10 +261,10 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
               }}
               onClick={(e) => {
-                if (swipedDevice[getDevice().device_id]) {
+                if (swipedDevice === getDevice().device_id.toString()) {
                   e.stopPropagation(); // Prevent device selection in swipe mode
                 } else {
-                  handleButtonClick("addDevice"); // Proceed to select the device if not swiped
+                  setActiveContent("addDevice"); // Proceed to select the device if not swiped
                 }
               }}
             >
@@ -148,7 +281,7 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
           {/* Render devices for the selected room */}
           {getRoom() !== null && roomsState[getRoom().id] && (
             <div key={getRoom().id}>
-              {roomsState[getRoom().id].devices > 0 ? (
+              {roomsState[getRoom().id].devices != 0 ? (
                 // Filter devices for the current room and map over them
                 devicesState
                   .filter((device) => device.room_id === getRoom().id)
@@ -171,11 +304,15 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                           width: "calc(100% - 15%)",
                           height: "76px",
                           transition: "transform 0.3s ease",
-                          transform: swipedDevice[device.device_id]
-                            ? "translateX(-50px)"
-                            : "translateX(0)",
+                          transform:
+                            swipedDevice === device.device_id.toString() &&
+                            isSwiping
+                              ? "translateX(-50px)"
+                              : "translateX(0)",
                         }}
-                        onTouchStart={(e) => handleTouchStart(e, device)}
+                        onTouchStart={(e) =>
+                          handleTouchStart(e, device.device_id)
+                        }
                         onTouchMove={(e) =>
                           handleTouchMove(e, device.device_id)
                         }
@@ -208,24 +345,25 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                       </div>
 
                       <div>
-                        {swipedDevice[device.device_id] && (
-                          <button
-                            style={{
-                              backgroundColor: "red",
-                              padding: "10px",
-                              display: "flex",
-                              borderRadius: "50%",
-                              border: "none",
-                              transform: "translate(-50%, -30%)",
-                            }}
-                          >
-                            <FaTrashAlt
-                              color="white"
-                              size={18}
-                              onClick={handleRemoveDevice}
-                            />
-                          </button>
-                        )}
+                        {swipedDevice === device.device_id.toString() &&
+                          isSwiping && (
+                            <button
+                              style={{
+                                backgroundColor: "red",
+                                padding: "10px",
+                                display: "flex",
+                                borderRadius: "50%",
+                                border: "none",
+                                transform: "translate(-50%, -30%)",
+                              }}
+                            >
+                              <FaTrashAlt
+                                color="white"
+                                size={18}
+                                onClick={() => setRemoveDevice(device)}
+                              />
+                            </button>
+                          )}
                       </div>
                     </div>
                   ))
@@ -245,6 +383,27 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
           )}
         </div>
       </div>
+
+      {/* Edit Title */}
+      {isEditing && (
+        <EditTitleModal
+          editingType={editingType}
+          tempTitle={tempTitle}
+          setTempTitle={setTempTitle}
+          handleConfirm={handleConfirm}
+          handleCancel={handleCancel}
+        />
+      )}
+
+      {/* Remove Device Display */}
+      {removeDevice && (
+        <RemoveModal
+          removeWhat="device"
+          removeItem={removeDevice}
+          handleRemove={handleRemoveDevice}
+          handleCancel={handleDeviceCancel}
+        />
+      )}
     </>
   );
 };
