@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Background from "./Background.tsx";
 import BottomNavbar from "./BottomNavbar.tsx";
 import HomePage from "./HomePage/HomePage.tsx";
@@ -6,33 +11,60 @@ import EnergyPage from "./EnergyPage/EnergyPage.tsx";
 import EnergyLimit from "./EnergyPage/EnergyLimit.tsx";
 import SolarPage from "./SolarPage/SolarPage.tsx";
 import ProfilePage from "./ProfilePage/ProfilePage.tsx";
-// import WelcomePage from "./LoginRegisterPage/WelcomePage.tsx";
-// import WelcomeBackground from "./LoginRegisterPage/WelcomeBackground.tsx";
-// hello 2
+import WelcomePage from "./LoginRegisterPage/WelcomePage.tsx";
+import Welcome2 from "./LoginRegisterPage/Welcome2.tsx";
+import SignIn from "./LoginRegisterPage/SignIn.tsx";
+import RegisterRole from "./LoginRegisterPage/RegisterRole.tsx";
+import Register from "./LoginRegisterPage/Register.tsx";
+import OTPVerification from "./LoginRegisterPage/OTPVerification.tsx";
+import JoinHome from "./LoginRegisterPage/JoinHome.tsx";
+import ForgotPW from "./LoginRegisterPage/ForgotPW.tsx";
+import CreateNewPW from "./LoginRegisterPage/CreateNewPW.tsx";
 
-function App() {
+const AppLayout = () => {
+  const location = useLocation();
+
+  // Define routes that should show the navbar
+  const routesWithNavbar = [
+    "/home",
+    "/energy",
+    "/energy-limit",
+    "/solar",
+    "/profile",
+  ];
+
+  // Check if current route should show navbar
+  const shouldShowNavbar = routesWithNavbar.includes(location.pathname);
+
+  return (
+    <Background>
+      <Routes>
+        <Route path="/" element={<WelcomePage />} />
+        <Route path="/welcome2" element={<Welcome2 />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/register-role" element={<RegisterRole />} />
+        <Route path="/register-acc" element={<Register />} />
+        <Route path="/create-new-pw" element={<CreateNewPW />} />
+        <Route path="/forgot-pw" element={<ForgotPW />} />
+        <Route path="/join-home" element={<JoinHome />} />
+        <Route path="/otp-ver" element={<OTPVerification />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/energy" element={<EnergyPage />} />
+        <Route path="/energy-limit" element={<EnergyLimit />} />
+        <Route path="/solar" element={<SolarPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
+      {shouldShowNavbar && <BottomNavbar />}
+    </Background>
+  );
+};
+
+const App = () => {
   return (
     <Router>
-      {/* IMPORTANT: COMMENT THE PAGES YOU ARE NOT WORKING ON */}
-      {/* WebApp Pages (zhen hao, wai yau, umar) */}
-      <Background>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/energy" element={<EnergyPage />} />
-          <Route path="/energy-limit" element={<EnergyLimit />} />
-          <Route path="/solar" element={<SolarPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Routes>
-        <BottomNavbar />
-      </Background>
-
-      {/* IMPORTANT: COMMENT THE PAGES YOU ARE NOT WORKING ON */}
-      {/* Login register Pages (Darshan, Alif) */}
-      {/* <WelcomeBackground>
-        <WelcomePage />
-      </WelcomeBackground> */}
+      <AppLayout />
     </Router>
   );
-}
+};
 
 export default App;

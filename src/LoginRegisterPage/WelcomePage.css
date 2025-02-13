@@ -1,0 +1,150 @@
+/* 🔹 Container for the entire page */
+.welcome-container {
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 0;
+  background-color: #204160;
+}
+
+/* 🔹 Top Section with Logo */
+.top-section {
+  background-color: #6d7a84;
+  height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20px;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+}
+
+/* 🔹 Logo Styling */
+.logo-container {
+  border: 1px dotted white;
+  background-color: transparent;
+  width: 75px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.logo-bg {
+  background-color: #d3c1a3;
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.logo-inner {
+  background-color: white;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.logo-img {
+  max-width: 75%;
+  max-height: 75%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* 🔹 Logo Text */
+.logo-text {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+/* 🔹 Main Content Section */
+.main-content {
+  background-color: #204160;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+/* 🔹 Title */
+.main-title {
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: white;
+  text-align: center;
+}
+
+/* 🔹 Description Text */
+.main-description {
+  font-size: 20px;
+  line-height: 1.5;
+  margin: 0 20px;
+  color: white;
+  text-align: center;
+}
+
+/* 🔹 Illustration */
+.illustration {
+  width: 70%;
+  margin: 20px auto;
+}
+
+/* 🔹 Get Started Button */
+.get-started-btn {
+  background-color: white;
+  color: #002244;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 12px 40px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.get-started-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* 🔹 Bottom Scroll Indicator */
+.scroll-indicator {
+  width: 150px;
+  height: 5px;
+  background-color: white;
+  border-radius: 5px;
+  margin: 200px auto 0 auto;
+}
+/* 🔹 Style for the Sign In & Register Buttons */
+.action-btn {
+  background-color: white;
+  color: #002244;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 12px 40px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 80%;
+  max-width: 250px;
+}
+
+.action-btn:hover {
+  background-color: #f0f0f0;
+}
