@@ -59,7 +59,7 @@ const Register: React.FC = () => {
       <button
         className="create-account-btn"
         // onClick={() => console.log("Account Created")}
-        onClick={() => navigate("/register-role")}
+        onClick={() => navigate("/otp-ver")}
       >
         Create Account
       </button>
@@ -68,7 +68,7 @@ const Register: React.FC = () => {
       <div className="divider">or Register with</div>
 
       {/* Google Register Button */}
-      <button onClick={() => navigate("/register-role")} className="google-btn">
+      <button onClick={() => navigate("/otp-ver")} className="google-btn">
         <img src={GoogleLogo} alt="Google Logo" className="google-icon" />
         Continue with Google
       </button>

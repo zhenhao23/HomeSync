@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 import WelcomeBackground from "./WelcomeBackground";
 import Logo from "../assets/logo.svg";
 import OTPImage from "../assets/otp.svg";
 import "./OTP.css";
 
 const OTPVerification: React.FC = () => {
+  const navigate = useNavigate(); // Initialize useNavigate hook
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]); // Store OTP as an array
   const [isVerified, setIsVerified] = useState<boolean>(false);
 
@@ -98,7 +100,13 @@ const OTPVerification: React.FC = () => {
           ))}
         </div>
 
-        <button className="verify-button" onClick={handleVerifyClick}>
+        <button
+          className="verify-button"
+          onClick={() => {
+            handleVerifyClick();
+            navigate("/register-role");
+          }}
+        >
           Verify
         </button>
 

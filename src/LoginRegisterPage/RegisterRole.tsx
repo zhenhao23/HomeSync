@@ -1,16 +1,24 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For navigation
-import "./RegisterRole.css"; // Reusable CSS for Register Pages
-import Logo from "../assets/logo.svg"; // HomeSync Logo
-import OwnerIcon from "../assets/homeowner.svg"; // Home Owner Icon
-import DwellerIcon from "../assets/homedweller.svg"; // Home Dweller Icon
-import { FaArrowLeft } from "react-icons/fa"; // Back Arrow Icon
+import { useNavigate } from "react-router-dom";
+import "./RegisterRole.css";
+import Logo from "../assets/logo.svg";
+import OwnerIcon from "../assets/homeowner.svg";
+import DwellerIcon from "../assets/homedweller.svg";
+import { FaArrowLeft } from "react-icons/fa";
 
 const RegisterRole: React.FC = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<"owner" | "dweller" | null>(
     null
   );
+
+  const handleNextClick = () => {
+    if (selectedRole === "owner") {
+      navigate("/home");
+    } else if (selectedRole === "dweller") {
+      navigate("/join-home");
+    }
+  };
 
   return (
     <div className="register-container">
@@ -67,7 +75,7 @@ const RegisterRole: React.FC = () => {
       <button
         className="next-btn"
         disabled={!selectedRole}
-        onClick={() => navigate("/join-home")}
+        onClick={handleNextClick}
       >
         Next
       </button>
