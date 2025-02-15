@@ -1,4 +1,4 @@
-import collaboratorIcon from "../assets/collaborators/collaboratorProfile.svg";
+import collabIcon from "../assets/collaborators/collaboratorProfile.svg";
 import { IoIosArrowBack } from "react-icons/io";
 import { Collaborator } from "./HomePage";
 import { useState } from "react";
@@ -13,19 +13,19 @@ const AddCollaborator: React.FC<AddCollabProps> = ({ setActiveContent }) => {
     {
       id: 0,
       name: "Adrian",
-      image: collaboratorIcon,
+      image: collabIcon,
       type: "Dweller",
     },
     {
       id: 1,
       name: "Joshua",
-      image: collaboratorIcon,
+      image: collabIcon,
       type: "Dweller",
     },
     {
       id: 2,
       name: "Lily",
-      image: collaboratorIcon,
+      image: collabIcon,
       type: "Dweller",
     },
   ];
