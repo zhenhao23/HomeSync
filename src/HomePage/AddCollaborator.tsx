@@ -1,4 +1,4 @@
-import collabIcon from "../assets/collaborators/collaboratorProfile.svg";
+import collabIcon from "../assets/viewDeviceProfile/profile2.svg";
 import { IoIosArrowBack } from "react-icons/io";
 import { Collaborator } from "./HomePage";
 import { useState } from "react";

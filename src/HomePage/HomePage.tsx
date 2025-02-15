@@ -31,7 +31,7 @@ import RemoveModal from "./RemoveModal.tsx";
 import ViewNotification from "./ViewNotification.tsx";
 import RequestAccessModal from "./RequestAccessModal.tsx";
 import AddCollaborator from "./AddCollaborator.tsx";
-import collaboratorIcon from "../assets/collaborators/collaboratorProfile.svg";
+import collaboratorIcon from "../assets/viewDeviceProfile/profile2.svg";
 
 export interface Room {
   id: number;
