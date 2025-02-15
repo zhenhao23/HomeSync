@@ -62,6 +62,7 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   const getUnitLabel = (deviceType: string): string => {
     switch (deviceType) {
       case "irrigation":
+        return "Litre per square meter";
       case "petfeeder":
         return "Amount";
       case "aircond":
@@ -71,6 +72,77 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
       default:
         return "";
     }
+  };
+
+  // function to get different unit display for different current selected device type
+  const getUnit = (deviceType: string): string => {
+    switch (deviceType) {
+      case "irrigation":
+        return "L/m²";
+      case "aircond":
+        return "°C";
+      case "light":
+      case "petfeeder":
+        return "%";
+      default:
+        return "";
+    }
+  };
+
+  const handleDecrease = (deviceType: string) => {
+    switch (deviceType) {
+      case "aircond":
+        return () => handleDecreaseCelsius();
+      case "irrigation":
+        return () => handleDecreaseWaterFlow();
+      default:
+        return () => {}; // Return an empty function instead of void
+    }
+  };
+
+  const handleIncrease = (deviceType: string) => {
+    switch (deviceType) {
+      case "aircond":
+        return () => handleIncreaseCelsius();
+      case "irrigation":
+        return () => handleIncreaseWaterFlow();
+      default:
+        return () => {}; // Return an empty function instead of void
+    }
+  };
+
+  const handleDecreaseWaterFlow = () => {
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === getDevice().device_id &&
+        device.devData.waterFlow > 2
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                waterFlow: device.devData.waterFlow - 1,
+              },
+            }
+          : device
+      )
+    );
+  };
+
+  const handleIncreaseWaterFlow = () => {
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === getDevice().device_id &&
+        device.devData.waterFlow < 60
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                waterFlow: device.devData.waterFlow + 1,
+              },
+            }
+          : device
+      )
+    );
   };
 
   // Handle Increase Celsius
@@ -109,6 +181,21 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
     );
   };
 
+  // Starts continuous execution on long press
+  const startLongPress = (action: () => void) => {
+    action(); // Execute immediately
+    const id = setInterval(action, 300); // Execute repeatedly every 300ms
+    setIntervalId(id);
+  };
+
+  // Stops execution when button is released
+  const stopLongPress = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
+  };
+
   const handleConfirm = () => {
     // Update the device title
     const updatedDeviceTitle = devicesState.map((d) => {
@@ -139,20 +226,15 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   const [intervalId, setIntervalId] = useState<any>(null);
 
   // Start increasing/decreasing tempature celsius when the button is pressed
-  const startChangingTemperature = (action: () => void) => {
-    const id = setInterval(() => {
-      action();
-    }, 300);
-    setIntervalId(id); // Save the interval ID to stop it later
-  };
+  // const startChangingTemperature = (action: () => void) => {
+  //   if (!action) return; // Ensure action exists
 
-  // Stop changing when the button is released
-  const stopChangingTemperature = () => {
-    if (intervalId) {
-      clearInterval(intervalId); // Clear the interval
-      setIntervalId(null); // Reset the interval ID state
-    }
-  };
+  //   const id = setInterval(() => {
+  //     action(); // Execute the function
+  //   }, 300);
+
+  //   setIntervalId(id); // Save interval ID to stop later
+  // };
 
   // function to get different intensity label for different current selected device type
   const getIntensityLabel = (deviceType: string): string => {
@@ -386,7 +468,13 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
       {/* Purple Container */}
       {devType === "light" || "aircond" || "petfeeder" || "irrigation" ? (
         <>
-          <div style={{ position: "relative", top: "60px" }}>
+          <div
+            style={{
+              position: "relative",
+              top: "60px",
+              height: "calc(100% - 57%)",
+            }}
+          >
             {/* Back Button */}
             <div
               onClick={() => setActiveContent("viewDeviceStatus")}
@@ -447,29 +535,27 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
                     {/* Find the current device from the updated devicesState */}
                     {getDevice().deviceType === "aircond"
                       ? getDevice().devData.celsius
+                      : getDevice().deviceType === "irrigation"
+                      ? getDevice().devData.waterFlow
                       : getDevice().devData.percentage}
-
-                    {/* If it's aircon, show the mapped Celsius value; otherwise, show percentage */}
-                    {/* {getDevice().deviceType === "aircond"
-                    ? getTemperature() // Assuming percentage represents the scroll position
-                    : getDevice().devData.percentage} */}
                   </b>
-                  {getDevice().deviceType === "aircond" ? (
-                    <b style={{ fontSize: "30px", color: "white" }}>°C</b>
-                  ) : (
-                    <b style={{ fontSize: "30px", color: "white" }}>%</b>
-                  )}
+                  <b style={{ fontSize: "30px", color: "white" }}>
+                    {getUnit(getDevice().deviceType)}
+                  </b>
+
                   <p
                     className="text-start"
                     style={{
                       fontSize: "20px",
                       color: "white",
+                      wordWrap: "break-word",
+                      maxWidth: "150px",
                     }}
                   >
                     {getUnitLabel(getDevice().deviceType)}
                   </p>
                 </div>
-                <div className="text-start pt-2">
+                <div className="text-start">
                   <label className="switch">
                     <input
                       type="checkbox"
@@ -524,11 +610,9 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
             </div>
 
             {/* Display button for different device */}
-            {getDevice().deviceType === "aircond" ? (
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ height: "90px" }}
-              >
+            {getDevice().deviceType === "aircond" ||
+            getDevice().deviceType === "irrigation" ? (
+              <div className="d-flex justify-content-center align-items-center p-2">
                 <button
                   className="me-5 btn p-2 d-flex align-items-center justify-content-center"
                   style={{
@@ -537,16 +621,15 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
                     height: "50px",
                     borderRadius: "15px",
                   }}
-                  onClick={handleDecreaseCelsius}
-                  disabled={getDevice().devData.celsius === 14}
+                  onClick={() => handleDecrease(getDevice().deviceType)}
+                  disabled={
+                    getDevice().devData.celsius === 14 ||
+                    getDevice().devData.waterFlow === 2
+                  }
                   onTouchStart={() =>
-                    startChangingTemperature(handleDecreaseCelsius)
+                    startLongPress(handleDecrease(getDevice().deviceType))
                   }
-                  onTouchEnd={stopChangingTemperature}
-                  onMouseDown={() =>
-                    startChangingTemperature(handleDecreaseCelsius)
-                  }
-                  onMouseUp={stopChangingTemperature}
+                  onTouchEnd={stopLongPress}
                 >
                   <FaMinus color="black" size={"18"} />
                 </button>
@@ -559,16 +642,15 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
                     height: "50px",
                     borderRadius: "15px",
                   }}
-                  onClick={handleIncreaseCelsius}
-                  disabled={getDevice().devData.celsius === 30}
+                  onClick={() => handleIncrease(getDevice().deviceType)}
+                  disabled={
+                    getDevice().devData.celsius === 30 ||
+                    getDevice().devData.waterFlow === 60
+                  }
                   onTouchStart={() =>
-                    startChangingTemperature(handleIncreaseCelsius)
+                    startLongPress(handleIncrease(getDevice().deviceType))
                   }
-                  onTouchEnd={stopChangingTemperature}
-                  onMouseDown={() =>
-                    startChangingTemperature(handleIncreaseCelsius)
-                  }
-                  onMouseUp={stopChangingTemperature}
+                  onTouchEnd={stopLongPress}
                 >
                   <FaPlus color="black" size={"18"} />
                 </button>

@@ -52,6 +52,7 @@ export interface Device {
     iconImage: string;
     percentage: number;
     celsius: number;
+    waterFlow: number;
   };
   content: {
     feature: string;
@@ -113,6 +114,7 @@ const HomePage: React.FC = () => {
         iconImage: managePetfeeder,
         percentage: 0,
         celsius: 0,
+        waterFlow: 0,
       },
       content: {
         feature: "Every Monday",
@@ -135,6 +137,7 @@ const HomePage: React.FC = () => {
         iconImage: manageAircond,
         percentage: 0,
         celsius: 30,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto AirCond",
@@ -157,6 +160,7 @@ const HomePage: React.FC = () => {
         iconImage: manageLamp,
         percentage: 40,
         celsius: 0,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto Lighting",
@@ -179,6 +183,7 @@ const HomePage: React.FC = () => {
         iconImage: manageLamp,
         percentage: 60,
         celsius: 0,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto Lighting",
@@ -199,8 +204,9 @@ const HomePage: React.FC = () => {
       swiped: false,
       devData: {
         iconImage: manageIrrigation,
-        percentage: 80,
+        percentage: 30,
         celsius: 0,
+        waterFlow: 30,
       },
       content: {
         feature: "Auto Irrigation",
@@ -223,6 +229,7 @@ const HomePage: React.FC = () => {
         iconImage: manageAircond,
         percentage: 0,
         celsius: 16,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto AirCond",
@@ -245,6 +252,7 @@ const HomePage: React.FC = () => {
         iconImage: manageAircond,
         percentage: 0,
         celsius: 18,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto AirCond",
@@ -267,6 +275,7 @@ const HomePage: React.FC = () => {
         iconImage: manageAircond,
         percentage: 0,
         celsius: 20,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto AirCond",
@@ -289,6 +298,7 @@ const HomePage: React.FC = () => {
         iconImage: manageAircond,
         percentage: 0,
         celsius: 25,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto AirCond",
@@ -311,6 +321,7 @@ const HomePage: React.FC = () => {
         iconImage: manageAircond,
         percentage: 0,
         celsius: 28,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto AirCond",
@@ -337,6 +348,7 @@ const HomePage: React.FC = () => {
       iconImage: manageLamp,
       percentage: 80,
       celsius: 0,
+      waterFlow: 0,
     },
     content: {
       feature: "Auto Lighting",
