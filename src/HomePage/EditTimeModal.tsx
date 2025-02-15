@@ -1,13 +1,11 @@
+import TimePickerDropdown from "./TimePickerDropdown";
+
 interface EditTimeModalProps {
-  tempTitle: string;
-  setTempTitle: React.Dispatch<React.SetStateAction<string>>;
   handleConfirm: () => void;
   handleCancel: () => void;
 }
 
 const EditTitleModal: React.FC<EditTimeModalProps> = ({
-  tempTitle,
-  setTempTitle,
   handleConfirm,
   handleCancel,
 }) => {
@@ -37,23 +35,9 @@ const EditTitleModal: React.FC<EditTimeModalProps> = ({
         }}
       >
         <h4 style={{ color: "#000000", fontSize: "20px" }}>Edit Time</h4>
-        <input
-          className="mb-3"
-          type="text"
-          value={tempTitle}
-          onChange={(e) => setTempTitle(e.target.value)}
-          style={{
-            width: "100%",
-            marginBottom: "10px",
-            padding: "8px",
-            border: "none",
-            borderRadius: "10px",
-            fontSize: "15px",
-            color: "#000000",
-            backgroundColor: "#eeeeee",
-            boxShadow: "inset 4px 4px 8px rgba(0, 0, 0, 0.1)",
-          }}
-        />
+        <div>
+          <TimePickerDropdown />
+        </div>
 
         <div
           style={{
@@ -74,7 +58,7 @@ const EditTitleModal: React.FC<EditTimeModalProps> = ({
               fontSize: "18px",
             }}
           >
-            Confirm
+            Cancel
           </button>
           <div
             style={{
@@ -94,7 +78,7 @@ const EditTitleModal: React.FC<EditTimeModalProps> = ({
               fontSize: "18px",
             }}
           >
-            Cancel
+            Save
           </button>
         </div>
       </div>

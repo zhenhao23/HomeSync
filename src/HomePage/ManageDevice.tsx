@@ -30,6 +30,8 @@ interface ManageDeviceProps {
   ) => boolean;
   setDevice: React.Dispatch<React.SetStateAction<Device>>;
   devicesState: Device[];
+  addFeature: boolean;
+  handleAddFeature: () => void;
 }
 
 const ManageDevice: React.FC<ManageDeviceProps> = ({
@@ -43,12 +45,14 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   getSelectedDeviceToggle,
   setDevice,
   devicesState,
+  addFeature,
+  handleAddFeature,
 }) => {
   // state to track if user is editing title
   const [isEditing, setIsEditing] = useState(false); // State to manage edit mode or exit mode
   // state to track the temporary title changed
   const [tempTitle, setTempTitle] = useState(getRoom().title); // Temporary title during editing
-  // state to track the editing type is a device for modal displaying
+  // state to track the editing type is a device for modal display
   const [editingType, setEditingType] = useState<string | null>(null);
 
   // function to handle if user click to edit device title in manageDevice page
@@ -222,19 +226,18 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
     setEditingType(null);
   };
 
+  // function to confirm edited time
+  const handleConfirmEditTime = () => {
+    toggleEditTime();
+  };
+
+  // function to cancel edited time
+  const handleCancelEditTime = () => {
+    toggleEditTime();
+  };
+
   // Track the interval ID for device
   const [intervalId, setIntervalId] = useState<any>(null);
-
-  // Start increasing/decreasing tempature celsius when the button is pressed
-  // const startChangingTemperature = (action: () => void) => {
-  //   if (!action) return; // Ensure action exists
-
-  //   const id = setInterval(() => {
-  //     action(); // Execute the function
-  //   }, 300);
-
-  //   setIntervalId(id); // Save interval ID to stop later
-  // };
 
   // function to get different intensity label for different current selected device type
   const getIntensityLabel = (deviceType: string): string => {
@@ -414,7 +417,7 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
 
   // state to track selected period for smart feature
   const [period, setPeriod] = useState("AM"); // Tracks the selected option
-  // state to track if user is editing time (not yet done)
+  // state to track if user click to edit time for modal display
   const [isEditTime, setIsEditTime] = useState(false);
 
   // state to track the toggled period by user (not yet done)
@@ -430,17 +433,10 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   // function to handle if user click to edit time (still doing it)
   const handleEditTimeClick = () => {
     toggleEditTime();
-    setEditingType("time"); // Set to "device" when editing a device
-    setTempTitle("Wanna edit time"); // Set temp title to the current device title
+    //setEditingType("time"); // Set to "time" when editing time
+    setTempTitle("Edit time"); // Set temp title to the current device title
   };
 
-  // state to track if user wants to add new smart feature schedule in manageDevice page
-  const [addFeature, setAddFeature] = useState(false);
-
-  // function to handle adding smart feature schedule
-  const handleAddFeature = () => {
-    setAddFeature((prev) => !prev);
-  };
 
   // function to handle the toggle of smart feature in manageDevice page
   const handleContentToggle = (
@@ -929,7 +925,7 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
                           }}
                           onClick={handleEditTimeClick}
                         >
-                          <span>11: 20</span>
+                          <span>11: 30</span>
                         </div>
                         <div
                           className="d-flex"
@@ -1026,7 +1022,9 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
                       </div>
                     ) : null}
 
-                    <div className="mt-3">
+                    <div className="mt-3"
+                    onClick={() => setActiveContent("repeatTime")}
+                    >
                       <div
                         className="d-flex justify-content-center justify-content-between fw-bold p-1"
                         style={{
@@ -1202,10 +1200,8 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
       {/* Edit Time */}
       {isEditTime && (
         <EditTimeModal
-          tempTitle={tempTitle}
-          setTempTitle={setTempTitle}
-          handleConfirm={handleConfirm}
-          handleCancel={handleCancel}
+          handleConfirm={handleConfirmEditTime}
+          handleCancel={handleCancelEditTime}
         />
       )}
     </>

@@ -32,6 +32,7 @@ import ViewNotification from "./ViewNotification.tsx";
 import RequestAccessModal from "./RequestAccessModal.tsx";
 import AddCollaborator from "./AddCollaborator.tsx";
 import collaboratorIcon from "../assets/addCollab/collab-profile.svg";
+import RepeatTime from "./RepeatTime.tsx";
 
 export interface Room {
   id: number;
@@ -542,6 +543,14 @@ const HomePage: React.FC = () => {
   // state to track the collaborator's state from collaborators array
   const [collabState, setCollabState] = useState(collaborators);
 
+  // state to track if user wants to add new smart feature schedule in manageDevice page
+  const [addFeature, setAddFeature] = useState(false);
+
+  // function to handle adding smart feature schedule
+  const handleAddFeature = () => {
+    setAddFeature((prev) => !prev);
+  };
+
   // funciton to find current device
   const currentDevice = devicesState.find(
     (device) => device.device_id === getDevice().device_id
@@ -762,6 +771,8 @@ const HomePage: React.FC = () => {
           getSelectedDeviceToggle={getSelectedDeviceToggle}
           setDevice={setDevice}
           devicesState={devicesState}
+          addFeature={addFeature}
+          handleAddFeature={handleAddFeature}
         />
       ) : activeContent === "viewCollaborators" ? (
         <ViewCollaborator
@@ -773,6 +784,11 @@ const HomePage: React.FC = () => {
         <ViewNotification setActiveContent={setActiveContent} />
       ) : activeContent === "addCollaborator" ? (
         <AddCollaborator setActiveContent={setActiveContent} />
+      ) : activeContent === "repeatTime" ? (
+        <RepeatTime
+          setActiveContent={setActiveContent}
+          setAddFeature={handleAddFeature}
+        />
       ) : null}
 
       {/* Remove Room Display */}

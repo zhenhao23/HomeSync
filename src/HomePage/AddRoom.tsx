@@ -124,7 +124,7 @@ const AddRoom: React.FC<AddRoomProps> = ({
 
   return (
     <>
-      <LogoNotif />
+      <LogoNotif setActiveContent={setActiveContent} />
       <WeatherDisplay />
       <div
         className="bg-white position-fixed start-50 translate-middle-x w-100 overflow-auto"

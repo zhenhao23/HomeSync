@@ -34,6 +34,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         iconImage: managePetfeeder,
         percentage: 60,
         celsius: 0,
+        waterFlow: 0,
       },
       content: {
         feature: "Every Monday",
@@ -56,6 +57,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         iconImage: manageAircond,
         percentage: 0,
         celsius: 24,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto AirCond",
@@ -78,6 +80,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         iconImage: manageLamp,
         percentage: 40,
         celsius: 0,
+        waterFlow: 0,
       },
       content: {
         feature: "Auto Lighting",
