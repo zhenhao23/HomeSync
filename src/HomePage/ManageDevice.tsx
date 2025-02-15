@@ -17,7 +17,7 @@ import EditTimeModal from "./EditTimeModal";
 
 interface ManageDeviceProps {
   devType: string | null;
-  handleButtonClick: (content: string) => void;
+  setActiveContent: (content: string) => void;
   getDevice: () => Device;
   getSelectedDeviceStatus: (roomId: number, deviceId: number) => boolean;
   getRoom: () => Room;
@@ -34,7 +34,7 @@ interface ManageDeviceProps {
 
 const ManageDevice: React.FC<ManageDeviceProps> = ({
   devType,
-  handleButtonClick,
+  setActiveContent,
   getDevice,
   getSelectedDeviceStatus,
   getRoom,
@@ -380,7 +380,6 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
       )
     );
   };
-  
 
   return (
     <>
@@ -390,7 +389,7 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
           <div style={{ position: "relative", top: "60px" }}>
             {/* Back Button */}
             <div
-              onClick={() => handleButtonClick("viewDeviceStatus")}
+              onClick={() => setActiveContent("viewDeviceStatus")}
               style={{
                 padding: "8px 15px",
                 cursor: "pointer",

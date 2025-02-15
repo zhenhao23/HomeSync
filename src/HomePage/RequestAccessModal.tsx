@@ -1,20 +1,12 @@
-import { Device, Room } from "./HomePage";
-
-interface RemoveModalProps {
-  removeWhat: string;
-  removeItem: Device | Room | null;
-  handleRemove: () => void;
-  handleCancel: () => void;
+interface RequestAccessProps {
+    handleCancel: () => void;
+    handleRequest: () => void;
 }
 
-const RemoveModal: React.FC<RemoveModalProps> = ({
-  removeWhat,
-  removeItem,
-  handleRemove,
-  handleCancel,
+const RequestAccessModal: React.FC<RequestAccessProps> = ({
+    handleCancel,
+    handleRequest
 }) => {
-  if (!removeItem) return null; // Ensure remove'Type' is not null
-
   return (
     <div
       style={{
@@ -41,7 +33,7 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
         }}
       >
         <h4 style={{ color: "#000000", fontSize: "20px" }}>
-          Remove {removeWhat.charAt(0).toUpperCase() + removeWhat.slice(1)}
+          No Access
         </h4>
         <div className="pb-2">
           <span
@@ -50,7 +42,7 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
               color: "#000000",
             }}
           >
-            Are you sure you want to remove this {removeWhat}?
+            Do you want to request for permission to access this room?
           </span>
         </div>
         <div
@@ -81,7 +73,7 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
             }}
           ></div>
           <button
-            onClick={handleRemove}
+            onClick={handleRequest}
             style={{
               backgroundColor: "#ffffff",
               color: "#f34235",
@@ -92,7 +84,7 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
               fontSize: "18px",
             }}
           >
-            Remove
+            Request
           </button>
         </div>
       </div>
@@ -100,4 +92,4 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
   );
 };
 
-export default RemoveModal;
+export default RequestAccessModal;

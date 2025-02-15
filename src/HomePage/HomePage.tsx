@@ -28,6 +28,10 @@ import DeviceSetting from "./DeviceSetting.tsx";
 import ManageDevice from "./ManageDevice.tsx";
 import ViewCollaborator from "./ViewCollaborator.tsx";
 import RemoveModal from "./RemoveModal.tsx";
+import ViewNotification from "./ViewNotification.tsx";
+import RequestAccessModal from "./RequestAccessModal.tsx";
+import AddCollaborator from "./AddCollaborator.tsx";
+import collaboratorIcon from "../assets/collaborators/collaboratorProfile.svg";
 
 export interface Room {
   id: number;
@@ -78,11 +82,6 @@ export interface Collaborator {
 
 // Homepage component definition
 const HomePage: React.FC = () => {
-  // Handle button click to set active content (switching page)
-  const handleButtonClick = (content: string) => {
-    setActiveContent(content); // Set the content based on the clicked button
-  };
-
   // Predefined room array
   const rooms: Room[] = [
     { id: 0, image: LivingRoomImage, title: "Living Room", devices: 1 },
@@ -493,6 +492,44 @@ const HomePage: React.FC = () => {
     setRemoveRoom(null);
   };
 
+  // state to track
+  const [isRequestAccess, setRequestAccess] = useState(false);
+
+  // function to request access in modal
+  const handleRequest = () => {
+    setRequestAccess(true); // Close the modal after request
+  };
+
+  // function to cancel request access in modal
+  const handleCancel = () => {
+    setRequestAccess(false);
+  };
+
+  // Predefined collaborator array
+  const collaborators: Collaborator[] = [
+    {
+      id: 0,
+      name: "Alvin",
+      image: collaboratorIcon,
+      type: "Owner",
+    },
+    {
+      id: 1,
+      name: "Alice",
+      image: collaboratorIcon,
+      type: "Dweller",
+    },
+    {
+      id: 2,
+      name: "Anna",
+      image: collaboratorIcon,
+      type: "Dweller",
+    },
+  ];
+
+  // state to track the collaborator's state from collaborators array
+  const [collabState, setCollabState] = useState(collaborators);
+
   // funciton to find current device
   const currentDevice = devicesState.find(
     (device) => device.device_id === getDevice().device_id
@@ -526,7 +563,7 @@ const HomePage: React.FC = () => {
       {/* Render content based on activeContent state */}
       {activeContent === "home" ? (
         <>
-          <LogoNotif />
+          <LogoNotif setActiveContent={setActiveContent} />
           <WeatherDisplay />
           <div
             className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
@@ -704,7 +741,7 @@ const HomePage: React.FC = () => {
       ) : activeContent === "manageDevice" ? (
         <ManageDevice
           devType={devType}
-          handleButtonClick={handleButtonClick}
+          setActiveContent={setActiveContent}
           getDevice={getDevice}
           getSelectedDeviceStatus={getSelectedDeviceStatus}
           getRoom={getRoom}
@@ -715,7 +752,15 @@ const HomePage: React.FC = () => {
           devicesState={devicesState}
         />
       ) : activeContent === "viewCollaborators" ? (
-        <ViewCollaborator handleButtonClick={handleButtonClick} />
+        <ViewCollaborator
+          setActiveContent={setActiveContent}
+          collabState={collabState}
+          setCollabState={setCollabState}
+        />
+      ) : activeContent === "viewNotification" ? (
+        <ViewNotification setActiveContent={setActiveContent} />
+      ) : activeContent === "addCollaborator" ? (
+        <AddCollaborator setActiveContent={setActiveContent} />
       ) : null}
 
       {/* Remove Room Display */}
@@ -725,6 +770,14 @@ const HomePage: React.FC = () => {
           removeItem={removeRoom}
           handleRemove={handleRemoveRoom}
           handleCancel={handleRoomCancel}
+        />
+      )}
+
+      {/* request access modal Display */}
+      {false && isRequestAccess && (
+        <RequestAccessModal
+          handleCancel={handleCancel}
+          handleRequest={handleRequest}
         />
       )}
     </>
