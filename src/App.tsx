@@ -11,6 +11,30 @@ import EnergyPage from "./EnergyPage/EnergyPage.tsx";
 import EnergyLimit from "./EnergyPage/EnergyLimit.tsx";
 import SolarPage from "./SolarPage/SolarPage.tsx";
 import ProfilePage from "./ProfilePage/ProfilePage.tsx";
+import WelcomePage from "./LoginRegisterPage/WelcomePage.tsx";
+import Welcome2 from "./LoginRegisterPage/Welcome2.tsx";
+import SignIn from "./LoginRegisterPage/SignIn.tsx";
+import RegisterRole from "./LoginRegisterPage/RegisterRole.tsx";
+import Register from "./LoginRegisterPage/Register.tsx";
+import OTPVerification from "./LoginRegisterPage/OTPVerification.tsx";
+import JoinHome from "./LoginRegisterPage/JoinHome.tsx";
+import ForgotPW from "./LoginRegisterPage/ForgotPW.tsx";
+import CreateNewPW from "./LoginRegisterPage/CreateNewPW.tsx";
+
+const AppLayout = () => {
+  const location = useLocation();
+
+  // Define routes that should show the navbar
+  const routesWithNavbar = [
+    "/home",
+    "/energy",
+    "/energy-limit",
+    "/solar",
+    "/profile",
+  ];
+
+  // Check if current route should show navbar
+  const shouldShowNavbar = routesWithNavbar.includes(location.pathname);
 
   return (
     <Background>
