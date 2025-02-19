@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -14,8 +8,138 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  id                Int           @id @default(autoincrement())
+  email            String        @unique
+  passwordHash      String
+  role             String
+  firstName        String
+  lastName         String
+  profilePictureUrl String?
+  twoFactorEnabled Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  // Relations
+  ownedHomes       SmartHome[]   @relation("HomeOwner")
+  homeDwellers     HomeDweller[]
+}
+
+model SmartHome {
+  id             Int                 @id @default(autoincrement())
+  homeownerId    Int
+  invitationCode String             @unique
+  name           String
+  createdAt      DateTime           @default(now())
+  // Relations
+  owner          User               @relation("HomeOwner", fields: [homeownerId], references: [id])
+  dwellers       HomeDweller[]
+  rooms          Room[]
+  solarMetrics   SolarEnergyMetric[]
+  solarDetails   SolarEnergyDetail[]
+}
+
+model HomeDweller {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  homeId          Int
+  permissionLevel String
+  status          String
+  addedAt         DateTime  @default(now())
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+  home            SmartHome @relation(fields: [homeId], references: [id])
+}
+
+model Room {
+  id        Int       @id @default(autoincrement())
+  homeId    Int
+  name      String
+  iconType  String
+  createdAt DateTime  @default(now())
+  // Relations
+  home      SmartHome @relation(fields: [homeId], references: [id])
+  devices   Device[]
+}
+
+model Device {
+  id           Int                     @id @default(autoincrement())
+  roomId       Int
+  displayName  String
+  type         String
+  status       String
+  iconType     String
+  isFavorite   Boolean                 @default(false)
+  addedAt      DateTime                @default(now())
+  // Relations
+  room         Room                    @relation(fields: [roomId], references: [id])
+  controls     DeviceControl[]
+  triggers     DeviceTrigger[]
+  energyLogs   EnergyConsumptionLog[]
+  energyBreakdowns EnergyDeviceBreakdown[]
+}
+
+model DeviceControl {
+  id           Int      @id @default(autoincrement())
+  deviceId     Int
+  controlType  String
+  currentValue Decimal
+  minValue     Decimal
+  maxValue     Decimal
+  // Relations
+  device       Device   @relation(fields: [deviceId], references: [id])
+}
+
+model DeviceTrigger {
+  id                Int      @id @default(autoincrement())
+  deviceId          Int
+  triggerType       String
+  conditionOperator String
+  thresholdValue    Decimal
+  isActive          Boolean  @default(true)
+  // Relations
+  device            Device   @relation(fields: [deviceId], references: [id])
+}
+
+model EnergyDeviceBreakdown {
+  id          Int      @id @default(autoincrement())
+  deviceId    Int
+  energyUsed  Decimal
+  activeHours Decimal  // Add this field to track hours device was active
+  timestamp   DateTime @default(now())
+  // Relations
+  device      Device   @relation(fields: [deviceId], references: [id])
+}
+
+model EnergyConsumptionLog {
+  id             Int       @id @default(autoincrement())
+  deviceId       Int
+  actionType     String    // e.g., "turned_on", "turned_off", "idle", "active"
+  actionDetails  String?   // Additional context about the action
+  timestamp      DateTime
+  // Relations
+  device         Device    @relation(fields: [deviceId], references: [id])
+}
+
+model SolarEnergyMetric {
+  id                  Int       @id @default(autoincrement())
+  homeId             Int
+  batteryLevel       Decimal
+  equivalentTrees    Int
+  co2EmissionsSaved  Decimal
+  standardCoalSaved  Decimal
+  timeframe          String
+  recordedDate       DateTime
+  // Relations
+  home               SmartHome @relation(fields: [homeId], references: [id])
+}
+
+model SolarEnergyDetail {
+  id              Int       @id @default(autoincrement())
+  homeId          Int
+  pvGeneration    Decimal
+  importedEnergy  Decimal
+  exportedEnergy  Decimal
+  loadEnergy      Decimal
+  timeframe       String
+  recordedDate    DateTime
+  // Relations
+  home            SmartHome @relation(fields: [homeId], references: [id])
 }
