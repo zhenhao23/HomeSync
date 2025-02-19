@@ -2,7 +2,11 @@ import React from "react";
 import { FaBell } from "react-icons/fa";
 import Logo from "../assets/logo.svg";
 
-const Background: React.FC = () => {
+interface LogoNotifProps {
+  setActiveContent: (content: string) => void;
+}
+
+const Background: React.FC<LogoNotifProps> = ({ setActiveContent }) => {
   return (
     <div className="position-fixed top-0 start-0 w-100 h-100 overflow-hidden">
       {/* Notification Button */}
@@ -19,8 +23,20 @@ const Background: React.FC = () => {
             cursor: "pointer",
             boxShadow: "3px 3px 4px rgba(0, 0, 0, 1)", // Shadow to bottom right
           }}
+          onClick={() => setActiveContent("viewNotification")}
         >
           <FaBell color="#204160" size={18} />
+          {/* Red Dot Notification */}
+          {true && (
+            <span
+              className="position-absolute top-0 end-0 bg-danger rounded-circle"
+              style={{
+                width: "10px",
+                height: "10px",
+                boxShadow: "0px 0px 5px rgba(0,0,0,0.3)",
+              }}
+            ></span>
+          )}
         </div>
       </div>
 

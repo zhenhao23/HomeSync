@@ -33,10 +33,10 @@
   .slider:before {
     position: absolute;
     content: "";
-    height: 28px;
-    width: 28px;
-    left: 4px;
-    bottom: 4px;
+    height: 25px;
+    width: 25px;
+    left: 6px;
+    bottom: 5px;
     background-color: white;
     -webkit-transition: 0.4s;
     transition: 0.4s;
@@ -72,9 +72,9 @@
   }
   
   input:checked + .slider:before {
-    -webkit-transform: translateX(33px);
-    -ms-transform: translateX(33px);
-    transform: translateX(33px);
+    -webkit-transform: translateX(32px);
+    -ms-transform: translateX(32px);
+    transform: translateX(32px);
   }
 
   input:checked + .purple-slider:before {

@@ -18,7 +18,7 @@ const BottomNavbar: React.FC = () => {
       id: "home",
       icon: <FaHome size={20} />,
       label: "Home",
-      path: "/",
+      path: "/home",
     },
     {
       id: "energy",
