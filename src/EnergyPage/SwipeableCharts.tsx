@@ -27,6 +27,66 @@ interface EnergyData {
   }>;
 }
 
+// type TimeRange = "today" | "week" | "month" | "year";
+type TimeRange = "week" | "month" | "year";
+
+const TimeRangeDropdown: React.FC<{
+  timeRange: TimeRange;
+  setTimeRange: (range: TimeRange) => void;
+  showToday?: boolean;
+}> = ({ timeRange, setTimeRange, showToday = true }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const timeRangeDisplay = {
+    today: "Today",
+    week: "This Week",
+    month: "This Month",
+    year: "This Year",
+  };
+
+  const options = showToday
+    ? (Object.keys(timeRangeDisplay) as TimeRange[])
+    : (["week", "month", "year"] as TimeRange[]);
+
+  return (
+    <div className="dropdown">
+      <button
+        className="btn btn-link text-white p-0 text-decoration-none d-flex align-items-center"
+        style={{ fontSize: "12px", background: "transparent" }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <FaChevronDown size={10} className="me-2" />
+        <span>{timeRangeDisplay[timeRange]}</span>
+      </button>
+      {isOpen && (
+        <div
+          className="dropdown-menu show"
+          style={{
+            position: "absolute",
+            backgroundColor: "rgba(0,0,0,0.9)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            marginTop: "8px",
+          }}
+        >
+          {options.map((range) => (
+            <button
+              key={range}
+              className="dropdown-item text-white"
+              style={{ fontSize: "12px", padding: "4px 12px" }}
+              onClick={() => {
+                setTimeRange(range);
+                setIsOpen(false);
+              }}
+            >
+              {timeRangeDisplay[range]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Custom hook for swipe detection
 const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
   const touchStart = useRef<number | null>(null);
@@ -62,7 +122,12 @@ const useSwipe = (onSwipeLeft: () => void, onSwipeRight: () => void) => {
   };
 };
 
-const PieChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
+// Update PieChartComponent
+const PieChartComponent: React.FC<{
+  data: EnergyData;
+  timeRange: TimeRange;
+  setTimeRange: (range: TimeRange) => void;
+}> = ({ data, timeRange, setTimeRange }) => {
   const navigate = useNavigate();
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF69B4"];
 
@@ -71,22 +136,16 @@ const PieChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
       className="container-fluid"
       style={{ transform: "translateX(0%) translateY(24%)" }}
     >
-      {/* Header */}
       <div className="row mb-0 ms-3">
         <div className="col-6 p-0">
           <div style={{ color: "white" }}>
             <div className="fs-5 mb-1">
               <b>Energy Usage</b>
             </div>
-            <div className="d-flex align-items-center">
-              <button
-                className="btn btn-link text-white p-0 text-decoration-none d-flex align-items-center"
-                style={{ fontSize: "12px", background: "transparent" }}
-              >
-                <FaChevronDown size={10} className="me-2" />
-                <span>This Week</span>
-              </button>
-            </div>
+            <TimeRangeDropdown
+              timeRange={timeRange}
+              setTimeRange={setTimeRange}
+            />
           </div>
         </div>
 
@@ -167,10 +226,12 @@ const PieChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
   );
 };
 
-const LineChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
+const LineChartComponent: React.FC<{
+  data: EnergyData;
+  timeRange: TimeRange;
+  setTimeRange: (range: TimeRange) => void;
+}> = ({ data, timeRange, setTimeRange }) => {
   const navigate = useNavigate();
-
-  // Calculate the domain for Y-axis based on the data
   const maxTotal = Math.ceil(Math.max(...data.dailyTotals.map((d) => d.total)));
   const yAxisTicks = [
     0,
@@ -190,15 +251,11 @@ const LineChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
             <div className="fs-5 mb-1">
               <b>Energy Usage</b>
             </div>
-            <div className="d-flex align-items-center">
-              <button
-                className="btn btn-link text-white p-0 text-decoration-none d-flex align-items-center"
-                style={{ fontSize: "12px", background: "transparent" }}
-              >
-                <FaChevronDown size={10} className="me-2" />
-                <span>This Week</span>
-              </button>
-            </div>
+            <TimeRangeDropdown
+              timeRange={timeRange}
+              setTimeRange={setTimeRange}
+              showToday={false}
+            />
           </div>
         </div>
 
@@ -278,6 +335,7 @@ const LineChartComponent: React.FC<{ data: EnergyData }> = ({ data }) => {
 
 const SwipeableCharts: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [timeRange, setTimeRange] = useState<TimeRange>("week");
   const [energyData, setEnergyData] = useState<EnergyData>({
     deviceTotals: [],
     dailyTotals: [],
@@ -287,9 +345,10 @@ const SwipeableCharts: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch(
-          "http://localhost:5000/api/devices/energy/aggregated"
+          `http://localhost:5000/api/devices/energy/aggregated?timeRange=${timeRange}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch energy data");
@@ -304,7 +363,7 @@ const SwipeableCharts: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [timeRange]); // Re-fetch when timeRange changes
 
   const handleSwipeLeft = () => {
     setActiveIndex((current) => (current + 1) % 2);
@@ -325,8 +384,16 @@ const SwipeableCharts: React.FC = () => {
   }
 
   const charts = [
-    { component: PieChartComponent, id: "pie" },
-    { component: LineChartComponent, id: "line" },
+    {
+      component: PieChartComponent,
+      id: "pie",
+      props: { data: energyData, timeRange, setTimeRange },
+    },
+    {
+      component: LineChartComponent,
+      id: "line",
+      props: { data: energyData, timeRange, setTimeRange },
+    },
   ];
 
   return (
@@ -346,13 +413,13 @@ const SwipeableCharts: React.FC = () => {
           transition: "transform 0.3s ease-in-out",
         }}
       >
-        {charts.map(({ component: ChartComponent, id }) => (
+        {charts.map(({ component: ChartComponent, id, props }) => (
           <div
             key={id}
             className="w-100 flex-shrink-0"
             style={{ minWidth: "100%" }}
           >
-            <ChartComponent data={energyData} />
+            <ChartComponent {...props} />
           </div>
         ))}
       </div>

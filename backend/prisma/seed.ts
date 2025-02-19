@@ -188,7 +188,7 @@ async function main() {
   ];
 
   // Generate timestamps for the past 7 days
-  const timestamps = generateTimestamps(7);
+  const timestamps = generateTimestamps(90);
 
   // Create each device and its historical data
   for (const deviceData of devices) {
@@ -226,7 +226,7 @@ async function main() {
     });
 
     // Create daily energy breakdowns
-    const dailyTimestamps = Array.from({ length: 7 }, (_, i) => {
+    const dailyTimestamps = Array.from({ length: 90 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
       date.setHours(0, 0, 0, 0);
