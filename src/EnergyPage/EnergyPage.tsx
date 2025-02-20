@@ -83,7 +83,6 @@ const EnergyPage: React.FC = () => {
         const data = await response.json();
         setAggregatedData(data);
         setError(null);
-        console.log(new Date());
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
