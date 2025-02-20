@@ -28,8 +28,8 @@ function generateEnergyUsage(deviceType: string): {
     SECURITY: { baseWatts: 800, avgHours: 24 },
   }[deviceType] || { baseWatts: 1000, avgHours: 4 };
 
-  // Add some random variation (±20%)
-  const hoursVariation = 0.8 + Math.random() * 0.4;
+  // Add some random variation (±40%)
+  const hoursVariation = 0.6 + Math.random() * 0.8;
   const actualHours = Math.min(devicePatterns.avgHours * hoursVariation, 24);
 
   const energyUsed = devicePatterns.baseWatts * actualHours;

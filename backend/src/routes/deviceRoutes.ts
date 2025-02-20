@@ -115,12 +115,17 @@ router.get(
               select: {
                 displayName: true,
                 type: true,
+                room: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
         });
 
-        const deviceTotals = aggregateDeviceTotals(breakdown);
+        const deviceTotals = aggregateDeviceTotals(breakdown, timeRange);
         const dailyTotals = aggregateDailyTotals(breakdown, timeRange);
 
         return res.json({
@@ -166,22 +171,93 @@ function getStartOfYear(date: Date): Date {
 }
 
 function aggregateDeviceTotals(
-  breakdown: any[]
-): { name: string; value: number }[] {
-  const deviceTotalsMap = new Map<string, number>();
+  breakdown: any[],
+  timeRange: string
+): {
+  name: string;
+  type: string;
+  room: string;
+  value: number;
+  activeHours: number;
+  previousValue?: number;
+  previousActiveHours?: number;
+}[] {
+  const deviceTotalsMap = new Map<
+    string,
+    {
+      type: string;
+      room: string;
+      currentValue: number;
+      currentActiveHours: number;
+      previousValue: number;
+      previousActiveHours: number;
+    }
+  >();
+
+  const currentDate = new Date();
+  let comparisonDate: Date;
+
+  // Determine comparison date based on timeRange
+  switch (timeRange) {
+    case "today":
+      comparisonDate = new Date(currentDate);
+      comparisonDate.setDate(currentDate.getDate() - 1);
+      break;
+    case "week":
+      comparisonDate = new Date(currentDate);
+      comparisonDate.setDate(currentDate.getDate() - 7);
+      break;
+    case "month":
+      comparisonDate = new Date(currentDate);
+      comparisonDate.setMonth(currentDate.getMonth() - 1);
+      break;
+    case "year":
+      comparisonDate = new Date(currentDate);
+      comparisonDate.setFullYear(currentDate.getFullYear() - 1);
+      break;
+    default:
+      comparisonDate = new Date(currentDate);
+      comparisonDate.setDate(currentDate.getDate() - 1); // Default to daily comparison
+  }
 
   breakdown.forEach((log) => {
     const deviceName = log.device.displayName;
+    const deviceType = log.device.type;
+    const roomName = log.device.room.name;
     const energyUsed = Number(log.energyUsed);
-    deviceTotalsMap.set(
-      deviceName,
-      (deviceTotalsMap.get(deviceName) || 0) + energyUsed
-    );
+    const activeHours = Number(log.activeHours);
+    const logDate = new Date(log.timestamp);
+
+    if (!deviceTotalsMap.has(deviceName)) {
+      deviceTotalsMap.set(deviceName, {
+        type: deviceType,
+        room: roomName,
+        currentValue: 0,
+        currentActiveHours: 0,
+        previousValue: 0,
+        previousActiveHours: 0,
+      });
+    }
+
+    const deviceData = deviceTotalsMap.get(deviceName)!;
+
+    if (logDate >= comparisonDate && logDate < currentDate) {
+      deviceData.currentValue += energyUsed;
+      deviceData.currentActiveHours += activeHours;
+    } else {
+      deviceData.previousValue += energyUsed;
+      deviceData.previousActiveHours += activeHours;
+    }
   });
 
-  return Array.from(deviceTotalsMap, ([name, value]) => ({
+  return Array.from(deviceTotalsMap, ([name, data]) => ({
     name,
-    value: Number(value.toFixed(2)),
+    type: data.type,
+    room: data.room,
+    value: Number(data.currentValue.toFixed(2)),
+    activeHours: Number(data.currentActiveHours.toFixed(1)),
+    previousValue: Number(data.previousValue.toFixed(2)),
+    previousActiveHours: Number(data.previousActiveHours.toFixed(1)),
   }));
 }
 
