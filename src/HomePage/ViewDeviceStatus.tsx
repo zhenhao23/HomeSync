@@ -278,10 +278,12 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
           className="d-flex flex-column overflow-auto"
           style={{ height: "calc(100% - 260px)" }}
         >
-          {/* Render devices for the selected room */}
-          {getRoom() !== null && roomsState[getRoom().id] && (
+          {/* Get the current room */}
+          {getRoom() !== null && (
             <div key={getRoom().id}>
-              {roomsState[getRoom().id].devices != 0 ? (
+              {/* Check if there are any devices for this room */}
+              {devicesState.filter((device) => device.room_id === getRoom().id)
+                .length > 0 ? (
                 // Filter devices for the current room and map over them
                 devicesState
                   .filter((device) => device.room_id === getRoom().id)

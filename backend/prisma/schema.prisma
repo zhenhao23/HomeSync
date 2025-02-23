@@ -64,9 +64,10 @@ model Device {
   roomId       Int
   displayName  String
   type         String
-  status       String
+  status       Boolean                 @default(false) // Changed from String to Boolean
   iconType     String
   isFavorite   Boolean                 @default(false)
+  swiped       Boolean                 @default(false) // New column
   addedAt      DateTime                @default(now())
   // Relations
   room         Room                    @relation(fields: [roomId], references: [id])
@@ -92,8 +93,9 @@ model DeviceTrigger {
   deviceId          Int
   triggerType       String
   conditionOperator String
-  thresholdValue    Decimal
   isActive          Boolean  @default(true)
+  featurePeriod     String   @default("Daily") // New column
+  featureDetail     String   @default("8:00am, 12:00pm, 7:00pm") // New column
   // Relations
   device            Device   @relation(fields: [deviceId], references: [id])
 }

@@ -46,11 +46,10 @@ const EnergyPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const deviceImages: { [key: string]: string } = {
-    LIGHT: LampImage,
-    AC: AirCondImage,
-    PET_FEEDER: PetFeederImage,
-    IRRIGATION: IrrigationImage,
-    SECURITY: SecurityImage,
+    light: LampImage,
+    aircond: AirCondImage,
+    petfeeder: PetFeederImage,
+    irrigation: IrrigationImage,
   };
 
   const processDeviceData = (devices: DeviceTotal[]): ProcessedDevice[] => {
@@ -60,7 +59,7 @@ const EnergyPage: React.FC = () => {
         : 0;
 
       return {
-        image: deviceImages[device.type] || SecurityImage,
+        image: deviceImages[device.type] || LampImage,
         title: device.name,
         usage: `${device.value.toFixed(0)} kWh`,
         room: device.room,

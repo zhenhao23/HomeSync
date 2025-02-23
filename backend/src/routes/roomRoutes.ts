@@ -17,6 +17,7 @@ router.get("/", (req: Request, res: Response) => {
           devices: {
             include: {
               controls: true,
+              triggers: true,
             },
           },
         },

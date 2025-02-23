@@ -106,9 +106,9 @@ async function main() {
     {
       displayName: "Lamp",
       room: bedroom,
-      type: "LIGHT",
+      type: "light",
       iconType: "lamp",
-      status: "ON",
+      status: true,
       controls: [
         {
           controlType: "BRIGHTNESS",
@@ -117,13 +117,22 @@ async function main() {
           maxValue: 100,
         },
       ],
+      triggers: [
+        {
+          triggerType: "Auto Lighting",
+          conditionOperator: "Infrared Detection",
+          isActive: false,
+          featurePeriod: "Daily",
+          featureDetail: "8:00pm to 7:00am",
+        },
+      ],
     },
     {
       displayName: "Air Cond",
       room: bedroom,
-      type: "AC",
+      type: "aircond",
       iconType: "aircond",
-      status: "ON",
+      status: true,
       controls: [
         {
           controlType: "TEMPERATURE",
@@ -133,13 +142,22 @@ async function main() {
         },
         { controlType: "FAN_SPEED", currentValue: 3, minValue: 1, maxValue: 5 },
       ],
+      triggers: [
+        {
+          triggerType: "Auto AirCond",
+          conditionOperator: "Turn on when room temp > 25°C",
+          isActive: false,
+          featurePeriod: "Daily",
+          featureDetail: "9:00pm to 4:00am",
+        },
+      ],
     },
     {
       displayName: "Pet Feeder",
       room: livingRoom,
-      type: "PET_FEEDER",
+      type: "petfeeder",
       iconType: "petfeeder",
-      status: "STANDBY",
+      status: false,
       controls: [
         {
           controlType: "PORTION_SIZE",
@@ -148,13 +166,22 @@ async function main() {
           maxValue: 3,
         },
       ],
+      triggers: [
+        {
+          triggerType: "Every Monday",
+          conditionOperator: "8:00am",
+          isActive: false,
+          featurePeriod: "Daily",
+          featureDetail: "8:00am, 12:00pm, 7:00pm",
+        },
+      ],
     },
     {
       displayName: "Irrigation",
       room: garden,
-      type: "IRRIGATION",
+      type: "irrigation",
       iconType: "irrigation",
-      status: "OFF",
+      status: false,
       controls: [
         {
           controlType: "WATER_FLOW",
@@ -162,26 +189,14 @@ async function main() {
           minValue: 0,
           maxValue: 10,
         },
-        {
-          controlType: "DURATION",
-          currentValue: 30,
-          minValue: 5,
-          maxValue: 120,
-        },
       ],
-    },
-    {
-      displayName: "Home Security",
-      room: livingRoom,
-      type: "SECURITY",
-      iconType: "security",
-      status: "ARMED",
-      controls: [
+      triggers: [
         {
-          controlType: "SENSITIVITY",
-          currentValue: 7,
-          minValue: 1,
-          maxValue: 10,
+          triggerType: "Auto Irrigation",
+          conditionOperator: "Soil Moisture Sensor",
+          isActive: false,
+          featurePeriod: "Every Monday",
+          featureDetail: "8:00am (10 minutes)",
         },
       ],
     },
@@ -200,6 +215,8 @@ async function main() {
         status: deviceData.status,
         iconType: deviceData.iconType,
         isFavorite: false,
+        swiped: false, // New field
+        addedAt: new Date(), // Ensure proper timestamp
       },
     });
 
@@ -213,10 +230,20 @@ async function main() {
       });
     }
 
+    // Create triggers for the device
+    for (const trigger of deviceData.triggers) {
+      await prisma.deviceTrigger.create({
+        data: {
+          deviceId: device.id,
+          ...trigger,
+        },
+      });
+    }
+
     // Create energy consumption logs
     const energyLogs = timestamps.map((timestamp) => ({
       deviceId: device.id,
-      actionType: deviceData.status === "ON" ? "active" : "idle",
+      actionType: deviceData.status === true ? "active" : "idle",
       actionDetails: `${deviceData.displayName} status: ${deviceData.status}`,
       timestamp: timestamp,
     }));

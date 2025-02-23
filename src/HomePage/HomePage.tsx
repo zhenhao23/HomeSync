@@ -89,6 +89,40 @@ export interface Collaborator {
   type: string;
 }
 
+// API Types
+interface ApiControl {
+  controlType: "percentage" | "temperature" | "waterFlow";
+  currentValue: number;
+}
+
+interface ApiTrigger {
+  triggerType: string;
+  conditionOperator: string;
+  isActive: boolean;
+  featurePeriod: string;
+  featureDetail: string;
+}
+
+interface ApiDevice {
+  id: number;
+  roomId: number;
+  type: string;
+  displayName: string;
+  status: boolean;
+  swiped: boolean;
+  controls: ApiControl[];
+  triggers: ApiTrigger[];
+}
+
+interface ApiRoom {
+  id: number;
+  homeId: number;
+  name: string;
+  iconType: string;
+  createdAt: string;
+  devices: ApiDevice[];
+}
+
 // Initial data
 const initialRooms: Room[] = [
   { id: 0, image: LivingRoomImage, title: "Living Room", devices: 1 },
@@ -308,6 +342,211 @@ const HomePage: React.FC = () => {
   const [removeRoom, setRemoveRoom] = useState<Room | null>(null);
   const [isRequestAccess, setRequestAccess] = useState(false);
   const [addFeature, setAddFeature] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // First, modify your device counting logic in the API fetch:
+  const updateDeviceCounts = (devices: Device[], rooms: Room[]): Room[] => {
+    // Create a map to count devices per room
+    const deviceCountByRoom = new Map<number, number>();
+    devices.forEach((device) => {
+      const count = deviceCountByRoom.get(device.room_id) || 0;
+      deviceCountByRoom.set(device.room_id, count + 1);
+    });
+
+    // Update rooms with correct device counts
+    return rooms.map((room) => ({
+      ...room,
+      devices: deviceCountByRoom.get(room.id) || 0,
+    }));
+  };
+
+  // Update your fetch function:
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch("http://localhost:5000/api/rooms");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const roomsData: ApiRoom[] = await response.json();
+
+      // First, update rooms from API
+      const updatedRooms = roomsData.map((room) => ({
+        id: room.id,
+        image: getRoomImage(room.iconType), // Use iconType from API
+        title: room.name, // Use name directly from API
+        devices: 0, // We'll update this count later
+      }));
+
+      // Then transform devices
+      const transformedDevices = transformApiData(roomsData);
+
+      // Finally, update device counts
+      const roomsWithCounts = updateDeviceCounts(
+        transformedDevices,
+        updatedRooms
+      );
+
+      setDevicesState(transformedDevices);
+      setRoomsState(roomsWithCounts);
+
+      // Log for debugging
+      console.log("Rooms after update:", roomsWithCounts);
+      console.log("Devices after update:", transformedDevices);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching data"
+      );
+      console.error("API Error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Add these helper functions to map room IDs to images and titles
+  const getRoomImage = (roomIconType: string): string => {
+    const roomImages: Record<string, string> = {
+      "living-room": LivingRoomImage,
+      bedroom: BedRoomImage,
+      kitchen: KitchenImage,
+      garden: GardenImage,
+      bathroom: BathroomImage,
+    };
+    return roomImages[roomIconType] || LivingRoomImage; // Default to LivingRoom if not found
+  };
+
+  const getRoomTitle = (roomId: number): string => {
+    const roomTitles: Record<number, string> = {
+      52: "Living Room",
+      53: "Bedroom",
+      54: "Kitchen",
+      3: "Garden",
+      4: "Bathroom",
+    };
+    return roomTitles[roomId] || "Unknown Room";
+  };
+
+  // Update your device mapping function to handle the correct device types
+  const getDeviceImage = (type: string): string => {
+    const deviceImages: Record<string, string> = {
+      petfeeder: petfeederIcon,
+      light: lampIcon,
+      aircond: airCondIcon, // Note the AC type mapping
+      irrigation: sprinklerIcon,
+    };
+    return deviceImages[type] || "../assets/default-device.svg";
+  };
+
+  // const getDeviceImage = (type: string): string => {
+  //   const deviceImages: Record<string, string> = {
+  //     PET_FEEDER: petfeederIcon,
+  //     AIRCOND: airCondIcon,
+  //     LIGHT: lampIcon,
+  //     IRRIGATION: sprinklerIcon,
+  //   };
+  //   return deviceImages[type] || "../assets/default-device.svg";
+  // };
+
+  const getDeviceIcon = (type: string): string => {
+    const deviceIcons: Record<string, string> = {
+      petfeeder: managePetfeeder,
+      aircond: manageAircond,
+      light: manageLamp,
+      irrigation: manageIrrigation,
+    };
+    return deviceIcons[type] || "../assets/default-icon.svg";
+  };
+
+  const transformApiData = (roomsData: ApiRoom[]): Device[] => {
+    return roomsData.flatMap((room) =>
+      room.devices.map(
+        (device: ApiDevice): Device => ({
+          device_id: device.id,
+          room_id: device.roomId,
+          image: getDeviceImage(device.type),
+          title: device.displayName,
+          deviceType: device.type,
+          status: device.status,
+          swiped: device.swiped,
+          devData: {
+            iconImage: getDeviceIcon(device.type),
+            percentage:
+              device.controls.find((c) => c.controlType === "percentage")
+                ?.currentValue || 0,
+            celsius:
+              device.controls.find((c) => c.controlType === "temperature")
+                ?.currentValue || 0,
+            waterFlow:
+              device.controls.find((c) => c.controlType === "waterFlow")
+                ?.currentValue || 0,
+          },
+          content: {
+            feature: device.triggers[0]?.triggerType || "Default Feature",
+            smartFeature:
+              device.triggers[0]?.conditionOperator || "Default Operator",
+            toggle1: device.triggers[0]?.isActive ?? false,
+            featurePeriod: device.triggers[0]?.featurePeriod || "Daily",
+            featureDetail:
+              device.triggers[0]?.featureDetail || "8:00am, 12:00pm, 7:00pm",
+            toggle2: false,
+          },
+        })
+      )
+    );
+  };
+
+  // const updateDeviceCounts = (devices: Device[]): Room[] => {
+  //   const deviceCountByRoom = new Map<number, number>();
+  //   devices.forEach((device) => {
+  //     const count = deviceCountByRoom.get(device.room_id) || 0;
+  //     deviceCountByRoom.set(device.room_id, count + 1);
+  //   });
+
+  //   return roomsState.map((room) => ({
+  //     ...room,
+  //     devices: deviceCountByRoom.get(room.id) || 0,
+  //   }));
+  // };
+
+  // const fetchData = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     setError(null);
+
+  //     const response = await fetch("http://localhost:5000/api/rooms");
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+
+  //     const roomsData: ApiRoom[] = await response.json();
+  //     const transformedDevices = transformApiData(roomsData);
+  //     const updatedRooms = updateDeviceCounts(transformedDevices);
+
+  //     setDevicesState(transformedDevices);
+  //     setRoomsState(updatedRooms);
+  //   } catch (err) {
+  //     setError(
+  //       err instanceof Error
+  //         ? err.message
+  //         : "An error occurred while fetching data"
+  //     );
+  //     console.error("API Error:", err);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // Memoized devices map for efficient lookups
   const devicesMap = useMemo(() => {
