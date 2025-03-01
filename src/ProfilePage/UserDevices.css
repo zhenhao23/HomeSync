@@ -1,0 +1,122 @@
+.user-devices {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Header Styles */
+
+.h2 {
+  padding: 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  margin-left: 15%;
+  margin-top: 15%;
+  gap: 1rem;
+  color: white;
+}
+
+.back-icon {
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-bottom: 20%;
+  color: #ffffff;
+}
+
+.header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Content Container */
+.content-container {
+  position: fixed;
+  top: 18%;
+  bottom: 1%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  background: white;
+  border-radius: 48px 48px 0 0;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+/* User Profile Section */
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-profile h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Device List */
+.device-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.device-item {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  min-height: 80px;
+}
+
+.device-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 1.5rem;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3a4c74;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.device-info {
+  flex: 1;
+}
+
+.device-location {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .content-container {
+    max-width: 600px;
+  }
+}
