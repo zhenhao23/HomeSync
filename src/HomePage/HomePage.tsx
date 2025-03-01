@@ -444,16 +444,6 @@ const HomePage: React.FC = () => {
     return deviceImages[type] || "../assets/default-device.svg";
   };
 
-  // const getDeviceImage = (type: string): string => {
-  //   const deviceImages: Record<string, string> = {
-  //     PET_FEEDER: petfeederIcon,
-  //     AIRCOND: airCondIcon,
-  //     LIGHT: lampIcon,
-  //     IRRIGATION: sprinklerIcon,
-  //   };
-  //   return deviceImages[type] || "../assets/default-device.svg";
-  // };
-
   const getDeviceIcon = (type: string): string => {
     const deviceIcons: Record<string, string> = {
       petfeeder: managePetfeeder,
@@ -501,47 +491,6 @@ const HomePage: React.FC = () => {
       )
     );
   };
-
-  // const updateDeviceCounts = (devices: Device[]): Room[] => {
-  //   const deviceCountByRoom = new Map<number, number>();
-  //   devices.forEach((device) => {
-  //     const count = deviceCountByRoom.get(device.room_id) || 0;
-  //     deviceCountByRoom.set(device.room_id, count + 1);
-  //   });
-
-  //   return roomsState.map((room) => ({
-  //     ...room,
-  //     devices: deviceCountByRoom.get(room.id) || 0,
-  //   }));
-  // };
-
-  // const fetchData = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     setError(null);
-
-  //     const response = await fetch("http://localhost:5000/api/rooms");
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     const roomsData: ApiRoom[] = await response.json();
-  //     const transformedDevices = transformApiData(roomsData);
-  //     const updatedRooms = updateDeviceCounts(transformedDevices);
-
-  //     setDevicesState(transformedDevices);
-  //     setRoomsState(updatedRooms);
-  //   } catch (err) {
-  //     setError(
-  //       err instanceof Error
-  //         ? err.message
-  //         : "An error occurred while fetching data"
-  //     );
-  //     console.error("API Error:", err);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   // Initial data fetch
   useEffect(() => {
@@ -599,31 +548,44 @@ const HomePage: React.FC = () => {
     setRoomEditing((prev) => !prev);
   };
 
-  const handleRemoveRoom = () => {
+  const handleRemoveRoom = async () => {
     if (removeRoom) {
-      // Update rooms
-      setRoomsState((prevRooms) => {
-        const updatedRooms = prevRooms
-          .filter((room) => room.id !== removeRoom.id)
-          .map((room, index) => ({ ...room, id: index }));
-        return updatedRooms;
-      });
+      try {
+        setIsLoading(true);
 
-      // Update devices
-      setDevicesState((prevDevices) => {
-        const filteredDevices = prevDevices.filter(
-          (device) => device.room_id !== removeRoom.id
+        // Call the API to delete the room
+        const response = await fetch(
+          `http://localhost:5000/api/rooms/${removeRoom.id}`,
+          {
+            method: "DELETE",
+          }
         );
-        return filteredDevices.map((device) => ({
-          ...device,
-          room_id:
-            device.room_id > removeRoom.id
-              ? device.room_id - 1
-              : device.room_id,
-        }));
-      });
 
-      setRemoveRoom(null);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Update rooms - this replaces both of the problematic setState calls
+        setRoomsState((prevRooms) =>
+          prevRooms.filter((room) => room.id !== removeRoom.id)
+        );
+
+        // Update devices - this replaces both of the problematic setState calls
+        setDevicesState((prevDevices) =>
+          prevDevices.filter((device) => device.room_id !== removeRoom.id)
+        );
+
+        setRemoveRoom(null);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "An error occurred while deleting the room"
+        );
+        console.error("API Error:", err);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -826,6 +788,7 @@ const HomePage: React.FC = () => {
           roomsState={roomsState}
           setRoomsState={setRoomsState}
           setActiveContent={setActiveContent}
+          homeId={19}
         />
       ) : activeContent === "viewDeviceStatus" ? (
         <ViewDeviceStatus

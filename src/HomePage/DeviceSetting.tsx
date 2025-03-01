@@ -24,6 +24,61 @@ interface DeviceSettingProps {
   setDevicesState: React.Dispatch<React.SetStateAction<Device[]>>;
 }
 
+// Function to map front-end device icons to API-compatible type
+const mapIconToType = (iconTitle: string): string => {
+  const typeMap: { [key: string]: string } = {
+    Lamp: "lamp",
+    "Air Conditioner": "air_conditioner",
+    Sprinkler: "sprinkler",
+    Cooker: "cooker",
+    "Smart Lock": "smart_lock",
+    Fan: "fan",
+    TV: "tv",
+    Speaker: "speaker",
+    Fridge: "fridge",
+    "Door Bell": "door_bell",
+    "Smoke Detector": "smoke_detector",
+    "Robot Vacuum": "robot_vacuum",
+  };
+
+  return typeMap[iconTitle] || iconTitle.toLowerCase().replace(" ", "_");
+};
+
+// API functions
+const addDeviceToAPI = async (
+  roomId: number,
+  displayName: string,
+  iconType: string
+) => {
+  try {
+    const type = mapIconToType(iconType);
+
+    const response = await fetch("http://localhost:5000/api/devices", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        roomId,
+        displayName,
+        type,
+        iconType,
+        isFavorite: false,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to add device");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error adding device:", error);
+    throw error;
+  }
+};
+
 const DeviceSetting: React.FC<DeviceSettingProps> = ({
   addSelectDevice,
   setRoomsState,
@@ -64,6 +119,8 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
   const [deviceIconAlert, setDeviceIconAlert] = useState(false);
   // state to check the device name is inputed by user (error handling)
   const [devNameAlert, setDevNameAlert] = useState(false);
+  // State to track API errors
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // State to track the selected icon in add device page
   const [selectedDeviceIcon, setSelectedDeviceIcon] = useState<{
@@ -84,14 +141,17 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
   };
 
   // function to handle if user wants to add device
-  const handleAddDevice = () => {
+  const handleAddDevice = async () => {
+    // Reset any previous errors
+    setApiError(null);
+
     // Case when no device is selected
     if (!addSelectDevice) {
       // Handle case if no device is selected
       return;
     }
 
-    // case of no selected device icon and device name inout by user
+    // case of no selected device icon and device name input by user
     if (selectedDeviceIcon === null && !devName?.trim()) {
       setDevNameAlert(true);
       setDeviceIconAlert(true);
@@ -110,38 +170,68 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
       return;
     }
 
-    // Calculate the next device_id for adding a new device
-    const nextDeviceId =
-      devicesState.length > 0
-        ? Math.max(...devicesState.map((device) => device.device_id)) + 1
-        : 0; // Start from 0 if no devices exist
+    try {
+      // Call the API to add the device
+      const roomId = getRoom().id;
+      const displayName = devName;
+      const iconType = selectedDeviceIcon.title;
 
-    // Create a new device object with the current room ID
-    const newDevice = {
-      ...addSelectDevice,
-      room_id: getRoom().id, // Assign the current room ID
-      device_id: nextDeviceId,
-    };
+      console.log("Adding device to API:", {
+        roomId,
+        displayName,
+        iconType,
+      });
 
-    // Add the new device to the devices state
-    const updatedDevicesState = [...devicesState, newDevice];
+      const newDeviceFromAPI = await addDeviceToAPI(
+        roomId,
+        displayName,
+        iconType
+      );
+      console.log("API response:", newDeviceFromAPI);
 
-    // Update the room state count
-    setRoomsState((prevRoomsState) =>
-      prevRoomsState.map((room) =>
-        room.id === getRoom().id ? { ...room, devices: room.devices + 1 } : room
-      )
-    );
+      // Calculate the next device_id for adding a new device (for frontend)
+      const nextDeviceId =
+        devicesState.length > 0
+          ? Math.max(...devicesState.map((device) => device.device_id)) + 1
+          : 0;
 
-    setDevName(null); // Reset the dev name input
-    setSelectedDeviceIcon(null); // Reset selected icon
-    setDevNameAlert(false); // Reset dev Alert to false state
-    setDeviceIconAlert(false); // Reset icon alert to false state
+      // Create a new device object with the API data
+      const newDevice = {
+        ...addSelectDevice,
+        room_id: roomId,
+        device_id: nextDeviceId,
+        id: newDeviceFromAPI.id, // Store the API ID
+        title: displayName, // Make sure to update these fields to match
+        image: selectedDeviceIcon.image, // your frontend model
+      };
 
-    // Update the devicesState with the new device
-    setDevicesState(updatedDevicesState);
-    // Navigate back to view device status page
-    setActiveContent("viewDeviceStatus");
+      // Add the new device to the devices state
+      const updatedDevicesState = [...devicesState, newDevice];
+
+      // Update the room state count
+      setRoomsState((prevRoomsState) =>
+        prevRoomsState.map((room) =>
+          room.id === roomId ? { ...room, devices: room.devices + 1 } : room
+        )
+      );
+
+      // Reset the form
+      setDevName(null);
+      setSelectedDeviceIcon(null);
+      setDevNameAlert(false);
+      setDeviceIconAlert(false);
+
+      // Update the devicesState with the new device
+      setDevicesState(updatedDevicesState);
+
+      // Navigate back to view device status page
+      setActiveContent("viewDeviceStatus");
+    } catch (error) {
+      console.error("Failed to add device:", error);
+      setApiError(
+        error instanceof Error ? error.message : "Failed to add device"
+      );
+    }
   };
 
   return (
@@ -195,6 +285,14 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
       >
         <div className="pb-2 p-3" style={{ width: "100vw" }}>
           <div className="text-left pb-3 container-fluid"></div>
+
+          {/* API Error Message */}
+          {apiError && (
+            <div className="alert alert-danger" role="alert">
+              {apiError}
+            </div>
+          )}
+
           <div className="container-fluid">
             <p
               className="mb-3 fw-normal"

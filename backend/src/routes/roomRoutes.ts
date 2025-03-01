@@ -72,4 +72,115 @@ router.get("/:id", (req: Request<RoomParams>, res: Response) => {
   }
 });
 
+// DELETE room by ID
+router.delete("/:id", (req: Request<RoomParams>, res: Response) => {
+  try {
+    const deleteRoom = async () => {
+      const roomId = parseInt(req.params.id);
+
+      // First check if the room exists
+      const room = await prisma.room.findUnique({
+        where: { id: roomId },
+        include: { devices: true },
+      });
+
+      if (!room) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+
+      // Get all device IDs in this room
+      const deviceIds = room.devices.map((device) => device.id);
+
+      // Delete in the correct order to respect foreign key constraints
+
+      // 1. First delete device controls
+      await prisma.deviceControl.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 2. Delete device triggers
+      await prisma.deviceTrigger.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 3. Delete energy logs
+      await prisma.energyConsumptionLog.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 4. Delete energy breakdowns
+      await prisma.energyDeviceBreakdown.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 5. Now we can delete the devices
+      await prisma.device.deleteMany({
+        where: { roomId: roomId },
+      });
+
+      // 6. Finally delete the room
+      const deletedRoom = await prisma.room.delete({
+        where: { id: roomId },
+      });
+
+      return res.json(deletedRoom);
+    };
+
+    deleteRoom().catch((error) => {
+      console.error("Error deleting room:", error);
+      res
+        .status(500)
+        .json({ error: "Failed to delete room", details: error.message });
+    });
+  } catch (error) {
+    console.error("Error deleting room:", error);
+    res.status(500).json({
+      error: "Failed to delete room",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+// POST new room
+router.post("/", (req: Request, res: Response) => {
+  try {
+    const createRoom = async () => {
+      const { name, iconType, homeId } = req.body;
+
+      // Validate required fields
+      if (!name || !iconType || !homeId) {
+        return res.status(400).json({
+          error: "Missing required fields",
+          required: ["name", "iconType", "homeId"],
+        });
+      }
+
+      // Create the new room
+      const newRoom = await prisma.room.create({
+        data: {
+          name,
+          iconType,
+          homeId: parseInt(homeId),
+        },
+      });
+
+      return res.status(201).json(newRoom);
+    };
+
+    createRoom().catch((error) => {
+      console.error("Error creating room:", error);
+      res.status(500).json({
+        error: "Failed to create room",
+        details: error.message,
+      });
+    });
+  } catch (error) {
+    console.error("Error creating room:", error);
+    res.status(500).json({
+      error: "Failed to create room",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 export default router;

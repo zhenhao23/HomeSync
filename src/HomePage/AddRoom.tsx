@@ -17,12 +17,14 @@ interface AddRoomProps {
   roomsState: Room[];
   setRoomsState: React.Dispatch<React.SetStateAction<Room[]>>;
   setActiveContent: (content: string) => void;
+  homeId: number; // Add this prop
 }
 
 const AddRoom: React.FC<AddRoomProps> = ({
   roomsState,
   setRoomsState,
   setActiveContent,
+  homeId, // Add this prop
 }) => {
   // Icons array to manage the 8 icons for add room
   const addRoomIcons = [
@@ -72,45 +74,152 @@ const AddRoom: React.FC<AddRoomProps> = ({
   // State to track the room name input from user in add room page
   const [roomName, setRoomName] = useState<string | null>(null);
 
-  // function to add a room
-  const handleAddRoom = () => {
-    // Case if user didn't input room name and icon in add room page
+  // First, let's create a function to make the API call
+  const addRoomToAPI = async (
+    roomName: string,
+    iconType: string,
+    homeId: number
+  ) => {
+    try {
+      const response = await fetch("/api/rooms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: roomName,
+          iconType: iconType,
+          homeId: homeId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add room");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error adding room:", error);
+      throw error;
+    }
+  };
+
+  // Now let's update your handleAddRoom function
+  const handleAddRoom = async () => {
+    // Validation logic (unchanged)
     if (selectedRoomIcon === null && !roomName?.trim()) {
       setRoomNameAlert(true);
       setRoomIconAlert(true);
       return;
     }
-    // Case if user didn't input room name in add room page
     if (!roomName?.trim()) {
       setRoomNameAlert(true);
       return;
     }
-    // Case if user didn't input icon in add room page
     if (selectedRoomIcon === null) {
       setRoomIconAlert(true);
       return;
     }
 
-    // new room
-    const newRoom = {
-      id: roomsState.length,
-      image: selectedRoomIcon.image,
-      title: roomName,
-      devices: 0,
-    };
+    try {
+      // Use the homeId from props, not a hardcoded value
 
-    // Add new room to the rooms list
-    setRoomsState((prevRooms) => [...prevRooms, newRoom]);
-    // Update the room's devices count in roomsState
+      // Get the icon type from the selected icon
+      const iconType = selectedRoomIcon.title;
 
-    setRoomName(null); // Reset the room name input
-    setSelectedRoomIcon(null); // Reset selected icon
-    setRoomNameAlert(false); // Reset room Alert to false state
-    setRoomIconAlert(false); // Reset icon alert to false state
+      console.log("Sending request to add room:", {
+        name: roomName,
+        iconType: iconType,
+        homeId: homeId,
+      });
 
-    // Navigate back to home page
-    goBackToHomePage();
+      // Call the API to add the room - use the full URL
+      const response = await fetch("http://localhost:5000/api/rooms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: roomName,
+          iconType: iconType,
+          homeId: homeId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Server responded with error:", errorData);
+        throw new Error(errorData.error || "Failed to add room");
+      }
+
+      const newRoomFromAPI = await response.json();
+      console.log("Room added successfully:", newRoomFromAPI);
+
+      // Create a new room object using the data returned from the API
+      const newRoom = {
+        id: newRoomFromAPI.id,
+        image: selectedRoomIcon.image,
+        title: roomName,
+        devices: 0,
+      };
+
+      // Add new room to the rooms list
+      setRoomsState((prevRooms) => [...prevRooms, newRoom]);
+
+      // Reset states
+      setRoomName(null);
+      setSelectedRoomIcon(null);
+      setRoomNameAlert(false);
+      setRoomIconAlert(false);
+
+      // Navigate back to home page
+      goBackToHomePage();
+    } catch (error) {
+      console.error("Failed to add room:", error);
+      // You might want to show an error message to the user
+    }
   };
+
+  // // function to add a room
+  // const handleAddRoom = () => {
+  //   // Case if user didn't input room name and icon in add room page
+  //   if (selectedRoomIcon === null && !roomName?.trim()) {
+  //     setRoomNameAlert(true);
+  //     setRoomIconAlert(true);
+  //     return;
+  //   }
+  //   // Case if user didn't input room name in add room page
+  //   if (!roomName?.trim()) {
+  //     setRoomNameAlert(true);
+  //     return;
+  //   }
+  //   // Case if user didn't input icon in add room page
+  //   if (selectedRoomIcon === null) {
+  //     setRoomIconAlert(true);
+  //     return;
+  //   }
+
+  //   // new room
+  //   const newRoom = {
+  //     id: roomsState.length,
+  //     image: selectedRoomIcon.image,
+  //     title: roomName,
+  //     devices: 0,
+  //   };
+
+  //   // Add new room to the rooms list
+  //   setRoomsState((prevRooms) => [...prevRooms, newRoom]);
+  //   // Update the room's devices count in roomsState
+
+  //   setRoomName(null); // Reset the room name input
+  //   setSelectedRoomIcon(null); // Reset selected icon
+  //   setRoomNameAlert(false); // Reset room Alert to false state
+  //   setRoomIconAlert(false); // Reset icon alert to false state
+
+  //   // Navigate back to home page
+  //   goBackToHomePage();
+  // };
 
   // function to handle general navigate back to home page
   const handleBackToHomePage = () => {

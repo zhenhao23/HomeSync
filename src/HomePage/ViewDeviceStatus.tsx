@@ -22,6 +22,29 @@ interface ViewDeviceStatusProps {
   handleToggle: (roomId: number, deviceId: number) => void;
 }
 
+// Add the API helper function
+const removeDeviceFromAPI = async (deviceId: number) => {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/devices/${deviceId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to remove device");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error removing device:", error);
+    throw error;
+  }
+};
+
 const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
   getRoom,
   getDevice,
@@ -40,14 +63,14 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
     setActiveContent("home");
   };
 
-  //const [isSwiping, setIsSwiping] = useState(false);
-
   // State to store the swipe status for a device
   const [swipedDevice, setSwipedDevice] = useState<string | null>(null);
   // state to track the startX position when user swipe
   const [startX, setStartX] = useState(0);
   // State to track the currently selected/swiped device to remove
   const [removeDevice, setRemoveDevice] = useState<Device | null>(null);
+  // State to track if a delete operation is in progress
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // state to track if user is editing title
   const [isEditing, setIsEditing] = useState(false); // State to manage edit mode or exit mode
@@ -63,27 +86,40 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
     setTempTitle(getRoom().title); // Set temp title to the current room title
   };
 
-  // Function to remove device if swiped
-  const handleRemoveDevice = () => {
+  // Function to remove device if swiped - Updated with API integration
+  const handleRemoveDevice = async () => {
     if (removeDevice) {
-      // Remove the device from the devicesState based on removeDevice's device_id
-      setDevicesState((prevDevicesState) =>
-        prevDevicesState.filter(
-          (device) => device.device_id !== removeDevice.device_id
-        )
-      );
+      setIsDeleting(true);
 
-      // Update the room's devices count in roomsState
-      setRoomsState((prevRoomsState) =>
-        prevRoomsState.map((room) =>
-          room.id === removeDevice.room_id
-            ? { ...room, devices: Math.max(0, room.devices - 1) }
-            : room
-        )
-      );
+      try {
+        // Call the API to remove the device
+        await removeDeviceFromAPI(removeDevice.device_id);
 
-      setSwipedDevice(null);
-      setRemoveDevice(null); // Reset after removal
+        // If API call succeeds, update the local state
+        // Remove the device from the devicesState based on removeDevice's device_id
+        setDevicesState((prevDevicesState) =>
+          prevDevicesState.filter(
+            (device) => device.device_id !== removeDevice.device_id
+          )
+        );
+
+        // Update the room's devices count in roomsState
+        setRoomsState((prevRoomsState) =>
+          prevRoomsState.map((room) =>
+            room.id === removeDevice.room_id
+              ? { ...room, devices: Math.max(0, room.devices - 1) }
+              : room
+          )
+        );
+      } catch (error) {
+        // Handle errors - you might want to show an error message to the user
+        console.error("Failed to remove device:", error);
+        // You could add code here to show an error message to the user
+      } finally {
+        setIsDeleting(false);
+        setSwipedDevice(null);
+        setRemoveDevice(null); // Reset after removal attempt, whether successful or not
+      }
     }
   };
 
@@ -358,12 +394,25 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                                 border: "none",
                                 transform: "translate(-50%, -30%)",
                               }}
+                              disabled={isDeleting}
                             >
-                              <FaTrashAlt
-                                color="white"
-                                size={18}
-                                onClick={() => setRemoveDevice(device)}
-                              />
+                              {isDeleting &&
+                              removeDevice?.device_id === device.device_id ? (
+                                <div
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                >
+                                  <span className="visually-hidden">
+                                    Loading...
+                                  </span>
+                                </div>
+                              ) : (
+                                <FaTrashAlt
+                                  color="white"
+                                  size={18}
+                                  onClick={() => setRemoveDevice(device)}
+                                />
+                              )}
                             </button>
                           )}
                       </div>

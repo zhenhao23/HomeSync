@@ -5,7 +5,6 @@ import LampImage from "../assets/devices/lamp.svg";
 import AirCondImage from "../assets/devices/aircond1.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
 import IrrigationImage from "../assets/devices/irrigation.svg";
-import SecurityImage from "../assets/devices/security.svg";
 
 type TimeRange = "week" | "month" | "year";
 

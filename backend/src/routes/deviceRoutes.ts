@@ -3,6 +3,238 @@ import prisma from "../prisma";
 
 const router = Router();
 
+interface DeviceParams {
+  id: string;
+}
+
+// GET all devices
+router.get("/", (req: Request, res: Response) => {
+  try {
+    const getAllDevices = async () => {
+      const devices = await prisma.device.findMany({
+        include: {
+          controls: true,
+          triggers: true,
+          energyLogs: {
+            orderBy: {
+              timestamp: "desc",
+            },
+            take: 1,
+          },
+        },
+      });
+      return res.json(devices);
+    };
+
+    getAllDevices().catch((error) => {
+      console.error("Error fetching devices:", error);
+      res.status(500).json({ error: "Failed to fetch devices" });
+    });
+  } catch (error) {
+    console.error("Error fetching devices:", error);
+    res.status(500).json({ error: "Failed to fetch devices" });
+  }
+});
+
+// GET device by ID
+router.get("/:id", (req: Request<DeviceParams>, res: Response) => {
+  try {
+    const getDeviceById = async () => {
+      const device = await prisma.device.findUnique({
+        where: { id: parseInt(req.params.id) },
+        include: {
+          controls: true,
+          triggers: true,
+          energyLogs: {
+            orderBy: {
+              timestamp: "desc",
+            },
+            take: 1,
+          },
+        },
+      });
+
+      if (!device) {
+        return res.status(404).json({ error: "Device not found" });
+      }
+      return res.json(device);
+    };
+
+    getDeviceById().catch((error) => {
+      console.error("Error fetching device:", error);
+      res.status(500).json({ error: "Failed to fetch device" });
+    });
+  } catch (error) {
+    console.error("Error fetching device:", error);
+    res.status(500).json({ error: "Failed to fetch device" });
+  }
+});
+
+// POST new device
+router.post("/", (req: Request, res: Response) => {
+  try {
+    const createDevice = async () => {
+      const { roomId, displayName, type, iconType, isFavorite } = req.body;
+
+      // Validate required fields
+      if (!roomId || !displayName || !type || !iconType) {
+        return res.status(400).json({
+          error: "Missing required fields",
+          required: ["roomId", "displayName", "type", "iconType"],
+        });
+      }
+
+      // Create the new device
+      const newDevice = await prisma.device.create({
+        data: {
+          roomId: parseInt(roomId),
+          displayName,
+          type,
+          iconType,
+          isFavorite: isFavorite || false,
+          status: false, // Default to off
+        },
+      });
+
+      return res.status(201).json(newDevice);
+    };
+
+    createDevice().catch((error) => {
+      console.error("Error creating device:", error);
+      res.status(500).json({
+        error: "Failed to create device",
+        details: error.message,
+      });
+    });
+  } catch (error) {
+    console.error("Error creating device:", error);
+    res.status(500).json({
+      error: "Failed to create device",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+// DELETE device by ID
+router.delete("/:id", (req: Request<DeviceParams>, res: Response) => {
+  try {
+    const deleteDevice = async () => {
+      const deviceId = parseInt(req.params.id);
+
+      // First check if the device exists
+      const device = await prisma.device.findUnique({
+        where: { id: deviceId },
+      });
+
+      if (!device) {
+        return res.status(404).json({ error: "Device not found" });
+      }
+
+      // Delete in the correct order to respect foreign key constraints
+
+      // 1. First delete device controls
+      await prisma.deviceControl.deleteMany({
+        where: { deviceId: deviceId },
+      });
+
+      // 2. Delete device triggers
+      await prisma.deviceTrigger.deleteMany({
+        where: { deviceId: deviceId },
+      });
+
+      // 3. Delete energy logs
+      await prisma.energyConsumptionLog.deleteMany({
+        where: { deviceId: deviceId },
+      });
+
+      // 4. Delete energy breakdowns
+      await prisma.energyDeviceBreakdown.deleteMany({
+        where: { deviceId: deviceId },
+      });
+
+      // 5. Now we can delete the device
+      const deletedDevice = await prisma.device.delete({
+        where: { id: deviceId },
+      });
+
+      return res.json(deletedDevice);
+    };
+
+    deleteDevice().catch((error) => {
+      console.error("Error deleting device:", error);
+      res
+        .status(500)
+        .json({ error: "Failed to delete device", details: error.message });
+    });
+  } catch (error) {
+    console.error("Error deleting device:", error);
+    res.status(500).json({
+      error: "Failed to delete device",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+// UPDATE device by ID (including toggling status)
+router.put("/:id", (req: Request<DeviceParams>, res: Response) => {
+  try {
+    const updateDevice = async () => {
+      const deviceId = parseInt(req.params.id);
+      const { displayName, type, status, iconType, isFavorite, swiped } =
+        req.body;
+
+      // Check if the device exists
+      const existingDevice = await prisma.device.findUnique({
+        where: { id: deviceId },
+      });
+
+      if (!existingDevice) {
+        return res.status(404).json({ error: "Device not found" });
+      }
+
+      // Update the device
+      const updatedDevice = await prisma.device.update({
+        where: { id: deviceId },
+        data: {
+          displayName: displayName !== undefined ? displayName : undefined,
+          type: type !== undefined ? type : undefined,
+          status: status !== undefined ? status : undefined,
+          iconType: iconType !== undefined ? iconType : undefined,
+          isFavorite: isFavorite !== undefined ? isFavorite : undefined,
+          swiped: swiped !== undefined ? swiped : undefined,
+        },
+      });
+
+      // If status is being changed, log it
+      if (status !== undefined && status !== existingDevice.status) {
+        await prisma.energyConsumptionLog.create({
+          data: {
+            deviceId: deviceId,
+            actionType: status ? "turned_on" : "turned_off",
+            actionDetails: `Device ${status ? "activated" : "deactivated"}`,
+            timestamp: new Date(),
+          },
+        });
+      }
+
+      return res.json(updatedDevice);
+    };
+
+    updateDevice().catch((error) => {
+      console.error("Error updating device:", error);
+      res
+        .status(500)
+        .json({ error: "Failed to update device", details: error.message });
+    });
+  } catch (error) {
+    console.error("Error updating device:", error);
+    res.status(500).json({
+      error: "Failed to update device",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 // GET energy consumption for all devices
 router.get("/energy/consumption", (req: Request, res: Response) => {
   try {
