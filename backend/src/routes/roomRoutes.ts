@@ -183,4 +183,51 @@ router.post("/", (req: Request, res: Response) => {
   }
 });
 
+// PUT update room
+router.put("/:id", (req: Request<RoomParams>, res: Response) => {
+  try {
+    const updateRoom = async () => {
+      const roomId = parseInt(req.params.id);
+      const { name, iconType, homeId } = req.body;
+
+      // Check if the room exists
+      const existingRoom = await prisma.room.findUnique({
+        where: { id: roomId },
+      });
+
+      if (!existingRoom) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+
+      // Create an update object only with the fields that are provided
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (iconType !== undefined) updateData.iconType = iconType;
+      if (homeId !== undefined) updateData.homeId = parseInt(homeId);
+
+      // Update the room with only the provided fields
+      const updatedRoom = await prisma.room.update({
+        where: { id: roomId },
+        data: updateData,
+      });
+
+      return res.json(updatedRoom);
+    };
+
+    updateRoom().catch((error) => {
+      console.error("Error updating room:", error);
+      res.status(500).json({
+        error: "Failed to update room",
+        details: error.message,
+      });
+    });
+  } catch (error) {
+    console.error("Error updating room:", error);
+    res.status(500).json({
+      error: "Failed to update room",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 export default router;

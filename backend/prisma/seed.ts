@@ -111,7 +111,7 @@ async function main() {
       status: true,
       controls: [
         {
-          controlType: "BRIGHTNESS",
+          controlType: "percentage",
           currentValue: 80,
           minValue: 0,
           maxValue: 100,
@@ -135,7 +135,7 @@ async function main() {
       status: true,
       controls: [
         {
-          controlType: "TEMPERATURE",
+          controlType: "temperature",
           currentValue: 22,
           minValue: 16,
           maxValue: 30,
@@ -160,10 +160,10 @@ async function main() {
       status: false,
       controls: [
         {
-          controlType: "PORTION_SIZE",
-          currentValue: 1,
-          minValue: 0.5,
-          maxValue: 3,
+          controlType: "percentage",
+          currentValue: 0,
+          minValue: 0,
+          maxValue: 100,
         },
       ],
       triggers: [
@@ -184,7 +184,7 @@ async function main() {
       status: false,
       controls: [
         {
-          controlType: "WATER_FLOW",
+          controlType: "waterFlow",
           currentValue: 0,
           minValue: 0,
           maxValue: 10,

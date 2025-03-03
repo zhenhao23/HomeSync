@@ -27,10 +27,10 @@ interface DeviceSettingProps {
 // Function to map front-end device icons to API-compatible type
 const mapIconToType = (iconTitle: string): string => {
   const typeMap: { [key: string]: string } = {
-    Lamp: "lamp",
-    "Air Conditioner": "air_conditioner",
-    Sprinkler: "sprinkler",
-    Cooker: "cooker",
+    Lamp: "light",
+    "Air Conditioner": "aircond",
+    Sprinkler: "irrigation",
+    Cooker: "petfeeder",
     "Smart Lock": "smart_lock",
     Fan: "fan",
     TV: "tv",
@@ -92,7 +92,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
     { image: lampIcon, title: "Lamp" },
     { image: airConditionerIcon, title: "Air Conditioner" },
     { image: sprinklerIcon, title: "Sprinkler" },
-    { image: petfeederIcon, title: "Cooker" },
+    { image: petfeederIcon, title: "Pet Feeder" },
     { image: smartLockIcon, title: "Smart Lock" },
     { image: fanIcon, title: "Fan" },
     { image: TVIcon, title: "TV" },

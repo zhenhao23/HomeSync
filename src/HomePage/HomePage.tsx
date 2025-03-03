@@ -57,6 +57,7 @@ export interface Device {
   status: boolean;
   swiped: boolean;
   devData: {
+    id: number;
     iconImage: string;
     percentage: number;
     celsius: number;
@@ -91,6 +92,7 @@ export interface Collaborator {
 
 // API Types
 interface ApiControl {
+  id: number;
   controlType: "percentage" | "temperature" | "waterFlow";
   currentValue: number;
 }
@@ -142,6 +144,7 @@ const initialDevices: Device[] = [
     status: false,
     swiped: false,
     devData: {
+      id: 0,
       iconImage: managePetfeeder,
       percentage: 0,
       celsius: 0,
@@ -165,6 +168,7 @@ const initialDevices: Device[] = [
     status: false,
     swiped: false,
     devData: {
+      id: 1,
       iconImage: manageAircond,
       percentage: 0,
       celsius: 30,
@@ -189,6 +193,7 @@ const initialDevices: Device[] = [
     status: false,
     swiped: false,
     devData: {
+      id: 2,
       iconImage: manageLamp,
       percentage: 40,
       celsius: 0,
@@ -212,6 +217,7 @@ const initialDevices: Device[] = [
     status: false,
     swiped: false,
     devData: {
+      id: 3,
       iconImage: manageLamp,
       percentage: 60,
       celsius: 0,
@@ -235,6 +241,7 @@ const initialDevices: Device[] = [
     status: false,
     swiped: false,
     devData: {
+      id: 4,
       iconImage: manageIrrigation,
       percentage: 30,
       celsius: 0,
@@ -258,6 +265,7 @@ const initialDevices: Device[] = [
     status: false,
     swiped: false,
     devData: {
+      id: 5,
       iconImage: manageAircond,
       percentage: 0,
       celsius: 16,
@@ -305,6 +313,7 @@ const defaultDevice: Device = {
   status: false,
   swiped: false,
   devData: {
+    id: 0,
     iconImage: manageLamp,
     percentage: 80,
     celsius: 0,
@@ -360,6 +369,35 @@ const HomePage: React.FC = () => {
       ...room,
       devices: deviceCountByRoom.get(room.id) || 0,
     }));
+  };
+
+  // Add this function at the top of your file alongside other API functions
+  const updateDeviceStatusAPI = async (
+    deviceId: number,
+    newStatus: boolean
+  ) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/devices/${deviceId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update device status");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating device status:", error);
+      throw error;
+    }
   };
 
   // Update your fetch function:
@@ -466,16 +504,23 @@ const HomePage: React.FC = () => {
           status: device.status,
           swiped: device.swiped,
           devData: {
+            id: device.controls[0]?.id,
             iconImage: getDeviceIcon(device.type),
             percentage:
-              device.controls.find((c) => c.controlType === "percentage")
-                ?.currentValue || 0,
+              Number(
+                device.controls.find((c) => c.controlType === "percentage")
+                  ?.currentValue
+              ) || 0,
             celsius:
-              device.controls.find((c) => c.controlType === "temperature")
-                ?.currentValue || 0,
+              Number(
+                device.controls.find((c) => c.controlType === "temperature")
+                  ?.currentValue
+              ) || 0,
             waterFlow:
-              device.controls.find((c) => c.controlType === "waterFlow")
-                ?.currentValue || 0,
+              Number(
+                device.controls.find((c) => c.controlType === "waterFlow")
+                  ?.currentValue
+              ) || 0,
           },
           content: {
             feature: device.triggers[0]?.triggerType || "Default Feature",
@@ -529,14 +574,58 @@ const HomePage: React.FC = () => {
   };
 
   // Event handlers
-  const handleToggle = (roomId: number, deviceId: number) => {
-    setDevicesState((prevDevicesState) =>
-      prevDevicesState.map((dev) =>
-        dev.room_id === roomId && dev.device_id === deviceId
-          ? { ...dev, status: !dev.status }
-          : dev
-      )
-    );
+  // const handleToggle = (roomId: number, deviceId: number) => {
+  //   setDevicesState((prevDevicesState) =>
+  //     prevDevicesState.map((dev) =>
+  //       dev.room_id === roomId && dev.device_id === deviceId
+  //         ? { ...dev, status: !dev.status }
+  //         : dev
+  //     )
+  //   );
+  //   console.log("thissss");
+  // };
+  // Updated handleToggle function with API integration
+  const handleToggle = async (roomId: number, deviceId: number) => {
+    try {
+      // Get the current device status
+      const currentDevice = devicesState.find(
+        (dev) => dev.room_id === roomId && dev.device_id === deviceId
+      );
+
+      if (!currentDevice) return;
+
+      // Calculate the new status (toggle the current status)
+      const newStatus = !currentDevice.status;
+
+      // Update local state optimistically for immediate UI feedback
+      setDevicesState((prevDevicesState) =>
+        prevDevicesState.map((dev) =>
+          dev.room_id === roomId && dev.device_id === deviceId
+            ? { ...dev, status: newStatus }
+            : dev
+        )
+      );
+
+      // Call the API to update the status in the backend
+      await updateDeviceStatusAPI(deviceId, newStatus);
+
+      console.log(`Device ${deviceId} status updated to ${newStatus}`);
+    } catch (error) {
+      // If the API call fails, revert the local state change
+      console.error("Failed to update device status:", error);
+
+      // Revert the optimistic update
+      setDevicesState((prevDevicesState) =>
+        prevDevicesState.map((dev) =>
+          dev.room_id === roomId && dev.device_id === deviceId
+            ? { ...dev, status: !dev.status } // Toggle back to original state
+            : dev
+        )
+      );
+
+      // Optional: Show error to user
+      alert("Failed to update device status. Please try again.");
+    }
   };
 
   const handleRoomClick = (selectedRoom: Room) => {
@@ -788,7 +877,7 @@ const HomePage: React.FC = () => {
           roomsState={roomsState}
           setRoomsState={setRoomsState}
           setActiveContent={setActiveContent}
-          homeId={19}
+          homeId={28}
         />
       ) : activeContent === "viewDeviceStatus" ? (
         <ViewDeviceStatus

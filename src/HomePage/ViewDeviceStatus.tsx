@@ -45,6 +45,29 @@ const removeDeviceFromAPI = async (deviceId: number) => {
   }
 };
 
+// Add this function at the top of your file, alongside the removeDeviceFromAPI function
+const updateRoomTitleAPI = async (roomId: number, newTitle: string) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/rooms/${roomId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: newTitle }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to update room title");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating room title:", error);
+    throw error;
+  }
+};
+
 const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
   getRoom,
   getDevice,
@@ -171,22 +194,42 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
     );
   };
 
-  // function to handle if user confirm for the changes in all modals
-  const handleConfirm = () => {
-    // Update the room title
-    const updatedRoomTitle = roomsState.map((r) => {
-      if (r.id === getRoom().id) {
-        return { ...r, title: tempTitle }; // Update room title
+  // Update the handleConfirm function to use the API
+  const handleConfirm = async () => {
+    if (editingType === "room") {
+      try {
+        // Show loading state if needed
+        // setIsLoading(true);
+
+        // Call the API to update the room title
+        await updateRoomTitleAPI(getRoom().id, tempTitle);
+
+        // If API call succeeds, update the local state
+        const updatedRoomTitle = roomsState.map((r) => {
+          if (r.id === getRoom().id) {
+            return { ...r, title: tempTitle }; // Update room title
+          }
+          return r;
+        });
+
+        setRoomsState(updatedRoomTitle); // Update the state with the new title for the room
+
+        setRoom((prevRoom) => ({
+          ...prevRoom,
+          title: tempTitle, // Update the room title
+        }));
+      } catch (error) {
+        // Handle error - you might want to show an error message
+        console.error("Failed to update room title:", error);
+        // Optional: Reset to original title
+        // setTempTitle(getRoom().title);
+      } finally {
+        // Hide loading state if needed
+        // setIsLoading(false);
       }
-      return r;
-    });
-    setRoomsState(updatedRoomTitle); // Update the state with the new title for the room
+    }
 
-    setRoom((prevRoom) => ({
-      ...prevRoom,
-      title: tempTitle, // Update the room title
-    }));
-
+    // Clean up UI state
     setEditingType(null);
     setIsEditing(false); // Exit edit mode after confirming
   };
@@ -370,9 +413,9 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                               checked={getSelectedDeviceStatus(
                                 getRoom().id,
                                 device.device_id
-                              )} // Access the state for the specific device
+                              )}
                               onChange={() => {
-                                handleToggle(getRoom().id, device.device_id); // Toggle state for the specific device
+                                handleToggle(getRoom().id, device.device_id);
                               }}
                             />
                             <span className="slider round"></span>

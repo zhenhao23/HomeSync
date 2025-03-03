@@ -175,37 +175,135 @@ router.delete("/:id", (req: Request<DeviceParams>, res: Response) => {
   }
 });
 
-// UPDATE device by ID (including toggling status)
 router.put("/:id", (req: Request<DeviceParams>, res: Response) => {
   try {
     const updateDevice = async () => {
       const deviceId = parseInt(req.params.id);
-      const { displayName, type, status, iconType, isFavorite, swiped } =
-        req.body;
+      const {
+        // Device fields
+        displayName,
+        type,
+        status,
+        iconType,
+        isFavorite,
+        swiped,
+        // Related data
+        controls, // Array of controls to update
+        triggers, // Array of triggers to update
+      } = req.body;
 
-      // Check if the device exists
+      // 1. Check if device exists
       const existingDevice = await prisma.device.findUnique({
         where: { id: deviceId },
+        include: { controls: true, triggers: true },
       });
 
       if (!existingDevice) {
         return res.status(404).json({ error: "Device not found" });
       }
 
-      // Update the device
-      const updatedDevice = await prisma.device.update({
-        where: { id: deviceId },
-        data: {
-          displayName: displayName !== undefined ? displayName : undefined,
-          type: type !== undefined ? type : undefined,
-          status: status !== undefined ? status : undefined,
-          iconType: iconType !== undefined ? iconType : undefined,
-          isFavorite: isFavorite !== undefined ? isFavorite : undefined,
-          swiped: swiped !== undefined ? swiped : undefined,
-        },
-      });
+      // 2. Update the device - only for fields that are provided
+      const deviceUpdateData: any = {};
+      if (displayName !== undefined) deviceUpdateData.displayName = displayName;
+      if (type !== undefined) deviceUpdateData.type = type;
+      if (status !== undefined) deviceUpdateData.status = status;
+      if (iconType !== undefined) deviceUpdateData.iconType = iconType;
+      if (isFavorite !== undefined) deviceUpdateData.isFavorite = isFavorite;
+      if (swiped !== undefined) deviceUpdateData.swiped = swiped;
 
-      // If status is being changed, log it
+      let updatedDevice;
+      if (Object.keys(deviceUpdateData).length > 0) {
+        updatedDevice = await prisma.device.update({
+          where: { id: deviceId },
+          data: deviceUpdateData,
+        });
+      } else {
+        updatedDevice = existingDevice;
+      }
+
+      // 3. Update controls if provided
+      if (controls && controls.length > 0) {
+        // Process each control
+        for (const control of controls) {
+          if (control.id) {
+            // Update existing control with only the provided fields
+            const controlUpdateData: any = {};
+
+            if (control.controlType !== undefined)
+              controlUpdateData.controlType = control.controlType;
+            if (control.currentValue !== undefined)
+              controlUpdateData.currentValue = control.currentValue;
+            if (control.minValue !== undefined)
+              controlUpdateData.minValue = control.minValue;
+            if (control.maxValue !== undefined)
+              controlUpdateData.maxValue = control.maxValue;
+
+            // Only update if there are fields to update
+            if (Object.keys(controlUpdateData).length > 0) {
+              await prisma.deviceControl.update({
+                where: { id: control.id },
+                data: controlUpdateData,
+              });
+            }
+          } else {
+            // For new controls, all fields are required
+            await prisma.deviceControl.create({
+              data: {
+                deviceId,
+                controlType: control.controlType,
+                currentValue: control.currentValue,
+                minValue: control.minValue,
+                maxValue: control.maxValue,
+              },
+            });
+          }
+        }
+      }
+
+      // 4. Update triggers if provided
+      if (triggers && triggers.length > 0) {
+        // Process each trigger
+        for (const trigger of triggers) {
+          if (trigger.id) {
+            // Update existing trigger with only the provided fields
+            const triggerUpdateData: any = {};
+
+            if (trigger.triggerType !== undefined)
+              triggerUpdateData.triggerType = trigger.triggerType;
+            if (trigger.conditionOperator !== undefined)
+              triggerUpdateData.conditionOperator = trigger.conditionOperator;
+            if (trigger.isActive !== undefined)
+              triggerUpdateData.isActive = trigger.isActive;
+            if (trigger.featurePeriod !== undefined)
+              triggerUpdateData.featurePeriod = trigger.featurePeriod;
+            if (trigger.featureDetail !== undefined)
+              triggerUpdateData.featureDetail = trigger.featureDetail;
+
+            // Only update if there are fields to update
+            if (Object.keys(triggerUpdateData).length > 0) {
+              await prisma.deviceTrigger.update({
+                where: { id: trigger.id },
+                data: triggerUpdateData,
+              });
+            }
+          } else {
+            // For new triggers, all fields are required
+            await prisma.deviceTrigger.create({
+              data: {
+                deviceId,
+                triggerType: trigger.triggerType,
+                conditionOperator: trigger.conditionOperator,
+                isActive:
+                  trigger.isActive !== undefined ? trigger.isActive : true,
+                featurePeriod: trigger.featurePeriod || "Daily",
+                featureDetail: trigger.featureDetail || "",
+              },
+            });
+          }
+        }
+      }
+
+      // 5. Log status change if necessary
       if (status !== undefined && status !== existingDevice.status) {
         await prisma.energyConsumptionLog.create({
           data: {
@@ -217,7 +315,22 @@ router.put("/:id", (req: Request<DeviceParams>, res: Response) => {
         });
       }
 
-      return res.json(updatedDevice);
+      // 6. Return the updated device with its related data
+      const result = await prisma.device.findUnique({
+        where: { id: deviceId },
+        include: {
+          controls: true,
+          triggers: true,
+          energyLogs: {
+            orderBy: {
+              timestamp: "desc",
+            },
+            take: 10,
+          },
+        },
+      });
+
+      return res.json(result);
     };
 
     updateDevice().catch((error) => {
