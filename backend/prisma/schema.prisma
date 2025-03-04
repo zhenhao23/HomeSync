@@ -9,6 +9,7 @@ generator client {
 
 model User {
   id                Int           @id @default(autoincrement())
+  firebaseUid  String?   @unique  // Add this line
   email            String        @unique
   passwordHash      String
   role             String

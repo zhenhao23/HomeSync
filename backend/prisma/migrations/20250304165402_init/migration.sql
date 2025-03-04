@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
+    "firebaseUid" TEXT,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
     "role" TEXT NOT NULL,
@@ -53,9 +54,10 @@ CREATE TABLE "Device" (
     "roomId" INTEGER NOT NULL,
     "displayName" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "status" BOOLEAN NOT NULL DEFAULT false,
     "iconType" TEXT NOT NULL,
     "isFavorite" BOOLEAN NOT NULL DEFAULT false,
+    "swiped" BOOLEAN NOT NULL DEFAULT false,
     "addedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Device_pkey" PRIMARY KEY ("id")
@@ -79,8 +81,9 @@ CREATE TABLE "DeviceTrigger" (
     "deviceId" INTEGER NOT NULL,
     "triggerType" TEXT NOT NULL,
     "conditionOperator" TEXT NOT NULL,
-    "thresholdValue" DECIMAL(65,30) NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "featurePeriod" TEXT NOT NULL DEFAULT 'Daily',
+    "featureDetail" TEXT NOT NULL DEFAULT '8:00am, 12:00pm, 7:00pm',
 
     CONSTRAINT "DeviceTrigger_pkey" PRIMARY KEY ("id")
 );
@@ -134,6 +137,9 @@ CREATE TABLE "SolarEnergyDetail" (
 
     CONSTRAINT "SolarEnergyDetail_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_firebaseUid_key" ON "User"("firebaseUid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

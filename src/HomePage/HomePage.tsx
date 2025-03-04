@@ -877,7 +877,7 @@ const HomePage: React.FC = () => {
           roomsState={roomsState}
           setRoomsState={setRoomsState}
           setActiveContent={setActiveContent}
-          homeId={28}
+          homeId={3}
         />
       ) : activeContent === "viewDeviceStatus" ? (
         <ViewDeviceStatus

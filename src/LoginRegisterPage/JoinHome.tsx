@@ -64,10 +64,11 @@ const JoinHome: React.FC = () => {
   return (
     <WelcomeBackground>
       <div className="otp-container">
-        <div className="signin-logo-container">
-          <div className="signin-logo-bg">
-            <div className="signin-logo-inner">
-              <img src={Logo} alt="HomeSync Logo" className="signin-logo-img" />
+        {/* HomeSync Logo */}
+        <div className="logo-container">
+          <div className="logo-bg">
+            <div className="logo-inner">
+              <img src={Logo} alt="Logo" className="logo-img" />
             </div>
           </div>
         </div>
