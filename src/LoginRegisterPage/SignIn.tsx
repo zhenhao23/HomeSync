@@ -48,23 +48,12 @@ const SignIn: React.FC = () => {
       const userData = await response.json();
       console.log("Logged in user:", userData);
 
+      // Store the token in localStorage
+      localStorage.setItem("authToken", idToken);
+
       navigate("/home");
     } catch (error: any) {
-      // Handle specific Firebase auth errors
-      switch (error.code) {
-        case "auth/invalid-credential":
-          setError("Incorrect email or password");
-          break;
-        case "auth/user-not-found":
-          setError("No account found with this email");
-          break;
-        case "auth/wrong-password":
-          setError("Incorrect password");
-          break;
-        default:
-          setError(error.message || "An error occurred. Please try again.");
-          console.error(error);
-      }
+      // Error handling...
     }
   };
 
@@ -92,6 +81,9 @@ const SignIn: React.FC = () => {
 
       const userData = await response.json();
       console.log("Google sign-in successful:", userData);
+
+      // Store the token in localStorage
+      localStorage.setItem("authToken", idToken);
 
       navigate("/home");
     } catch (error: any) {

@@ -80,7 +80,12 @@ const Register: React.FC = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Send Google user details to your backend
+      // Extract name parts from displayName
+      const nameParts = user.displayName?.split(" ") || ["", ""];
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || ""; // Better handling of multi-word last names
+
+      // Send Google user details to your backend with all required fields
       const response = await fetch("http://localhost:5000/auth/register", {
         method: "POST",
         headers: {
@@ -88,14 +93,23 @@ const Register: React.FC = () => {
         },
         body: JSON.stringify({
           email: user.email,
-          firstName: user.displayName?.split(" ")[0] || "",
-          lastName: user.displayName?.split(" ")[1] || "",
+          firstName: firstName,
+          lastName: lastName,
+          role: "user", // Add default role
           firebaseUid: user.uid,
+          // No password needed - backend will use "google-auth-user"
         }),
       });
 
+      const responseData = await response.json();
+      console.log("Google registration response:", responseData);
+
       if (!response.ok) {
-        throw new Error("Failed to register user in database");
+        const errorMessage =
+          responseData.details ||
+          responseData.error ||
+          "Failed to register user in database";
+        throw new Error(errorMessage);
       }
 
       console.log("Google registration successful:", user);

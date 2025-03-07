@@ -10,20 +10,35 @@ const prisma = new PrismaClient();
 router.post("/register", (req: Request, res: Response) => {
   try {
     const registerUser = async () => {
-      const { email, password, firstName, lastName, role = "user" } = req.body;
-
-      // Create Firebase user
-      const userRecord = await auth().createUser({
+      const {
         email,
         password,
-      });
+        firstName,
+        lastName,
+        role = "user",
+        firebaseUid,
+      } = req.body;
+
+      // If firebaseUid is provided, use it instead of creating a new Firebase user
+      let uid = firebaseUid;
+
+      if (!uid) {
+        // Only create Firebase user if no firebaseUid was provided
+        const userRecord = await auth().createUser({
+          email,
+          password,
+        });
+        uid = userRecord.uid;
+      }
 
       // Create user in Prisma database
       const user = await prisma.user.create({
         data: {
-          firebaseUid: userRecord.uid,
+          firebaseUid: uid,
           email,
-          passwordHash: await hashPassword(password),
+          passwordHash: password
+            ? await hashPassword(password)
+            : "google-auth-user",
           firstName,
           lastName,
           role,
@@ -35,6 +50,8 @@ router.post("/register", (req: Request, res: Response) => {
         userId: user.id,
       });
     };
+
+    // ...existing code...
 
     registerUser().catch((error) => {
       console.error("Registration error:", error);

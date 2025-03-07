@@ -111,8 +111,7 @@
 
 /* 🔹 Create Account Button */
 .create-account-btn {
-  width: 80%;
-  max-width: 320px;
+  width: 100%; /* Change this from 80% to 100% to match parent container */
   background-color: #ffb8b8;
   color: white;
   padding: 12px;
@@ -121,6 +120,7 @@
   font-weight: bold;
   cursor: pointer;
   margin-top: 20px;
+  align-self: center; /* Add this to help with alignment */
 }
 
 .create-account-btn:hover {

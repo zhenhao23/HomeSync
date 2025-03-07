@@ -1,5 +1,6 @@
 import { FaMinusCircle, FaPlus } from "react-icons/fa";
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 
 // Import images
 import LivingRoomImage from "../assets/rooms/livingroom.svg";
@@ -354,6 +355,7 @@ const HomePage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate(); // Add this hook
 
   // First, modify your device counting logic in the API fetch:
   const updateDeviceCounts = (devices: Device[], rooms: Room[]): Room[] => {
@@ -377,11 +379,20 @@ const HomePage: React.FC = () => {
     newStatus: boolean
   ) => {
     try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      // If no token is available, show error
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
       const response = await fetch(
         `http://localhost:5000/api/devices/${deviceId}`,
         {
           method: "PUT",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: newStatus }),
@@ -389,6 +400,12 @@ const HomePage: React.FC = () => {
       );
 
       if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid
+          navigate("/signin");
+          throw new Error("Authentication token expired");
+        }
+
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to update device status");
       }
@@ -401,13 +418,43 @@ const HomePage: React.FC = () => {
   };
 
   // Update your fetch function:
+  // Update your fetch function to include the auth token:
   const fetchData = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch("http://localhost:5000/api/rooms");
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      // If no token is available, redirect to signin
+      if (!token) {
+        console.error("No authentication token found");
+        navigate("/signin");
+        return;
+      }
+
+      // TEMPORARY FIX: Use a specific homeId you know exists in your database
+      // Later, replace this with proper home selection
+      const homeId = 8; // Replace with a valid home ID from your database
+
+      const response = await fetch(
+        `http://localhost:5000/api/rooms/home/${homeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (!response.ok) {
+        if (response.status === 401) {
+          // Token might be expired, navigate to login
+          console.error("Authentication token expired or invalid");
+          navigate("/signin");
+          return;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -877,7 +924,7 @@ const HomePage: React.FC = () => {
           roomsState={roomsState}
           setRoomsState={setRoomsState}
           setActiveContent={setActiveContent}
-          homeId={3}
+          homeId={8}
         />
       ) : activeContent === "viewDeviceStatus" ? (
         <ViewDeviceStatus
