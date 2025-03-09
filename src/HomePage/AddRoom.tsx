@@ -105,7 +105,6 @@ const AddRoom: React.FC<AddRoomProps> = ({
     }
   };
 
-  // Now let's update your handleAddRoom function
   const handleAddRoom = async () => {
     // Validation logic (unchanged)
     if (selectedRoomIcon === null && !roomName?.trim()) {
@@ -123,7 +122,14 @@ const AddRoom: React.FC<AddRoomProps> = ({
     }
 
     try {
-      // Use the homeId from props, not a hardcoded value
+      // Get auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        console.error("Authentication token not found");
+        // Redirect to signin page or show authentication error
+        return;
+      }
 
       // Get the icon type from the selected icon
       const iconType = selectedRoomIcon.title;
@@ -134,11 +140,12 @@ const AddRoom: React.FC<AddRoomProps> = ({
         homeId: homeId,
       });
 
-      // Call the API to add the room - use the full URL
+      // Call the API to add the room with authentication token
       const response = await fetch("http://localhost:5000/api/rooms", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add authentication token
         },
         body: JSON.stringify({
           name: roomName,
@@ -146,6 +153,21 @@ const AddRoom: React.FC<AddRoomProps> = ({
           homeId: homeId,
         }),
       });
+
+      // Handle authentication errors
+      if (response.status === 401) {
+        console.error("Authentication token expired or invalid");
+        // Navigate to sign-in page
+        // navigate("/signin");
+        return;
+      }
+
+      // Handle permission errors
+      if (response.status === 403) {
+        console.error("You don't have access to this home");
+        alert("You don't have permission to add rooms to this home");
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -177,7 +199,8 @@ const AddRoom: React.FC<AddRoomProps> = ({
       goBackToHomePage();
     } catch (error) {
       console.error("Failed to add room:", error);
-      // You might want to show an error message to the user
+      alert("An error occurred while adding the room. Please try again.");
+      // You might want to show a more user-friendly error message
     }
   };
 

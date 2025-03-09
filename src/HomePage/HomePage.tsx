@@ -387,6 +387,14 @@ const HomePage: React.FC = () => {
         throw new Error("Authentication required");
       }
 
+      // Get the current homeId from localStorage
+      const homeId = localStorage.getItem("currentHomeId");
+
+      if (!homeId) {
+        throw new Error("Home ID not found");
+      }
+
+      // Send both the status update and homeId for validation
       const response = await fetch(
         `http://localhost:5000/api/devices/${deviceId}`,
         {
@@ -395,7 +403,10 @@ const HomePage: React.FC = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ status: newStatus }),
+          body: JSON.stringify({
+            status: newStatus,
+            homeId: parseInt(homeId), // Send homeId for server-side validation
+          }),
         }
       );
 
@@ -404,6 +415,10 @@ const HomePage: React.FC = () => {
           // Token expired or invalid
           navigate("/signin");
           throw new Error("Authentication token expired");
+        }
+
+        if (response.status === 403) {
+          throw new Error("You don't have permission to control this device");
         }
 
         const errorData = await response.json();
@@ -418,7 +433,6 @@ const HomePage: React.FC = () => {
   };
 
   // Update your fetch function:
-  // Update your fetch function to include the auth token:
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -434,9 +448,64 @@ const HomePage: React.FC = () => {
         return;
       }
 
-      // TEMPORARY FIX: Use a specific homeId you know exists in your database
-      // Later, replace this with proper home selection
-      const homeId = 8; // Replace with a valid home ID from your database
+      // Get the current homeId from localStorage
+      const homeId = localStorage.getItem("currentHomeId");
+
+      // If no homeId is available, try to fetch homes
+      if (!homeId) {
+        // Fetch the user's homes
+        const homesResponse = await fetch(
+          "http://localhost:5000/api/homes/user",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!homesResponse.ok) {
+          if (homesResponse.status === 401) {
+            navigate("/signin");
+            return;
+          }
+          throw new Error("Failed to fetch user's homes");
+        }
+
+        const homesData = await homesResponse.json();
+
+        if (homesData.length > 0) {
+          // Store and use the first home's ID
+          const firstHomeId = homesData[0].id;
+          localStorage.setItem("currentHomeId", firstHomeId.toString());
+
+          // Fetch rooms for this home
+          await fetchRoomsForHome(firstHomeId, token);
+        } else {
+          setError("No homes found for your account");
+          setIsLoading(false);
+        }
+      } else {
+        // Use the stored homeId to fetch rooms
+        await fetchRoomsForHome(parseInt(homeId), token);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching data"
+      );
+      console.error("API Error:", err);
+      setIsLoading(false);
+    }
+  };
+
+  // Helper function to fetch rooms for a specific home
+  const fetchRoomsForHome = async (homeId: number, token: string) => {
+    try {
+      // Set timeout for the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
       const response = await fetch(
         `http://localhost:5000/api/rooms/home/${homeId}`,
@@ -445,8 +514,11 @@ const HomePage: React.FC = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
         }
       );
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -455,7 +527,10 @@ const HomePage: React.FC = () => {
           navigate("/signin");
           return;
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.status === 403) {
+          throw new Error("You don't have access to this home");
+        }
+        throw new Error(`Server error: ${response.status}`);
       }
 
       const roomsData: ApiRoom[] = await response.json();
@@ -463,8 +538,8 @@ const HomePage: React.FC = () => {
       // First, update rooms from API
       const updatedRooms = roomsData.map((room) => ({
         id: room.id,
-        image: getRoomImage(room.iconType), // Use iconType from API
-        title: room.name, // Use name directly from API
+        image: getRoomImage(room.iconType),
+        title: room.name,
         devices: 0, // We'll update this count later
       }));
 
@@ -484,11 +559,16 @@ const HomePage: React.FC = () => {
       console.log("Rooms after update:", roomsWithCounts);
       console.log("Devices after update:", transformedDevices);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An error occurred while fetching data"
-      );
+      // Handle AbortError separately
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setError("Request timed out. Please try again.");
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "An error occurred while fetching rooms"
+        );
+      }
       console.error("API Error:", err);
     } finally {
       setIsLoading(false);
@@ -689,36 +769,86 @@ const HomePage: React.FC = () => {
       try {
         setIsLoading(true);
 
-        // Call the API to delete the room
+        // Get auth token from localStorage
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+          console.error("Authentication token not found");
+          navigate("/signin");
+          return;
+        }
+
+        // Get current homeId (needed for validation on the backend)
+        const homeId = localStorage.getItem("currentHomeId");
+
+        if (!homeId) {
+          setError("Home ID not found");
+          return;
+        }
+
+        // Call the API to delete the room with proper authentication
         const response = await fetch(
           `http://localhost:5000/api/rooms/${removeRoom.id}`,
           {
             method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           }
         );
 
+        // Handle different error responses
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          if (response.status === 401) {
+            // Authentication failure
+            navigate("/signin");
+            return;
+          }
+
+          if (response.status === 403) {
+            // Permission denied
+            setError("You don't have permission to delete this room");
+            setRemoveRoom(null);
+            return;
+          }
+
+          if (response.status === 404) {
+            // Room not found
+            setError("Room not found");
+            setRemoveRoom(null);
+            return;
+          }
+
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `Failed to delete room: ${response.status}`
+          );
         }
 
-        // Update rooms - this replaces both of the problematic setState calls
+        // Get the response data
+        const deletedRoom = await response.json();
+        console.log("Room deleted successfully:", deletedRoom);
+
+        // Update local state
         setRoomsState((prevRooms) =>
           prevRooms.filter((room) => room.id !== removeRoom.id)
         );
 
-        // Update devices - this replaces both of the problematic setState calls
+        // Remove devices associated with this room
         setDevicesState((prevDevices) =>
           prevDevices.filter((device) => device.room_id !== removeRoom.id)
         );
 
+        // Close the modal
         setRemoveRoom(null);
       } catch (err) {
+        console.error("Error deleting room:", err);
         setError(
           err instanceof Error
             ? err.message
             : "An error occurred while deleting the room"
         );
-        console.error("API Error:", err);
       } finally {
         setIsLoading(false);
       }
@@ -924,7 +1054,7 @@ const HomePage: React.FC = () => {
           roomsState={roomsState}
           setRoomsState={setRoomsState}
           setActiveContent={setActiveContent}
-          homeId={8}
+          homeId={parseInt(localStorage.getItem("currentHomeId") || "0")}
         />
       ) : activeContent === "viewDeviceStatus" ? (
         <ViewDeviceStatus

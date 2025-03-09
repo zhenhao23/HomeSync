@@ -24,12 +24,17 @@ const Register: React.FC = () => {
     setError("");
 
     try {
+      // Create Firebase user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
 
+      // Get Firebase ID token for backend authentication
+      const idToken = await userCredential.user.getIdToken();
+
+      // Send user data to backend
       const response = await fetch("http://localhost:5000/auth/register", {
         method: "POST",
         headers: {
@@ -57,6 +62,14 @@ const Register: React.FC = () => {
         throw new Error(errorMessage);
       }
 
+      // Store the token in localStorage for immediate authentication
+      localStorage.setItem("authToken", idToken);
+
+      // Store the homeId that was just created
+      if (responseData.homeId) {
+        localStorage.setItem("currentHomeId", responseData.homeId.toString());
+      }
+
       console.log("User registered:", userCredential.user);
       navigate("/otp-ver");
     } catch (error: any) {
@@ -79,6 +92,9 @@ const Register: React.FC = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      // Get Firebase ID token for backend authentication
+      const idToken = await user.getIdToken();
 
       // Extract name parts from displayName
       const nameParts = user.displayName?.split(" ") || ["", ""];
@@ -110,6 +126,14 @@ const Register: React.FC = () => {
           responseData.error ||
           "Failed to register user in database";
         throw new Error(errorMessage);
+      }
+
+      // Store the token in localStorage for immediate authentication
+      localStorage.setItem("authToken", idToken);
+
+      // Store the homeId that was just created
+      if (responseData.homeId) {
+        localStorage.setItem("currentHomeId", responseData.homeId.toString());
       }
 
       console.log("Google registration successful:", user);

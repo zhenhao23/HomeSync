@@ -72,12 +72,26 @@ const EnergyPage: React.FC = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        // Get the auth token from localStorage (assuming your app stores it there)
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+          throw new Error("Authentication token not found");
+        }
+
         const response = await fetch(
-          `http://localhost:5000/api/devices/energy/aggregated?timeRange=${timeRange}`
+          `http://localhost:5000/api/devices/energy/aggregated?timeRange=${timeRange}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
+
         if (!response.ok) {
           throw new Error("Failed to fetch aggregated data");
         }
+
         const data = await response.json();
         setAggregatedData(data);
         setError(null);

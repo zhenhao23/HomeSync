@@ -1,6 +1,7 @@
 //homeRoutes.ts
 import { Router, Request, Response } from "express";
 import prisma from "../prisma";
+import { verifyToken } from "../../firebase/middleware/authMiddleware";
 
 const router = Router();
 
@@ -9,7 +10,7 @@ router.get("/", (req: Request, res: Response) => {
   try {
     const getAllHomes = async () => {
       const homes = await prisma.smartHome.findMany({
-        select: { id: true, name: true },
+        select: { id: true, homeownerId: true, name: true },
       });
       return res.json(homes);
     };
@@ -59,6 +60,68 @@ router.post("/", (req: Request, res: Response) => {
     console.error("Error creating home:", error);
     res.status(500).json({
       error: "Failed to create home",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+router.get("/user", verifyToken, (req: Request, res: Response) => {
+  try {
+    const getUserHomes = async () => {
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const userId = req.user.id;
+
+      // Get all homes the user has access to through the HomeDweller table
+      const accessibleHomes = await prisma.homeDweller.findMany({
+        where: {
+          userId: userId,
+          status: "active", // Only include active statuses
+        },
+        include: {
+          home: {
+            select: {
+              id: true,
+              name: true,
+              invitationCode: true,
+              createdAt: true,
+              homeownerId: true, // Include to determine ownership
+            },
+          },
+        },
+        orderBy: {
+          home: {
+            createdAt: "desc", // Show newest homes first
+          },
+        },
+      });
+
+      // Transform the data to have consistent format
+      const homes = accessibleHomes.map((entry) => ({
+        id: entry.home.id,
+        name: entry.home.name,
+        invitationCode: entry.home.invitationCode,
+        createdAt: entry.home.createdAt,
+        isOwner: entry.home.homeownerId === userId,
+        permissionLevel: entry.permissionLevel,
+      }));
+
+      return res.json(homes);
+    };
+
+    getUserHomes().catch((error) => {
+      console.error("Failed to fetch homes:", error);
+      res.status(500).json({
+        error: "Failed to fetch homes",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    });
+  } catch (error) {
+    console.error("Failed to fetch homes:", error);
+    res.status(500).json({
+      error: "Failed to fetch homes",
       details: error instanceof Error ? error.message : "Unknown error",
     });
   }

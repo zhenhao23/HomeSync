@@ -17,6 +17,7 @@ const SignIn: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // Inside handleEmailSignIn function
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -51,11 +52,21 @@ const SignIn: React.FC = () => {
       // Store the token in localStorage
       localStorage.setItem("authToken", idToken);
 
+      // Store the default home ID if available
+      if (userData.defaultHomeId) {
+        localStorage.setItem(
+          "currentHomeId",
+          userData.defaultHomeId.toString()
+        );
+      }
+
       navigate("/home");
     } catch (error: any) {
       // Error handling...
     }
   };
+
+  // Similarly update the handleGoogleSignIn function with the same home ID storage logic
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -84,6 +95,14 @@ const SignIn: React.FC = () => {
 
       // Store the token in localStorage
       localStorage.setItem("authToken", idToken);
+
+      // Store the default home ID if available
+      if (userData.defaultHomeId) {
+        localStorage.setItem(
+          "currentHomeId",
+          userData.defaultHomeId.toString()
+        );
+      }
 
       navigate("/home");
     } catch (error: any) {

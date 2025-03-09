@@ -13,6 +13,7 @@ import deviceRoutes from "./routes/deviceRoutes";
 import roomRoutes from "./routes/roomRoutes";
 import homeRoutes from "./routes/homeRoutes";
 import authRoutes from "./routes/authRoutes";
+import dwellerRoutes from "./routes/dwellerRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -46,6 +47,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/devices", deviceRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/homes", homeRoutes);
+app.use("/api/dwellers", dwellerRoutes);
 app.use("/auth", authRoutes);
 
 // Error handling middleware

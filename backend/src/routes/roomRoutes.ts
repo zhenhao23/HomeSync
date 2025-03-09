@@ -10,74 +10,78 @@ import {
 const router = Router();
 
 // Updated interface to fix the type error
-interface RoomParams {
+interface RoomParams extends ParamsDictionary {
   id: string;
-  homeId?: string;
-  [key: string]: string | undefined; // Add index signature to satisfy ParamsDictionary constraint
+  homeId: string;
 }
 
 // Apply authentication to all room routes
-router.use((req: Request, res: Response, next: NextFunction) => {
-  verifyToken(req, res, next);
-});
-
-// Rest of your code remains the same...
+router.use(verifyToken);
 
 // GET all rooms for a specific home
-router.get("/home/:homeId", (req: Request, res: Response) => {
+router.get("/home/:homeId", verifyToken, (req: Request, res: Response) => {
   try {
-    const getAllRooms = async () => {
+    const getRooms = async () => {
       const homeId = parseInt(req.params.homeId);
 
-      // Create a middleware specific to this homeId
-      const homeAccessMiddleware = checkHomeAccess(homeId);
+      if (isNaN(homeId)) {
+        return res.status(400).json({ error: "Invalid home ID" });
+      }
 
-      // Return a promise that resolves when the middleware completes
-      const checkAccess = () =>
-        new Promise<void>((resolve, reject) => {
-          homeAccessMiddleware(req, res, () => resolve());
-        });
+      // Check if user has access to this home
+      const hasAccess = await prisma.homeDweller.findFirst({
+        where: {
+          homeId: homeId,
+          userId: req.user!.id,
+          status: "active",
+        },
+      });
 
-      try {
-        // Check access first
-        await checkAccess();
+      if (!hasAccess) {
+        return res
+          .status(403)
+          .json({ error: "You don't have access to this home" });
+      }
 
-        // If we get here, access is verified, get rooms data
-        const rooms = await prisma.room.findMany({
-          where: { homeId },
-          include: {
-            devices: {
-              include: {
-                controls: true,
-                triggers: true,
-              },
+      // User has access, fetch rooms
+      const rooms = await prisma.room.findMany({
+        where: { homeId },
+        include: {
+          devices: {
+            include: {
+              controls: true,
+              triggers: true,
             },
           },
-        });
-        return res.json(rooms);
-      } catch (error) {
-        // Error handling is done by the middleware
-        return;
-      }
+        },
+      });
+
+      return res.json(rooms);
     };
 
-    getAllRooms().catch((error) => {
+    getRooms().catch((error) => {
       console.error("Error fetching rooms:", error);
-      res.status(500).json({ error: "Failed to fetch rooms" });
+      res.status(500).json({
+        error: "Failed to fetch rooms",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
     });
   } catch (error) {
     console.error("Error fetching rooms:", error);
-    res.status(500).json({ error: "Failed to fetch rooms" });
+    res.status(500).json({
+      error: "Failed to fetch rooms",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 });
 
 // GET room by ID
-router.get("/:id", (req: Request<RoomParams>, res: Response) => {
+router.get("/:id", verifyToken, (req: Request<RoomParams>, res: Response) => {
   try {
-    const getRoomById = async () => {
+    const getRoom = async () => {
       const roomId = parseInt(req.params.id);
 
-      // First get the room to check its homeId
+      // First, get the room to check its homeId
       const roomInfo = await prisma.room.findUnique({
         where: { id: roomId },
         select: { homeId: true },
@@ -87,57 +91,61 @@ router.get("/:id", (req: Request<RoomParams>, res: Response) => {
         return res.status(404).json({ error: "Room not found" });
       }
 
-      // Create a middleware specific to this homeId
-      const homeAccessMiddleware = checkHomeAccess(roomInfo.homeId);
+      // Check if user has access to the room's home
+      const hasAccess = await prisma.homeDweller.findFirst({
+        where: {
+          homeId: roomInfo.homeId,
+          userId: req.user!.id,
+          status: "active",
+        },
+      });
 
-      // Return a promise that resolves when the middleware completes
-      const checkAccess = () =>
-        new Promise<void>((resolve, reject) => {
-          homeAccessMiddleware(req as any, res, () => resolve());
-        });
+      if (!hasAccess) {
+        return res
+          .status(403)
+          .json({ error: "You don't have access to this room" });
+      }
 
-      try {
-        // Check access first
-        await checkAccess();
-
-        // If we get here, access is verified, get full room data
-        const room = await prisma.room.findUnique({
-          where: { id: roomId },
-          include: {
-            devices: {
-              include: {
-                controls: true,
-                energyLogs: {
-                  orderBy: { timestamp: "desc" },
-                  take: 1,
-                },
+      // User has access, fetch the room
+      const room = await prisma.room.findUnique({
+        where: { id: roomId },
+        include: {
+          devices: {
+            include: {
+              controls: true,
+              energyLogs: {
+                orderBy: { timestamp: "desc" },
+                take: 1,
               },
             },
           },
-        });
+        },
+      });
 
-        if (!room) {
-          return res.status(404).json({ error: "Room not found" });
-        }
-
-        return res.json(room);
-      } catch (error) {
-        // Error handling is done by the middleware
-        return;
+      if (!room) {
+        return res.status(404).json({ error: "Room not found" });
       }
+
+      return res.json(room);
     };
 
-    getRoomById().catch((error) => {
+    getRoom().catch((error) => {
       console.error("Error fetching room:", error);
-      res.status(500).json({ error: "Failed to fetch room" });
+      res.status(500).json({
+        error: "Failed to fetch room",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
     });
   } catch (error) {
     console.error("Error fetching room:", error);
-    res.status(500).json({ error: "Failed to fetch room" });
+    res.status(500).json({
+      error: "Failed to fetch room",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 });
 
-// DELETE room by ID
+// DELETE room by ID - Simplify validation
 router.delete("/:id", (req: Request<RoomParams>, res: Response) => {
   try {
     const deleteRoom = async () => {
@@ -153,59 +161,57 @@ router.delete("/:id", (req: Request<RoomParams>, res: Response) => {
         return res.status(404).json({ error: "Room not found" });
       }
 
-      // Create a middleware specific to this homeId
-      const homeAccessMiddleware = checkHomeAccess(room.homeId);
+      // Check if user has access to the room's home
+      const hasAccess = await prisma.homeDweller.findFirst({
+        where: {
+          homeId: room.homeId,
+          userId: req.user!.id,
+          status: "active",
+        },
+      });
 
-      // Return a promise that resolves when the middleware completes
-      const checkAccess = () =>
-        new Promise<void>((resolve, reject) => {
-          homeAccessMiddleware(req as any, res, () => resolve());
-        });
-
-      try {
-        // Check access first
-        await checkAccess();
-
-        // If we get here, access is verified, proceed with deletion
-        // Get all device IDs in this room
-        const deviceIds = room.devices.map((device) => device.id);
-
-        // Delete in the correct order to respect foreign key constraints
-        // 1. First delete device controls
-        await prisma.deviceControl.deleteMany({
-          where: { deviceId: { in: deviceIds } },
-        });
-
-        // 2. Delete device triggers
-        await prisma.deviceTrigger.deleteMany({
-          where: { deviceId: { in: deviceIds } },
-        });
-
-        // 3. Delete energy logs
-        await prisma.energyConsumptionLog.deleteMany({
-          where: { deviceId: { in: deviceIds } },
-        });
-
-        // 4. Delete energy breakdowns
-        await prisma.energyDeviceBreakdown.deleteMany({
-          where: { deviceId: { in: deviceIds } },
-        });
-
-        // 5. Now we can delete the devices
-        await prisma.device.deleteMany({
-          where: { roomId: roomId },
-        });
-
-        // 6. Finally delete the room
-        const deletedRoom = await prisma.room.delete({
-          where: { id: roomId },
-        });
-
-        return res.json(deletedRoom);
-      } catch (error) {
-        // Error handling is done by the middleware
-        return;
+      if (!hasAccess) {
+        return res
+          .status(403)
+          .json({ error: "You don't have access to delete this room" });
       }
+
+      // If we get here, access is verified, proceed with deletion
+      // Get all device IDs in this room
+      const deviceIds = room.devices.map((device) => device.id);
+
+      // Delete in the correct order to respect foreign key constraints
+      // 1. First delete device controls
+      await prisma.deviceControl.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 2. Delete device triggers
+      await prisma.deviceTrigger.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 3. Delete energy logs
+      await prisma.energyConsumptionLog.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 4. Delete energy breakdowns
+      await prisma.energyDeviceBreakdown.deleteMany({
+        where: { deviceId: { in: deviceIds } },
+      });
+
+      // 5. Now we can delete the devices
+      await prisma.device.deleteMany({
+        where: { roomId: roomId },
+      });
+
+      // 6. Finally delete the room
+      const deletedRoom = await prisma.room.delete({
+        where: { id: roomId },
+      });
+
+      return res.json(deletedRoom);
     };
 
     deleteRoom().catch((error) => {
@@ -223,7 +229,7 @@ router.delete("/:id", (req: Request<RoomParams>, res: Response) => {
   }
 });
 
-// POST new room
+// POST new room - Simplify validation
 router.post("/", (req: Request, res: Response) => {
   try {
     const createRoom = async () => {
@@ -237,33 +243,31 @@ router.post("/", (req: Request, res: Response) => {
         });
       }
 
-      // Create a middleware specific to this homeId
-      const homeAccessMiddleware = checkHomeAccess(homeId);
+      // Check if user has access to this home
+      const hasAccess = await prisma.homeDweller.findFirst({
+        where: {
+          homeId: parseInt(homeId),
+          userId: req.user!.id,
+          status: "active",
+        },
+      });
 
-      // Return a promise that resolves when the middleware completes
-      const checkAccess = () =>
-        new Promise<void>((resolve, reject) => {
-          homeAccessMiddleware(req, res, () => resolve());
-        });
-
-      try {
-        // Check access first
-        await checkAccess();
-
-        // If we get here, access is verified, create the room
-        const newRoom = await prisma.room.create({
-          data: {
-            name,
-            iconType,
-            homeId: parseInt(homeId),
-          },
-        });
-
-        return res.status(201).json(newRoom);
-      } catch (error) {
-        // Error handling is done by the middleware
-        return;
+      if (!hasAccess) {
+        return res
+          .status(403)
+          .json({ error: "You don't have access to this home" });
       }
+
+      // If we get here, access is verified, create the room
+      const newRoom = await prisma.room.create({
+        data: {
+          name,
+          iconType,
+          homeId: parseInt(homeId),
+        },
+      });
+
+      return res.status(201).json(newRoom);
     };
 
     createRoom().catch((error) => {
@@ -282,14 +286,14 @@ router.post("/", (req: Request, res: Response) => {
   }
 });
 
-// PUT update room
+// PUT update room - Simplify validation
 router.put("/:id", (req: Request<RoomParams>, res: Response) => {
   try {
     const updateRoom = async () => {
       const roomId = parseInt(req.params.id);
       const { name, iconType, homeId } = req.body;
 
-      // Check if the room exists and get its homeId
+      // Check if the room exists
       const existingRoom = await prisma.room.findUnique({
         where: { id: roomId },
       });
@@ -298,59 +302,59 @@ router.put("/:id", (req: Request<RoomParams>, res: Response) => {
         return res.status(404).json({ error: "Room not found" });
       }
 
-      // Determine which homeId to check (if we're changing homes, check both)
-      const homeIdToCheck = homeId || existingRoom.homeId;
+      // Check if user has access to the current home
+      const hasCurrentAccess = await prisma.homeDweller.findFirst({
+        where: {
+          homeId: existingRoom.homeId,
+          userId: req.user!.id,
+          status: "active",
+        },
+      });
 
-      // Create a middleware specific to this homeId
-      const homeAccessMiddleware = checkHomeAccess(homeIdToCheck);
-
-      // Return a promise that resolves when the middleware completes
-      const checkAccess = () =>
-        new Promise<void>((resolve, reject) => {
-          homeAccessMiddleware(req as any, res, () => resolve());
-        });
-
-      try {
-        // Check access first
-        await checkAccess();
-
-        // If we're changing homeId and it's different, verify access to the new home too
-        if (homeId && homeId !== existingRoom.homeId) {
-          const newHomeAccessMiddleware = checkHomeAccess(homeId);
-
-          const checkNewHomeAccess = () =>
-            new Promise<void>((resolve, reject) => {
-              newHomeAccessMiddleware(req as any, res, () => resolve());
-            });
-
-          await checkNewHomeAccess();
-        }
-
-        // If we get here, access is verified, proceed with update
-        // Create an update object only with the fields that are provided
-        const updateData: any = {};
-        if (name !== undefined) updateData.name = name;
-        if (iconType !== undefined) updateData.iconType = iconType;
-        if (homeId !== undefined) updateData.homeId = parseInt(homeId);
-
-        // Update the room with only the provided fields
-        const updatedRoom = await prisma.room.update({
-          where: { id: roomId },
-          data: updateData,
-        });
-
-        return res.json(updatedRoom);
-      } catch (error) {
-        // Error handling is done by the middleware
-        return;
+      if (!hasCurrentAccess) {
+        return res
+          .status(403)
+          .json({ error: "You don't have access to this room" });
       }
+
+      // If changing the homeId, check access to the new home too
+      if (homeId && parseInt(homeId) !== existingRoom.homeId) {
+        const hasNewAccess = await prisma.homeDweller.findFirst({
+          where: {
+            homeId: parseInt(homeId),
+            userId: req.user!.id,
+            status: "active",
+          },
+        });
+
+        if (!hasNewAccess) {
+          return res
+            .status(403)
+            .json({ error: "You don't have access to the destination home" });
+        }
+      }
+
+      // If we get here, access is verified, proceed with update
+      // Create an update object only with the fields that are provided
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (iconType !== undefined) updateData.iconType = iconType;
+      if (homeId !== undefined) updateData.homeId = parseInt(homeId);
+
+      // Update the room with only the provided fields
+      const updatedRoom = await prisma.room.update({
+        where: { id: roomId },
+        data: updateData,
+      });
+
+      return res.json(updatedRoom);
     };
 
     updateRoom().catch((error) => {
       console.error("Error updating room:", error);
       res.status(500).json({
         error: "Failed to update room",
-        details: error.message,
+        details: error instanceof Error ? error.message : "Unknown error",
       });
     });
   } catch (error) {
