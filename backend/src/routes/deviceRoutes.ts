@@ -236,7 +236,33 @@ router.post("/", (req: Request, res: Response) => {
         },
       });
 
-      return res.status(201).json(newDevice);
+      // Create default controls based on device type
+      await createDefaultControls(newDevice.id, type.toLowerCase());
+
+      // Create default triggers based on device type
+      await createDefaultTriggers(newDevice.id, type.toLowerCase());
+
+      // Fetch the complete device with its related data
+      const deviceWithRelations = await prisma.device.findUnique({
+        where: { id: newDevice.id },
+        include: {
+          controls: true,
+          triggers: true,
+          room: {
+            include: {
+              home: {
+                select: {
+                  id: true,
+                  name: true,
+                  homeownerId: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return res.status(201).json(deviceWithRelations);
     };
 
     createDevice().catch((error) => {
@@ -254,6 +280,148 @@ router.post("/", (req: Request, res: Response) => {
     });
   }
 });
+
+// Helper function to create default controls based on device type
+async function createDefaultControls(deviceId: number, deviceType: string) {
+  type ControlConfig = {
+    controlType: string;
+    currentValue: number;
+    minValue: number;
+    maxValue: number;
+  }[];
+
+  const controlsConfig: Record<string, ControlConfig> = {
+    light: [
+      {
+        controlType: "percentage",
+        currentValue: 0,
+        minValue: 0,
+        maxValue: 100,
+      },
+    ],
+    aircond: [
+      {
+        controlType: "temperature",
+        currentValue: 22,
+        minValue: 16,
+        maxValue: 30,
+      },
+      {
+        controlType: "FAN_SPEED",
+        currentValue: 3,
+        minValue: 1,
+        maxValue: 5,
+      },
+    ],
+    petfeeder: [
+      {
+        controlType: "percentage",
+        currentValue: 0,
+        minValue: 0,
+        maxValue: 100,
+      },
+    ],
+    irrigation: [
+      {
+        controlType: "waterFlow",
+        currentValue: 0,
+        minValue: 0,
+        maxValue: 10,
+      },
+    ],
+    // Default for other device types
+    default: [
+      {
+        controlType: "percentage",
+        currentValue: 0,
+        minValue: 0,
+        maxValue: 100,
+      },
+    ],
+  };
+
+  const controls = controlsConfig[deviceType] || controlsConfig.default;
+
+  for (const control of controls) {
+    await prisma.deviceControl.create({
+      data: {
+        deviceId,
+        ...control,
+      },
+    });
+  }
+}
+
+// Helper function to create default triggers based on device type
+async function createDefaultTriggers(deviceId: number, deviceType: string) {
+  type TriggerConfig = {
+    triggerType: string;
+    conditionOperator: string;
+    isActive: boolean;
+    featurePeriod: string;
+    featureDetail: string;
+  }[];
+
+  const triggersConfig: Record<string, TriggerConfig> = {
+    light: [
+      {
+        triggerType: "Auto Lighting",
+        conditionOperator: "Infrared Detection",
+        isActive: false,
+        featurePeriod: "Daily",
+        featureDetail: "8:00pm to 7:00am",
+      },
+    ],
+    aircond: [
+      {
+        triggerType: "Auto AirCond",
+        conditionOperator: "Turn on when room temp > 25°C",
+        isActive: false,
+        featurePeriod: "Daily",
+        featureDetail: "9:00pm to 4:00am",
+      },
+    ],
+    petfeeder: [
+      {
+        triggerType: "Auto Feeding",
+        conditionOperator: "Time-based",
+        isActive: false,
+        featurePeriod: "Daily",
+        featureDetail: "8:00am, 12:00pm, 7:00pm",
+      },
+    ],
+    irrigation: [
+      {
+        triggerType: "Auto Irrigation",
+        conditionOperator: "Soil Moisture Sensor",
+        isActive: false,
+        featurePeriod: "Every Monday",
+        featureDetail: "8:00am (10 minutes)",
+      },
+    ],
+    // Default for other device types
+    default: [
+      {
+        triggerType: "Auto Schedule",
+        conditionOperator: "Time-based",
+        isActive: false,
+        featurePeriod: "Daily",
+        featureDetail: "8:00am to 8:00pm",
+      },
+    ],
+  };
+
+  const triggers = triggersConfig[deviceType] || triggersConfig.default;
+
+  for (const trigger of triggers) {
+    await prisma.deviceTrigger.create({
+      data: {
+        deviceId,
+        ...trigger,
+      },
+    });
+  }
+}
 
 // DELETE device by ID - secured with authentication and home access check
 router.delete("/:id", (req: Request<DeviceParams>, res: Response) => {

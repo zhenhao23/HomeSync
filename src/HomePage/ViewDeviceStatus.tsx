@@ -25,12 +25,20 @@ interface ViewDeviceStatusProps {
 // Add the API helper function
 const removeDeviceFromAPI = async (deviceId: number) => {
   try {
+    // Get auth token from localStorage
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      throw new Error("Authentication token not found. Please log in again.");
+    }
+
     const response = await fetch(
       `http://localhost:5000/api/devices/${deviceId}`,
       {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add the authorization header
         },
       }
     );
@@ -48,10 +56,18 @@ const removeDeviceFromAPI = async (deviceId: number) => {
 // Add this function at the top of your file, alongside the removeDeviceFromAPI function
 const updateRoomTitleAPI = async (roomId: number, newTitle: string) => {
   try {
+    // Get auth token from localStorage
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      throw new Error("Authentication token not found. Please log in again.");
+    }
+
     const response = await fetch(`http://localhost:5000/api/rooms/${roomId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Add the authorization header
       },
       body: JSON.stringify({ name: newTitle }),
     });

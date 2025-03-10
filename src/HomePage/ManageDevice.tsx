@@ -55,12 +55,20 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
     controlID: number
   ) => {
     try {
+      // Get auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
       const response = await fetch(
         `http://localhost:5000/api/devices/${deviceId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Add the authorization header
           },
           body: JSON.stringify({
             controls: [
@@ -367,6 +375,13 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
     const deviceId = getDevice().device_id;
 
     try {
+      // Get auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
       // Make API call to update the device title
       const response = await fetch(
         `http://localhost:5000/api/devices/${deviceId}`,
@@ -374,6 +389,7 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Add the authorization header
           },
           body: JSON.stringify({
             displayName: tempTitle,

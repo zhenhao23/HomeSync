@@ -1085,6 +1085,7 @@ const HomePage: React.FC = () => {
           setActiveContent={setActiveContent}
           devicesState={devicesState}
           setDevicesState={setDevicesState}
+          fetchData={fetchData} // Pass the fetchData function
         />
       ) : activeContent === "manageDevice" ? (
         <ManageDevice

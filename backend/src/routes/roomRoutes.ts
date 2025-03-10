@@ -15,6 +15,49 @@ interface RoomParams extends ParamsDictionary {
   homeId: string;
 }
 
+// Development/debug route - Get rooms without authentication
+// Place this BEFORE applying global authentication
+router.get("/debug/home/:homeId", (req: Request, res: Response) => {
+  try {
+    const getRooms = async () => {
+      const homeId = parseInt(req.params.homeId);
+
+      if (isNaN(homeId)) {
+        return res.status(400).json({ error: "Invalid home ID" });
+      }
+
+      // Fetch rooms without authentication check
+      const rooms = await prisma.room.findMany({
+        where: { homeId },
+        include: {
+          devices: {
+            include: {
+              controls: true,
+              triggers: true,
+            },
+          },
+        },
+      });
+
+      return res.json(rooms);
+    };
+
+    getRooms().catch((error) => {
+      console.error("Error fetching rooms (debug):", error);
+      res.status(500).json({
+        error: "Failed to fetch rooms",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    });
+  } catch (error) {
+    console.error("Error fetching rooms (debug):", error);
+    res.status(500).json({
+      error: "Failed to fetch rooms",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 // Apply authentication to all room routes
 router.use(verifyToken);
 

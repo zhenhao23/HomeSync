@@ -31,6 +31,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       status: false,
       swiped: false,
       devData: {
+        id: 0,
         iconImage: managePetfeeder,
         percentage: 60,
         celsius: 0,
@@ -54,6 +55,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       status: false,
       swiped: false,
       devData: {
+        id: 1,
         iconImage: manageAircond,
         percentage: 0,
         celsius: 24,
@@ -77,6 +79,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       status: false,
       swiped: false,
       devData: {
+        id: 2,
         iconImage: manageLamp,
         percentage: 40,
         celsius: 0,

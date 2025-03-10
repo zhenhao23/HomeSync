@@ -22,6 +22,7 @@ interface DeviceSettingProps {
   setActiveContent: (content: string) => void;
   devicesState: Device[];
   setDevicesState: React.Dispatch<React.SetStateAction<Device[]>>;
+  fetchData: () => Promise<void>; // Add this property
 }
 
 // Function to map front-end device icons to API-compatible type
@@ -30,7 +31,8 @@ const mapIconToType = (iconTitle: string): string => {
     Lamp: "light",
     "Air Conditioner": "aircond",
     Sprinkler: "irrigation",
-    Cooker: "petfeeder",
+    "Pet Feeder": "petfeeder", // Change this line from "petfeeder" to match your backend
+    Cooker: "petfeeder", // Add this line if "Cooker" is also used for pet feeders
     "Smart Lock": "smart_lock",
     Fan: "fan",
     TV: "tv",
@@ -53,10 +55,18 @@ const addDeviceToAPI = async (
   try {
     const type = mapIconToType(iconType);
 
+    // Get auth token from localStorage
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      throw new Error("Authentication token not found. Please log in again.");
+    }
+
     const response = await fetch("http://localhost:5000/api/devices", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Add the authorization header
       },
       body: JSON.stringify({
         roomId,
@@ -86,6 +96,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
   setActiveContent,
   devicesState,
   setDevicesState,
+  fetchData,
 }) => {
   // List of available device icons
   const icons: Icon[] = [
@@ -223,6 +234,8 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
 
       // Update the devicesState with the new device
       setDevicesState(updatedDevicesState);
+
+      await fetchData(); // Refresh all data from backend
 
       // Navigate back to view device status page
       setActiveContent("viewDeviceStatus");
