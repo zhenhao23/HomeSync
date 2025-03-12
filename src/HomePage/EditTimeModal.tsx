@@ -1,14 +1,42 @@
+import { useState } from "react";
 import TimePickerDropdown from "./TimePickerDropdown";
 
 interface EditTimeModalProps {
-  handleConfirm: () => void;
-  handleCancel: () => void;
+  handleTurnOnChange: (time: string) => void;
+  handleTurnOffChange: (time: string) => void;
+  turnType: "turnOn" | "turnOff";
+  toggleEditTime: () => void;
 }
 
-const EditTitleModal: React.FC<EditTimeModalProps> = ({
-  handleConfirm,
-  handleCancel,
+const EditTimeModal: React.FC<EditTimeModalProps> = ({
+  handleTurnOnChange,
+  handleTurnOffChange,
+  turnType,
+  toggleEditTime,
 }) => {
+  // Get current time
+  const now = new Date();
+  const currentHour = now.getHours().toString().padStart(2, "0");
+  const currentMinute = now.getMinutes().toString().padStart(2, "0");
+
+  const [selectedHour, setSelectedHour] = useState(currentHour);
+  const [selectedMinute, setSelectedMinute] = useState(currentMinute);
+
+  const handleCancelEditTime = () => {
+    toggleEditTime(); // Close modal
+  }
+
+  // Function to confirm edited time
+  const handleConfirmEditTime = () => {
+    const time = `${selectedHour}:${selectedMinute}`;
+    if (turnType === "turnOn") {
+      handleTurnOnChange(time);
+    } else if (turnType === "turnOff") {
+      handleTurnOffChange(time);
+    }
+    toggleEditTime(); // Close modal
+  };
+
   return (
     <div
       style={{
@@ -36,7 +64,12 @@ const EditTitleModal: React.FC<EditTimeModalProps> = ({
       >
         <h4 style={{ color: "#000000", fontSize: "20px" }}>Edit Time</h4>
         <div>
-          <TimePickerDropdown />
+          <TimePickerDropdown 
+          selectedHour={selectedHour}
+          setSelectedHour={setSelectedHour}
+          selectedMinute={selectedMinute}
+          setSelectedMinute={setSelectedMinute}
+          />
         </div>
 
         <div
@@ -47,7 +80,7 @@ const EditTitleModal: React.FC<EditTimeModalProps> = ({
         ></div>
         <div className="p-1 d-flex justify-content-around">
           <button
-            onClick={handleConfirm}
+            onClick={handleCancelEditTime}
             style={{
               backgroundColor: "#ffffff",
               color: "#4285f4",
@@ -67,7 +100,7 @@ const EditTitleModal: React.FC<EditTimeModalProps> = ({
             }}
           ></div>
           <button
-            onClick={handleCancel}
+            onClick={handleConfirmEditTime}
             style={{
               backgroundColor: "#ffffff",
               color: "#f34235",
@@ -86,4 +119,4 @@ const EditTitleModal: React.FC<EditTimeModalProps> = ({
   );
 };
 
-export default EditTitleModal;
+export default EditTimeModal;

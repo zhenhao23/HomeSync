@@ -1,0 +1,86 @@
+
+.logo-border {
+    border: 1px dotted white;
+    background-color: transparent;
+    width: 67px;
+    height: 67px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-border .logo-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #D3C1A3;
+    width: 55px;
+    height: 55px;
+  }
+
+  .logo-core {
+    background-color: white;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Small laptop size */
+@media (min-width: 1280px) { 
+    .logo-border {
+      width: 70px;
+      height: 70px;
+    }
+
+    .logo-border .logo-inner {
+      width: 58px;
+      height: 58px;
+    }
+
+    .logo-core {
+        width: 48px;
+        height: 48px;
+      }
+}
+
+ /* Medium laptop size */
+ @media (min-width: 1440px) { 
+  .logo-border { 
+    width: 80px;
+    height: 80px;
+  }
+
+  .logo-border .logo-inner {
+      width: 68px;
+      height: 68px;
+    }
+
+  .logo-core {
+      width: 58px;
+      height: 58px;
+  }
+ }
+
+ /* Large laptop size */
+@media (min-width: 1920px) {
+  .logo-border { 
+    width: 90px;
+    height: 90px;
+  }
+
+  .logo-border .logo-inner {
+      width: 75px;
+      height: 75px;
+    }
+
+  .logo-core {
+      width: 62px;
+      height: 62px;
+  }
+}
+
+
+
+ 

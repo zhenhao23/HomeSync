@@ -1,4 +1,4 @@
-import { FaPen, FaPlus, FaTrashAlt } from "react-icons/fa";
+import { FaMinusCircle, FaPen, FaPlus, FaTrashAlt } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { Device, Room } from "./HomePage";
 import profile1Icon from "../assets/viewDeviceProfile/profile1.svg";
@@ -6,6 +6,10 @@ import profile2Icon from "../assets/viewDeviceProfile/profile2.svg";
 import { useState } from "react";
 import EditTitleModal from "./EditTitleModal";
 import RemoveModal from "./RemoveModal";
+import "./ViewDeviceStatus.css";
+import DeviceOverview from "./DeviceOverview";
+import useWindowSize from "./Layout";
+import NoDeviceMessage from "./NoDeviceMessage";
 
 interface ViewDeviceStatusProps {
   getRoom: () => Room;
@@ -20,6 +24,14 @@ interface ViewDeviceStatusProps {
   setActiveContent: (content: string) => void;
   getSelectedDeviceStatus: (roomId: number, deviceId: number) => boolean;
   handleToggle: (roomId: number, deviceId: number) => void;
+  swipedDevice: string | null;
+  setSwipedDevice: React.Dispatch<React.SetStateAction<string | null>>;
+  removeDevice: Device | null;
+  setRemoveDevice: React.Dispatch<React.SetStateAction<Device | null>>;
+  handleRemoveDevice: () => void;
+  handleDeviceCancel: () => void;
+  isSwiping: boolean;
+  setIsSwiping: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Add the API helper function
@@ -97,19 +109,21 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
   setActiveContent,
   getSelectedDeviceStatus,
   handleToggle,
+  swipedDevice,
+  setSwipedDevice,
+  removeDevice,
+  setRemoveDevice,
+  handleRemoveDevice,
+  handleDeviceCancel,
+  isSwiping,
+  setIsSwiping,
 }) => {
   const goBackToHomePage = () => {
     setActiveContent("home");
   };
 
-  // State to store the swipe status for a device
-  const [swipedDevice, setSwipedDevice] = useState<string | null>(null);
   // state to track the startX position when user swipe
   const [startX, setStartX] = useState(0);
-  // State to track the currently selected/swiped device to remove
-  const [removeDevice, setRemoveDevice] = useState<Device | null>(null);
-  // State to track if a delete operation is in progress
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // state to track if user is editing title
   const [isEditing, setIsEditing] = useState(false); // State to manage edit mode or exit mode
@@ -124,57 +138,6 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
     setEditingType("room"); // Set to "room" when editing a room
     setTempTitle(getRoom().title); // Set temp title to the current room title
   };
-
-  // Function to remove device if swiped - Updated with API integration
-  const handleRemoveDevice = async () => {
-    if (removeDevice) {
-      setIsDeleting(true);
-
-      try {
-        // Call the API to remove the device
-        await removeDeviceFromAPI(removeDevice.device_id);
-
-        // If API call succeeds, update the local state
-        // Remove the device from the devicesState based on removeDevice's device_id
-        setDevicesState((prevDevicesState) =>
-          prevDevicesState.filter(
-            (device) => device.device_id !== removeDevice.device_id
-          )
-        );
-
-        // Update the room's devices count in roomsState
-        setRoomsState((prevRoomsState) =>
-          prevRoomsState.map((room) =>
-            room.id === removeDevice.room_id
-              ? { ...room, devices: Math.max(0, room.devices - 1) }
-              : room
-          )
-        );
-      } catch (error) {
-        // Handle errors - you might want to show an error message to the user
-        console.error("Failed to remove device:", error);
-        // You could add code here to show an error message to the user
-      } finally {
-        setIsDeleting(false);
-        setSwipedDevice(null);
-        setRemoveDevice(null); // Reset after removal attempt, whether successful or not
-      }
-    }
-  };
-
-  // function to handle cancel action modal in viewDeviceStatus page
-  const handleDeviceCancel = () => {
-    if (removeDevice) {
-      // Reset the swiped state (un-swipe)
-      setSwipedDevice(null);
-    }
-
-    // Reset the removeCollab state to null
-    setRemoveDevice(null);
-  };
-
-  // State to track if a swipe is in progress
-  const [isSwiping, setIsSwiping] = useState(false);
 
   // Handle touch start (when swiping in device begins)
   const handleTouchStart = (e: React.TouchEvent, deviceId: number) => {
@@ -265,10 +228,28 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
     setActiveContent("manageDevice");
   };
 
+  const isLaptop = useWindowSize();
+
+  // Filter devices for the selected room
+  const filteredDevices = devicesState.filter(
+    (device) => device.room_id === getRoom().id
+  );
+
+  // state to track if user is editing device in view device status page
+  const [isDeviceEditing, setRoomEditing] = useState(false);
+
+  // Toggle edit mode when editing device in view device status page
+  const handleDeviceEdit = () => {
+    setRoomEditing((prev) => !prev); // Toggle edit mode
+  };
+
   return (
     <>
       {/* Container for Back Button and Title */}
-      <div style={{ position: "relative", top: "60px" }}>
+      <div
+        style={{ position: "relative", top: "60px" }}
+        className="room-title-pen"
+      >
         {/* Back Button */}
         <div
           onClick={goBackToHomePage}
@@ -323,175 +304,249 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
       </div>
 
       {/* White container */}
-      <div
-        className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
-        style={{
-          top: "13%",
-          height: "100%",
-          borderRadius: "18px",
-        }}
-      >
-        <div className="d-flex justify-content-between p-4">
+      <div className="position-fixed purple-container">
+        {isLaptop ? (
           <div
-            className="text-start"
-            onClick={(e) => {
-              if (swipedDevice === getDevice().device_id.toString()) {
-                e.stopPropagation(); // Prevent device selection in swipe mode
-              } else {
-                setActiveContent("viewCollaborators"); // Proceed to select the device if not swiped
-              }
-            }}
+            style={{ width: "100%" }}
+            className="d-flex justify-content-between align-items-center p-4 pb-1"
           >
-            <img src={profile1Icon} className="img-fluid mb-1 pe-2" />
-            <img src={profile2Icon} className="img-fluid mb-1" />
-            <IoIosArrowForward size={22} color="#748188" />
+            <div className="col-4 text-start device-edit-div">
+              <h5
+                className="mb-0 ms-3 fw-semibold device-edit"
+                onClick={handleDeviceEdit}
+              >
+                {isDeviceEditing ? "Done" : "Edit"}
+              </h5>
+            </div>
+            <div className="col-4 text-center d-flex justify-content-center align-items-center">
+              <h3 className="fw-bold me-2 room-device-title">
+                {getRoom().title}
+              </h3>
+              {isDeviceEditing ? (
+                <FaPen
+                  className="mb-1"
+                  size={18}
+                  color="white"
+                  onClick={(e) => {
+                    if (swipedDevice === getDevice().device_id.toString()) {
+                      e.stopPropagation(); // Prevent device selection in swipe mode
+                    } else {
+                      handleEditRoomClick(); // Proceed to select the device if not swiped
+                    }
+                  }}
+                  style={{ cursor: "pointer" }}
+                />
+              ) : (
+                <>
+                  <div onClick={() => setActiveContent("viewCollaborators")}>
+                    <img
+                      src={profile1Icon}
+                      className="img-fluid mb-1 pe-2 collab-image"
+                    />
+                    <img
+                      src={profile2Icon}
+                      className="img-fluid mb-1 pe-2 collab-image"
+                    />
+                    <IoIosArrowForward size={22} color="#f5f5f5" />
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="col-4 text-end add-device-container">
+              <button
+                className="me-2 btn rounded-circle p-2 add-device-div"
+                disabled={isDeviceEditing}
+                onClick={(e) => {
+                  if (swipedDevice === getDevice().device_id.toString()) {
+                    e.stopPropagation(); // Prevent device selection in swipe mode
+                  } else {
+                    setActiveContent("addDevice"); // Proceed to select the device if not swiped
+                  }
+                }}
+              >
+                <FaPlus className="add-device-button" />
+              </button>
+            </div>
           </div>
-          <div className="text-end d-flex justify-content-end">
-            <button
-              className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
-              style={{
-                backgroundColor: "#204160",
-                width: "30px",
-                height: "30px",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-              }}
-              onClick={(e) => {
-                if (swipedDevice === getDevice().device_id.toString()) {
-                  e.stopPropagation(); // Prevent device selection in swipe mode
-                } else {
-                  setActiveContent("addDevice"); // Proceed to select the device if not swiped
-                }
-              }}
-            >
-              <FaPlus color="white" />
-            </button>
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className="p-4 collab-image-div">
+              <div
+                className="text-start"
+                onClick={(e) => {
+                  if (swipedDevice === getDevice().device_id.toString()) {
+                    e.stopPropagation(); // Prevent device selection in swipe mode
+                  } else {
+                    setActiveContent("viewCollaborators"); // Proceed to select the device if not swiped
+                  }
+                }}
+              >
+                <img src={profile1Icon} className="img-fluid mb-1 pe-2" />
+                <img src={profile2Icon} className="img-fluid mb-1" />
+                <IoIosArrowForward size={22} color="#748188" />
+              </div>
+              <div className="text-end d-flex justify-content-end">
+                <button
+                  className="me-2 btn rounded-circle p-2 add-device-div"
+                  style={{}}
+                  onClick={(e) => {
+                    if (swipedDevice === getDevice().device_id.toString()) {
+                      e.stopPropagation(); // Prevent device selection in swipe mode
+                    } else {
+                      setActiveContent("addDevice"); // Proceed to select the device if not swiped
+                    }
+                  }}
+                >
+                  <FaPlus className="add-device-button" />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Devices */}
-        <div
-          className="d-flex flex-column overflow-auto"
-          style={{ height: "calc(100% - 260px)" }}
-        >
-          {/* Get the current room */}
-          {getRoom() !== null && (
-            <div key={getRoom().id}>
-              {/* Check if there are any devices for this room */}
-              {devicesState.filter((device) => device.room_id === getRoom().id)
-                .length > 0 ? (
-                // Filter devices for the current room and map over them
-                devicesState
-                  .filter((device) => device.room_id === getRoom().id)
-                  .map((device) => (
+        {isLaptop ? (
+          <div className="row laptop-container pt-4">
+            {filteredDevices.length > 0 ? (
+              filteredDevices.map((device) => (
+                <div
+                  className="col-6 laptop-devices"
+                  style={{ position: "relative" }}
+                >
+                  {isDeviceEditing ? (
                     <div
-                      key={device.device_id}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100vw",
+                        pointerEvents: isDeviceEditing ? "auto" : "none",
+                        opacity: 1,
                       }}
                     >
-                      <div
-                        className="p-3 mb-4 d-flex justify-content-between"
-                        style={{
-                          backgroundColor: "#f5f5f5",
-                          borderRadius: "16px",
-                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-                          width: "calc(100% - 15%)",
-                          height: "76px",
-                          transition: "transform 0.3s ease",
-                          transform:
-                            swipedDevice === device.device_id.toString() &&
-                            isSwiping
-                              ? "translateX(-50px)"
-                              : "translateX(0)",
+                      {/* White Background Behind Minus Button */}
+                      <div className="edit-device-white"></div>
+                      <FaMinusCircle
+                        color="red"
+                        size={18}
+                        className="d-flex flex-start edit-device-minus-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRemoveDevice(device);
                         }}
-                        onTouchStart={(e) =>
-                          handleTouchStart(e, device.device_id)
-                        }
-                        onTouchMove={(e) =>
-                          handleTouchMove(e, device.device_id)
-                        }
-                        onClick={() => handleSelectDevice(device)}
-                      >
-                        <div className="d-flex align-items-center">
-                          <img src={device.image} className="img-fluid" />
-                          <span className="ms-3">{device.title}</span>
-                        </div>
-                        <div
-                          className="text-end d-flex align-items-center"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <label className="switch">
-                            <input
-                              type="checkbox"
-                              checked={getSelectedDeviceStatus(
-                                getRoom().id,
-                                device.device_id
-                              )}
-                              onChange={() => {
-                                handleToggle(getRoom().id, device.device_id);
-                              }}
-                            />
-                            <span className="slider round"></span>
-                            <span className="on-text">ON</span>
-                            <span className="off-text">OFF</span>
-                          </label>
-                        </div>
-                      </div>
+                      />
+                    </div>
+                  ) : null}
 
-                      <div>
-                        {swipedDevice === device.device_id.toString() &&
-                          isSwiping && (
-                            <button
-                              style={{
-                                backgroundColor: "red",
-                                padding: "10px",
-                                display: "flex",
-                                borderRadius: "50%",
-                                border: "none",
-                                transform: "translate(-50%, -30%)",
-                              }}
-                              disabled={isDeleting}
-                            >
-                              {isDeleting &&
-                              removeDevice?.device_id === device.device_id ? (
-                                <div
-                                  className="spinner-border spinner-border-sm"
-                                  role="status"
-                                >
-                                  <span className="visually-hidden">
-                                    Loading...
-                                  </span>
-                                </div>
-                              ) : (
+                  <DeviceOverview
+                    setActiveContent={setActiveContent}
+                    getDevice={() => device}
+                    getSelectedDeviceStatus={getSelectedDeviceStatus}
+                    handleToggle={handleToggle}
+                    getRoom={getRoom}
+                    setDevicesState={setDevicesState}
+                    setDevice={setDevice}
+                    devicesState={devicesState}
+                  />
+                  <div className="view-more">
+                    <p
+                      style={{ color: "white", margin: 0 }}
+                      onClick={() => {
+                        setActiveContent("manageDevice");
+                        setDevice(device);
+                      }}
+                    >
+                      View More
+                    </p>
+                    <IoIosArrowForward size={22} color="#FFFFFF" />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <NoDeviceMessage />
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="dev-container">
+              {/* Render devices for the selected room  */}
+              {getRoom() !== null && roomsState[getRoom().id] && (
+                <div key={getRoom().id}>
+                  {roomsState[getRoom().id].devices != 0 ? (
+                    // Filter devices for the current room and map over them
+                    filteredDevices.map((device) => (
+                      <div className="devices-container" key={device.device_id}>
+                        <div
+                          className="p-3 mb-4 devices-div"
+                          style={{
+                            transform:
+                              swipedDevice === device.device_id.toString() &&
+                              isSwiping
+                                ? "translateX(-50px)"
+                                : "translateX(0)",
+                          }}
+                          onTouchStart={(e) =>
+                            handleTouchStart(e, device.device_id)
+                          }
+                          onTouchMove={(e) =>
+                            handleTouchMove(e, device.device_id)
+                          }
+                          onClick={() => handleSelectDevice(device)}
+                        >
+                          <div className="d-flex align-items-center">
+                            <img src={device.image} className="img-fluid" />
+                            <span className="ms-3">{device.title}</span>
+                          </div>
+                          <div
+                            className="text-end d-flex align-items-center"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <label className="switch">
+                              <input
+                                type="checkbox"
+                                checked={getSelectedDeviceStatus(
+                                  getRoom().id,
+                                  device.device_id
+                                )} // Access the state for the specific device
+                                onChange={() => {
+                                  handleToggle(getRoom().id, device.device_id); // Toggle state for the specific device
+                                }}
+                              />
+                              <span className="slider round"></span>
+                              <span className="on-text">ON</span>
+                              <span className="off-text">OFF</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div>
+                          {swipedDevice === device.device_id.toString() &&
+                            isSwiping && (
+                              <button
+                                style={{
+                                  backgroundColor: "red",
+                                  padding: "10px",
+                                  display: "flex",
+                                  borderRadius: "50%",
+                                  border: "none",
+                                  transform: "translate(-50%, -30%)",
+                                }}
+                              >
                                 <FaTrashAlt
                                   color="white"
                                   size={18}
                                   onClick={() => setRemoveDevice(device)}
                                 />
-                              )}
-                            </button>
-                          )}
+                              </button>
+                            )}
+                        </div>
                       </div>
-                    </div>
-                  ))
-              ) : (
-                <div
-                  className="d-flex justify-content-center align-items-center"
-                  style={{ height: "50vh" }}
-                >
-                  <p className="fw-semibold" style={{ fontSize: "15px" }}>
-                    No devices added yet.
-                    <br />
-                    Tap '+' to get started!
-                  </p>
+                    ))
+                  ) : (
+                    <NoDeviceMessage />
+                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
 
       {/* Edit Title */}

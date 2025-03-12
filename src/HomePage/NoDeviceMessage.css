@@ -1,0 +1,36 @@
+.no-device-div {
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.no-device-message {
+    font-size: 15px; 
+    font-weight: 500;
+}
+
+@media (min-width: 1280px) {
+    .no-device-div {
+        height: 100%;
+    }
+
+    .no-device-message {
+        font-size: 17px; 
+        color: #ffffff;
+    }
+}
+
+@media (min-width: 1440px) {
+
+    .no-device-message {
+        font-size: 18px; 
+    }
+}
+
+@media (min-width: 1920px) {
+
+    .no-device-message {
+        font-size: 20px; 
+    }
+}

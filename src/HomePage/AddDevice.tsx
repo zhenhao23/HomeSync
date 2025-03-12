@@ -8,6 +8,7 @@ import airCondIcon from "../assets/viewDeviceStatus/aircond3.svg";
 import manageAircond from "../assets/manageDevice/aircond2.svg";
 import lampIcon from "../assets/devicesSettingIcon/lamp.svg";
 import manageLamp from "../assets/manageDevice/light.svg";
+import "./AddDevice.css";
 
 interface AddDeviceProps {
   addSelectDevice: Device | null;
@@ -37,14 +38,22 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         celsius: 0,
         waterFlow: 0,
       },
-      content: {
-        feature: "Every Monday",
-        smartFeature: "8:00am",
-        toggle1: false,
-        featurePeriod: "Daily",
-        featureDetail: "8:00am, 12:00pm, 7:00pm",
-        toggle2: false,
-      },
+      content: [
+        {
+          feature_id: 0,
+          feature: "Every Monday",
+          label: "9:00am",
+          status: false,
+          isUserAdded: true,
+        },
+        {
+          feature_id: 1,
+          feature: "Daily",
+          label: "8:00am, 12:00pm, 7:00pm",
+          status: false,
+          isUserAdded: true,
+        },
+      ],
     },
     {
       device_id: 1,
@@ -61,14 +70,22 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         celsius: 24,
         waterFlow: 0,
       },
-      content: {
-        feature: "Auto AirCond",
-        smartFeature: "Turn on when room temp > 25°C",
-        toggle1: false,
-        featurePeriod: "Daily",
-        featureDetail: "9:00pm to 4:00am",
-        toggle2: false,
-      },
+      content: [
+        {
+          feature_id: 2,
+          feature: "Auto Air Cond",
+          label: "Turn on when room temp > 25°C",
+          status: false,
+          isUserAdded: false,
+        },
+        {
+          feature_id: 3,
+          feature: "Daily",
+          label: "9:00am to 4:00pm",
+          status: false,
+          isUserAdded: true,
+        },
+      ],
     },
     {
       device_id: 2,
@@ -85,14 +102,22 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         celsius: 0,
         waterFlow: 0,
       },
-      content: {
-        feature: "Auto Lighting",
-        smartFeature: "Infrared Detection",
-        toggle1: false,
-        featurePeriod: "Daily",
-        featureDetail: "8:00pm to 7:00am",
-        toggle2: false,
-      },
+      content: [
+        {
+          feature_id: 4,
+          feature: "Auto Lighting",
+          label: "Infrared Detection",
+          status: false,
+          isUserAdded: false,
+        },
+        {
+          feature_id: 5,
+          feature: "Daily",
+          label: "8:00am to 7:00pm",
+          status: false,
+          isUserAdded: true,
+        },
+      ],
     },
   ];
 
@@ -136,138 +161,101 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   return (
     <>
       {/* Container for Back Button and Title, button */}
-      <div
-        className="d-flex justify-content-between"
-        style={{ width: "100%", position: "relative", top: "60px" }}
-      >
-        {/* Back Button */}
-        <div
-          onClick={() => {
-            setAddSelectDevice(null);
-            handleButtonClick("viewDeviceStatus");
-          }}
-          style={{
-            padding: "8px 15px",
-            cursor: "pointer",
-            position: "absolute",
-          }}
-        >
-          <IoIosArrowBack size={22} color="#FFFFFF" />
-          <span
-            style={{
-              marginLeft: "8px",
-              color: "#FFFFFF",
-              fontSize: "16px",
-            }}
-          >
-            Back
-          </span>
-        </div>
-
-        {/* Room Title */}
-        <div className="d-flex col-12 justify-content-center text-center">
-          {/* Display the title normally when not in edit mode */}
-          <h3
-            className="fw-bold"
-            style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
-          >
-            Add Device
-          </h3>
-        </div>
-
-        {/* button */}
-        <div
-          style={{
-            padding: "6px 25px",
-            cursor: "pointer",
-            position: "absolute",
-            right: "0",
-          }}
-        >
-          <button
-            className="btn p-2 d-flex align-items-center justify-content-center"
-            style={{
-              backgroundColor: "white",
-              width: "30px",
-              height: "30px",
-              cursor: "pointer",
-              borderRadius: "8px",
-            }}
-            onClick={handleSpinClick}
-          >
-            <FaSync color="#748188" className={isSpinning ? "spinning" : ""} />
-          </button>
-        </div>
-      </div>
-
-      {/* White container */}
-      <div
-        className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column overflow-auto"
-        style={{
-          top: "13%",
-          height: "100%",
-          borderRadius: "18px",
-        }}
-      >
-        {addDevice.map((device, index) => (
-          <div key={index} style={{ marginTop: index === 0 ? "30px" : "0" }}>
-            <div className="d-flex justify-content-between">
-              <div
-                className="col-8"
-                style={{
-                  marginLeft: "calc(100% - 90%)",
-                  fontSize: "18px",
-                }}
-              >
-                {device.title}
-              </div>
-              <label className="container col-1">
-                <input
-                  type="radio"
-                  checked={addSelectDevice?.device_id === device.device_id}
-                  onChange={() => handleDeviceSelect(device)}
-                />
-                <span className="checkmark"></span>
-              </label>
+      <div className="add-device-background">
+        <div className="add-device-laptop">
+          <div className="add-device-header">
+            {/* Back Button */}
+            <div
+              className="add-device-back"
+              onClick={() => {
+                setAddSelectDevice(null);
+                handleButtonClick("viewDeviceStatus");
+              }}
+            >
+              <IoIosArrowBack className="add-device-arrow" />
+              <span className="add-device-word">Back</span>
             </div>
+
+            {/* Room Title */}
+            <div className="d-flex col-12 justify-content-center text-center">
+              {/* Display the title normally when not in edit mode */}
+              <h3 className="fw-bold add-device-title">Add Device</h3>
+            </div>
+
+            {/* button */}
             <div
               style={{
-                borderTop: "1px solid #000000",
-                margin: "18px 30px",
-              }}
-            ></div>
-          </div>
-        ))}
-        <div
-          style={{
-            display: "flex",
-            height: "calc(100% - 50%)",
-            alignItems: "flex-end",
-            justifyContent: "center",
-          }}
-        >
-          <div className="text-center">
-            {!addSelectDevice && connectDevice ? (
-              <div className="p-4">
-                <span style={{ color: "red", fontSize: "15px" }}>
-                  Please select a device to connect!
-                </span>
-              </div>
-            ) : (
-              ""
-            )}
-            <button
-              className="btn p-2 px-5"
-              style={{
-                backgroundColor: "#204160",
-                color: "white",
-                borderRadius: "12px",
+                padding: "6px 25px",
                 cursor: "pointer",
+                position: "absolute",
+                right: "0",
               }}
-              onClick={() => handleConnectClick("deviceSetting")}
             >
-              <h6>Connect</h6>
-            </button>
+              <button
+                className="btn p-2 d-flex align-items-center justify-content-center sync-button"
+                onClick={handleSpinClick}
+              >
+                <FaSync
+                  color="#748188"
+                  className={isSpinning ? "spinning" : ""}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* White container */}
+          <div className="d-flex flex-column devices-list">
+            {addDevice.map((device, index) => (
+              <div
+                key={index}
+                style={{ marginTop: index === 0 ? "30px" : "0" }}
+              >
+                <div className="d-flex justify-content-between">
+                  <div
+                    className="col-8"
+                    style={{
+                      marginLeft: "calc(100% - 90%)",
+                      fontSize: "18px",
+                    }}
+                  >
+                    {device.title}
+                  </div>
+                  <label className="container col-1">
+                    <input
+                      type="radio"
+                      checked={addSelectDevice?.device_id === device.device_id}
+                      onChange={() => handleDeviceSelect(device)}
+                    />
+                    <span className="checkmark"></span>
+                  </label>
+                </div>
+                <div
+                  style={{
+                    borderTop: "1px solid #000000",
+                    margin: "18px 30px",
+                  }}
+                ></div>
+              </div>
+            ))}
+            <div className="connect-div">
+              <div className="text-center">
+                {!addSelectDevice && connectDevice ? (
+                  <div className="p-4">
+                    <span style={{ color: "red", fontSize: "15px" }}>
+                      Please select a device to connect!
+                    </span>
+                  </div>
+                ) : (
+                  ""
+                )}
+                <button
+                  className="p-2 px-5 add-device-connect"
+                  onClick={() => handleConnectClick("deviceSetting")}
+                >
+                  <h6>Connect</h6>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

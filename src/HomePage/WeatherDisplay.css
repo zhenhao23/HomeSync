@@ -1,0 +1,161 @@
+.weather-container {
+    position: fixed;
+    left: 50%;
+    top: 15%;
+    transform: translateX(-50%);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .weather-icons {
+    display: flex;
+    width: 25%;
+  }
+
+  .vector-sunbeam {
+    width: 48px;
+    height: 48px;
+    transform: translateX(60%) translateY(0%);
+  }
+  
+  .vector-sun {
+    width: 27px;
+    height: 38px;
+    transform: translateX(-35%) translateY(41%);
+  }
+  
+  .vector-cloud {
+    width: 48px;
+    height: 48px;
+    transform: translateX(-90%) translateY(50%);
+  }
+
+  .weather-content {
+    width: 40%;
+  }
+  
+  .weather-date {
+    font-size: 12px;
+  }
+  
+  .weather-condition {
+    font-size: 16px;
+  }
+  
+  .weather-location {
+    font-size: 12px;
+  }
+  
+  .weather-temp {
+    width: 35%;
+    font-size: 40px;
+  }
+
+  /* Small laptop size */
+  @media (min-width: 1280px) {
+    .vector-sunbeam {
+      width: 50px;
+      height: 50px;
+      transform: translateX(50%) translateY(-22%);
+    }
+    
+    .vector-sun {
+      width: 30px;
+      height: 41px;
+      transform: translateX(-52%) translateY(19%);
+    }
+    
+    .vector-cloud {
+      width: 50px;
+      height: 50px;
+      transform: translateX(-100%) translateY(28%);
+    }
+
+    .weather-date {
+      font-size: 14px;
+    }
+    
+    .weather-condition {
+      font-size: 19px;
+    }
+    
+    .weather-location {
+      font-size: 14px;
+    }
+
+    .weather-temp {
+      font-size: 32px;
+    }
+
+    .weather-container {
+      position: relative;
+      background-color: #4C7380;
+      border-radius: 18px;
+      width: calc(100vw - 72vw);
+      height: calc(100vh - 88vh);
+      align-items: center;
+      justify-content: center;
+      margin-left: 2%;
+    }
+
+  }
+
+  /* Medium laptop size */
+  @media (min-width: 1440px) {
+
+      .weather-date {
+        font-size: 16px;
+      }
+
+      .weather-condition {
+        font-size: 20px;
+      }
+
+      .weather-location {
+        font-size: 16px;
+      }
+
+      .weather-temp {
+        font-size: 35px;
+      }
+
+}
+
+ /* Large laptop size */
+ @media (min-width: 1920px) {
+  .vector-sunbeam {
+    width: 62px;
+    height: 60px;
+    transform: translateX(50%) translateY(-22%);
+  }
+  
+  .vector-sun {
+    width: 34px;
+    height: 45px;
+    transform: translateX(-52%) translateY(19%);
+  }
+  
+  .vector-cloud {
+    width: 56px;
+    height: 56px;
+    transform: translateX(-100%) translateY(28%);
+  }
+
+  .weather-date {
+    font-size: 18px;
+  }
+  
+  .weather-condition {
+    font-size: 22px;
+  }
+  
+  .weather-location {
+    font-size: 18px;
+  }
+
+  .weather-temp {
+    font-size: 40px;
+  }
+
+ }

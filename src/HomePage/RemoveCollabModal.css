@@ -1,0 +1,21 @@
+.remove-collab-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    height: 175px;
+    text-align: center;
+}
+
+
+@media (min-width: 1280px) {
+
+    .remove-collab-container {
+        padding: 30px;
+        width: 350px;
+        height: 200px;
+    }
+}
+
+
+

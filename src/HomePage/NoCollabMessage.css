@@ -1,0 +1,18 @@
+.no-collab-div {
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+  
+.no-collab-message {
+    font-size: 15px; 
+    font-weight: 500;
+}
+
+@media (min-width: 1280px) {
+    .no-collab-div {
+        width: 480px;
+    }
+}

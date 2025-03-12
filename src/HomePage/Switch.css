@@ -119,3 +119,29 @@ input:checked ~ .on-text {
 input:checked ~ .off-text {
   display: none;
 }
+
+
+@media (min-width: 1920px) and (min-height: 1080px) {
+  .switch {
+    width: 80px;
+    height: 40px;
+  }
+
+  .on-text, .off-text {
+    font-size: 17px;
+  }
+
+  .slider:before {
+    height: 27px;
+    width: 27px;
+    left: 7px;
+    bottom: 6px;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(38px);
+    -ms-transform: translateX(38px);
+    transform: translateX(38px);
+  }
+
+}

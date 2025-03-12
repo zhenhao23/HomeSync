@@ -1,0 +1,204 @@
+
+.add-room-button {
+  background-color: #ffffff;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.room-item {
+    transition: border 0.2s ease-in-out;
+    outline: none;
+    border-radius: 16px;
+  }
+
+.room-container {
+    top: 28vh;
+    height: 100%;
+    border-radius: 18px;
+    background-color: #4C7380;
+    width: 28%;
+}
+
+.weather-div {
+  position: absolute;
+  top: 13%
+}
+
+
+.homesync-title {
+  color: #ffffff;
+  font-size: 1.4rem;
+  margin-left: 10px;
+}
+
+.room-minus-button {
+    cursor: pointer;
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 28px;
+    height: 28px;
+}
+
+.minus-white {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    z-index: 0;
+}
+
+  .room-item-div{
+    padding-top: 12px;
+  }
+
+  @media (min-width: 1280px) {
+
+    .room-container-title {
+      font-size: 23px;
+    }
+
+    .room-container{
+      left: 2.5%;
+      padding: 10px;
+      height: 72%;
+      border-radius: 18px 18px 0 0;
+    }
+
+    .room-item-div{
+      height: 90%;
+    }
+
+    .edit {
+      font-size: 18px;
+    }
+
+    .add-room-button {
+      width: 28px;
+      height: 28px;
+    }
+
+  }
+
+  @media (min-width: 1440px) {
+
+    .room-container-title {
+      font-size: 27px;
+    }
+
+    .homesync-title {
+      font-size: 1.5rem;
+    }
+
+    .edit {
+      font-size: 20px;
+    }
+
+    .add-room-button {
+      width: 30px;
+      height: 30px;
+    }
+
+    .room-title {
+      font-size: 22px;
+    }
+
+    .device-count {
+      font-size: 18px;
+    }
+
+    .room-minus-button {
+      top: -5px;
+      left: -8px;
+      width: 34px;
+      height: 34px;
+  }
+
+    .minus-white {
+      top: -4px;
+      left: -5px;
+      width: 30px;
+      height: 30px;
+  }
+
+  .room-container {
+    padding: 18px;
+  }
+
+  }
+
+  @media (min-width: 1920px) {
+
+    .homesync-title {
+      font-size: 1.6rem;
+    }
+
+    .edit {
+      font-size: 24px;
+    }
+
+    .room-container-title {
+      font-size: 32px;
+    }
+
+    .add-room-button {
+      width: 32px;
+      height: 32px;
+    }
+
+    .room-title {
+      font-size: 26px;
+    }
+
+    .device-count {
+      font-size: 22px;
+    }
+
+    .room-container {
+      padding: 25px;
+    }
+
+    .room-minus-button {
+      top: -15px;
+      left: -10px;
+      width: 40px;
+      height: 40px;
+  }
+
+    .minus-white {
+      top: -12px;
+      left: -8px;
+      width: 35px;
+      height: 35px;
+  }
+
+  }
+
+  
+  /* Responsive Design: Apply a different border color on desktop */
+  @media (min-width: 1280px) {
+    .room-item:focus {
+    background: linear-gradient(90deg, #789EDC 50%, transparent 50%), 
+                linear-gradient(90deg, #789EDC 50%, transparent 50%), 
+                linear-gradient(0deg, #789EDC 50%, transparent 50%), 
+                linear-gradient(0deg, #789EDC 50%, transparent 50%);
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-size: 95px 6px, 95px 6px, 6px 80px, 6px 80px;
+    background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%;
+    animation: dash 2s linear infinite;
+    padding: 8px;
+    transition: padding 0.1s ease-in-out;
+    }
+  }
+
+
+@keyframes dash {
+    to {
+        background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
+    } 
+} 
+  

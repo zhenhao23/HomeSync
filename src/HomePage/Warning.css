@@ -1,0 +1,13 @@
+.warning-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    margin-top: calc(100% - 94%);
+}
+
+@media (min-width: 1280px) {
+    .warning-container {
+        width: 480px;
+    }
+}

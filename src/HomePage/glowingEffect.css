@@ -27,3 +27,22 @@
     transition: box-shadow 1s ease-in-out, background-color 1s ease-in-out;
     filter: blur(60px);
 }
+
+
+@media (min-width: 1440px) and (min-height: 900px) {
+
+  .lamp-glow, .aircond-glow {
+    left: calc(100% - 39%);
+    width: calc(100% - 65%);
+  }
+
+}
+
+@media (min-width: 1920px) and (min-height: 1080px) {
+
+  .lamp-glow, .aircond-glow {
+    left: calc(100% - 35%);
+    width: calc(100% - 70%);
+  }
+
+}
