@@ -1,21 +1,12 @@
-import { Device, Room } from "./HomePage";
-import "./RemoveModal.css";
-
-interface RemoveModalProps {
-  removeWhat: string;
-  removeItem: Device | Room | null;
-  handleRemove: () => void;
-  handleCancel: () => void;
+interface CancelAddFeatureProps {
+    handleCancelAddFeature: () => void;
+    handleDiscardAddFeature: () => void;
 }
 
-const RemoveModal: React.FC<RemoveModalProps> = ({
-  removeWhat,
-  removeItem,
-  handleRemove,
-  handleCancel,
+const CancelAddFeatureModal: React.FC<CancelAddFeatureProps> = ({
+    handleCancelAddFeature,
+    handleDiscardAddFeature,
 }) => {
-  if (!removeItem) return null; // Ensure remove'Type' is not null
-
   return (
     <div
       style={{
@@ -32,12 +23,10 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
       }}
     >
       <div className="remove-room-container">
-        <h4 className="remove-room-title">
-          Remove {removeWhat.charAt(0).toUpperCase() + removeWhat.slice(1)}
-        </h4>
+        <h4 className="remove-room-title">Cancel Feature</h4>
         <div className="pb-2">
           <span className="remove-room-message">
-            Are you sure you want to remove this {removeWhat}?
+            Are you sure you want to discard your changes?
           </span>
         </div>
 
@@ -50,7 +39,11 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
         ></div>
 
         <div className="p-1 d-flex justify-content-around remove-room-button-div">
-          <button className="remove-room-cancel" onClick={handleCancel}>
+          <button
+            className="remove-room-cancel"
+            onClick={handleCancelAddFeature}
+            style={{ color: "#4285f4" }}
+          >
             Cancel
           </button>
           <div
@@ -59,8 +52,12 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
               height: "40px",
             }}
           ></div>
-          <button className="remove-room-confirm" onClick={handleRemove}>
-            Remove
+          <button
+            className="remove-room-confirm"
+            onClick={handleDiscardAddFeature}
+            style={{ color: "#4285f4" }}
+          >
+            Confirm
           </button>
         </div>
       </div>
@@ -68,4 +65,4 @@ const RemoveModal: React.FC<RemoveModalProps> = ({
   );
 };
 
-export default RemoveModal;
+export default CancelAddFeatureModal;

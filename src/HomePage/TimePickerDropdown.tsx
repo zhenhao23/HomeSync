@@ -1,14 +1,16 @@
-import { useState } from "react";
+interface TimePickerProps {
+  selectedHour: string;
+  setSelectedHour: React.Dispatch<React.SetStateAction<string>>;
+  selectedMinute: string;
+  setSelectedMinute: React.Dispatch<React.SetStateAction<string>>;
+}
 
-const TimePickerDropdown = () => {
-  // Get current time
-  const now = new Date();
-  const currentHour = now.getHours().toString().padStart(2, "0");
-  const currentMinute = now.getMinutes().toString().padStart(2, "0");
-
-  const [selectedHour, setSelectedHour] = useState(currentHour);
-  const [selectedMinute, setSelectedMinute] = useState(currentMinute);
-
+const TimePickerDropdown: React.FC<TimePickerProps> = ({
+  selectedHour,
+  setSelectedHour,
+  selectedMinute,
+  setSelectedMinute,
+}) => {
   // Generate minutes (00-59)
   const generateMinutes = () => {
     return Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
@@ -49,7 +51,9 @@ const TimePickerDropdown = () => {
               <li key={hour}>
                 <button
                   className="dropdown-item"
-                  onClick={() => setSelectedHour(hour)}
+                  onClick={() => {
+                    setSelectedHour(hour);
+                  }}
                 >
                   {hour}
                 </button>
@@ -84,7 +88,9 @@ const TimePickerDropdown = () => {
               <li key={minute}>
                 <button
                   className="dropdown-item"
-                  onClick={() => setSelectedMinute(minute)}
+                  onClick={() => {
+                    setSelectedMinute(minute);
+                  }}
                 >
                   {minute}
                 </button>

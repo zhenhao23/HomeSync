@@ -1,6 +1,6 @@
 import React from "react";
 import { FaBell } from "react-icons/fa";
-import Logo from "../assets/logo.svg";
+import "./LogoNotif.css";
 
 interface LogoNotifProps {
   setActiveContent: (content: string) => void;
@@ -8,84 +8,24 @@ interface LogoNotifProps {
 
 const Background: React.FC<LogoNotifProps> = ({ setActiveContent }) => {
   return (
-    <div className="position-fixed top-0 start-0 w-100 h-100 overflow-hidden">
+    <>
       {/* Notification Button */}
-      <div
-        className="position-absolute top-0 end-0 m-3"
-        style={{ zIndex: 20, transform: "translateX(-30%) translateY(140%)" }}
-      >
-        <div
-          className="rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            backgroundColor: "white",
-            width: "35px",
-            height: "35px",
-            cursor: "pointer",
-            boxShadow: "3px 3px 4px rgba(0, 0, 0, 1)", // Shadow to bottom right
-          }}
-          onClick={() => setActiveContent("viewNotification")}
-        >
-          <FaBell color="#204160" size={18} />
-          {/* Red Dot Notification */}
-          {true && (
-            <span
-              className="position-absolute top-0 end-0 bg-danger rounded-circle"
-              style={{
-                width: "10px",
-                height: "10px",
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.3)",
-              }}
-            ></span>
-          )}
-        </div>
-      </div>
-
-      {/* Logo */}
-      <div
-        className="position-absolute top-0 start-50 translate-middle-x"
-        style={{ zIndex: 20 }}
-      >
-        <div
-          className="rounded-circle d-flex align-items-center justify-content-center"
-          style={{
-            border: "1px dotted white",
-            backgroundColor: "transparent",
-            width: "67px",
-            height: "67px",
-            marginTop: "30px",
-          }}
-        >
+      <div className="notif-container">
+        <div className="notification-button">
           <div
-            className="rounded-circle d-flex align-items-center justify-content-center"
-            style={{
-              backgroundColor: "#D3C1A3",
-              width: "55px",
-              height: "55px",
-            }}
+            className="rounded-circle notification-icon"
+            onClick={() => setActiveContent("viewNotification")}
           >
-            <div
-              className="rounded-circle d-flex align-items-center justify-content-center"
-              style={{
-                backgroundColor: "white",
-                width: "45px",
-                height: "45px",
-              }}
-            >
-              <img
-                src={Logo}
-                alt="Logo"
-                className="img-fluid"
-                style={{
-                  maxWidth: "75%",
-                  maxHeight: "75%",
-                  objectFit: "contain",
-                }}
-              />
-            </div>
+            <FaBell color="#204160" size={18} />
+            {/* Red Dot Notification */}
+            {true && (
+              <span className="bg-danger rounded-circle notification-dot"></span>
+            )}
           </div>
+          <span className="notification-text">Notifications</span>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

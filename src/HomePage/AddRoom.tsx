@@ -1,6 +1,4 @@
 import { IoIosArrowBack } from "react-icons/io";
-import LogoNotif from "./LogoNotif";
-import WeatherDisplay from "./WeatherDisplay";
 import { FaExclamationCircle } from "react-icons/fa";
 import livingRoomIcon from "../assets/addRoomIcon/livingroom.svg";
 import bedIcon from "../assets/addRoomIcon/bed.svg";
@@ -12,6 +10,7 @@ import bookShelfIcon from "../assets/addRoomIcon/bookshelf.svg";
 import coatHangerIcon from "../assets/addRoomIcon/coat-hanger.svg";
 import { useState } from "react";
 import { Room } from "./HomePage";
+import "./AddRoom.css";
 
 interface AddRoomProps {
   roomsState: Room[];
@@ -97,6 +96,7 @@ const AddRoom: React.FC<AddRoomProps> = ({
       image: selectedRoomIcon.image,
       title: roomName,
       devices: 0,
+      collaborators: [],
     };
 
     // Add new room to the rooms list
@@ -124,209 +124,147 @@ const AddRoom: React.FC<AddRoomProps> = ({
 
   return (
     <>
-      <LogoNotif setActiveContent={setActiveContent} />
-      <WeatherDisplay />
-      <div
-        className="bg-white position-fixed start-50 translate-middle-x w-100 overflow-auto"
-        style={{
-          top: "27%",
-          height: "calc(100% - 30%)",
-          borderRadius: "18px",
-        }}
-      >
-        <div
-          onClick={handleBackToHomePage}
-          style={{ width: "65px", height: "30px", cursor: "pointer" }}
-          className="ms-3 mt-3"
-        >
-          <IoIosArrowBack size={22} color="#204160" />
-          <span
-            style={{
-              marginLeft: "2px",
-              color: "#204160",
-            }}
+      <div className="add-room-background">
+        <div className="add-room-container">
+          <div
+            onClick={handleBackToHomePage}
+            className="ms-3 mt-3 add-room-back"
           >
-            Back
-          </span>
-        </div>
-        <div className="pb-2 p-3" style={{ width: "100vw" }}>
-          <div className="text-left pb-3 container-fluid">
-            <h3 className="mb-0 fw-bold" style={{ color: "#204160" }}>
-              Room Settings
-            </h3>
-          </div>
-          <div className="container-fluid">
-            <p
-              className="mb-3 fw-normal"
-              style={{ color: "#204160", fontSize: "18px" }}
-            >
-              Name:
-            </p>
-
-            <div
+            <IoIosArrowBack size={22} color="#204160" />
+            <span
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                marginLeft: "2px",
+                color: "#204160",
               }}
             >
-              <div
-                style={{
-                  position: "relative",
-                  width: "80vw",
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="Enter a name for your room"
-                  style={{
-                    backgroundColor: "#eeeeee",
-                    borderRadius: "10px",
-                    width: "80vw",
-                    height: "40px",
-                    boxShadow: "inset 3px 3px 2px rgba(0, 0, 0, 0.1)",
-                    textAlign: "left",
-                    paddingLeft: "15px",
-                    fontSize: "17px",
-                    border: "2px solid",
-                    borderColor: !roomName && roomNameAlert ? "red" : "#eeeeee",
-                  }}
-                  onChange={(e) => setRoomName(e.target.value)}
-                />
-                {roomNameAlert && !roomName && (
-                  <FaExclamationCircle
-                    color="red"
-                    size={20}
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      pointerEvents: "none",
-                    }}
-                  />
-                )}
-              </div>
-            </div>
+              Back
+            </span>
           </div>
-          <div className="pt-3 pb-2 container-fluid">
-            <div>
-              <span
-                className="mb-3 fw-normal"
-                style={{ color: "#204160", fontSize: "18px" }}
-              >
-                Icon:
-              </span>
-
+          <div className="pb-2 p-3 add-room-content">
+            <div className="text-left pb-3 container-fluid">
+              <h3 className="mb-0 fw-bold room-setting-title">Room Settings</h3>
+            </div>
+            <div className="container-fluid">
+              <p className="mb-3 fw-normal room-setting-name">Name:</p>
               <div
-                className="d-flex align-items-center"
                 style={{
-                  overflow: "hidden",
-                  marginTop: "-7%",
-                  position: "absolute",
-                  right: "0",
-                  width: "145px",
-                  height: "45px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <div
-                  className="d-flex justify-content-start align-items-center ps-4"
                   style={{
+                    position: "relative",
+                  }}
+                >
+                  <input
+                    className="add-room-input"
+                    type="text"
+                    placeholder="Enter a name for your room"
+                    style={{
+                      borderColor:
+                        !roomName && roomNameAlert ? "red" : "#eeeeee",
+                    }}
+                    onChange={(e) => setRoomName(e.target.value)}
+                  />
+                  {roomNameAlert && !roomName && (
+                    <FaExclamationCircle className="exclamation-circle" />
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="pt-3 pb-2 container-fluid">
+              <div>
+                <span className="mb-3 fw-normal room-setting-icon">Icon:</span>
+
+                <div
+                  className="d-flex align-items-center"
+                  style={{
+                    overflow: "hidden",
+                    marginTop: "-7%",
                     position: "absolute",
                     right: "0",
-                    marginLeft: "auto",
-                    width: "135px",
-                    height: "35px",
-                    backgroundColor: "#204160",
-                    borderTopLeftRadius: "18px",
-                    borderBottomLeftRadius: "18px",
-                    transition: "transform 0.15s ease-in-out",
-                    transform: isIconTextVisible
-                      ? "translateX(0)"
-                      : "translateX(105%)",
-                    boxShadow: `0 0 3px 3px rgba(255, 255, 255, 0.4) inset,
-                  0 0 2px 2px rgba(0, 0, 0, 0.3)`,
+                    width: "145px",
+                    height: "45px",
                   }}
                 >
-                  <span
-                    style={{
-                      color: "#ffffff",
-                      fontSize: "15px",
-                    }}
-                  >
-                    {selectedRoomIcon?.title}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="d-flex flex-wrap justify-content-start">
-                {addRoomIcons.map((i, index) => (
                   <div
-                    key={index}
-                    className="col-3"
+                    className="d-flex justify-content-start align-items-center ps-4"
                     style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      position: "absolute",
+                      right: "0",
+                      marginLeft: "auto",
+                      width: "135px",
+                      height: "35px",
+                      backgroundColor: "#204160",
+                      borderTopLeftRadius: "18px",
+                      borderBottomLeftRadius: "18px",
+                      transition: "transform 0.15s ease-in-out",
+                      transform: isIconTextVisible
+                        ? "translateX(0)"
+                        : "translateX(105%)",
+                      boxShadow: `0 0 3px 3px rgba(255, 255, 255, 0.4) inset,
+                  0 0 2px 2px rgba(0, 0, 0, 0.3)`,
                     }}
                   >
-                    <div
-                      className="p-3 text-center mt-4"
+                    <span
                       style={{
-                        backgroundColor:
-                          selectedRoomIcon?.title === i.title
-                            ? "#d9d9d9"
-                            : "#f5f5f5",
-                        borderRadius: "50%",
-                        maxWidth: "calc(100% - 20%)",
-                        maxHeight: "calc(100% - 20%)",
+                        color: "#ffffff",
+                        fontSize: "15px",
                       }}
-                      onClick={() => handleRoomIconClick(i)}
                     >
-                      <img src={i.image} alt={i.title} className="img-fluid" />
-                    </div>
+                      {selectedRoomIcon?.title}
+                    </span>
                   </div>
-                ))}
-              </div>
-              {!selectedRoomIcon && roomIconAlert ? (
-                <div
-                  className="p-1"
-                  style={{
-                    position: "absolute",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                  }}
-                >
-                  <span style={{ color: "red", fontSize: "15px" }}>
-                    Please select a room type!
-                  </span>
                 </div>
-              ) : (
-                ""
-              )}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                paddingTop: "calc(100% - 90%)",
-              }}
-            >
-              <button
-                className="btn p-2 px-5"
+              </div>
+              <div>
+                <div className="d-flex flex-wrap justify-content-start">
+                  {addRoomIcons.map((i, index) => (
+                    <div key={index} className="col-3 add-room-icons">
+                      <div
+                        className="p-3 text-center mt-4 add-room-div"
+                        style={{
+                          backgroundColor:
+                            selectedRoomIcon?.title === i.title
+                              ? "#d9d9d9"
+                              : "#f5f5f5",
+                        }}
+                        onClick={() => handleRoomIconClick(i)}
+                      >
+                        <img
+                          src={i.image}
+                          alt={i.title}
+                          className="img-fluid"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {!selectedRoomIcon && roomIconAlert ? (
+                  <div className="p-1 select-room-error">
+                    <span>Please select a room type!</span>
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+              <div
                 style={{
-                  backgroundColor: "#204160",
-                  color: "white",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  margin: "30px auto",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingTop: "calc(100% - 90%)",
                 }}
-                onClick={handleAddRoom}
               >
-                <h6>Save</h6>
-              </button>
+                <button
+                  className="p-2 px-5 add-room-save"
+                  onClick={handleAddRoom}
+                >
+                  <h6>Save</h6>
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,0 +1,95 @@
+.add-collab-laptop {
+    background-color: #ffffff;
+    position: fixed;
+    top: 13%;
+    height: 100%;
+    border-radius: 18px;
+}
+
+.add-collab-div {
+    height: calc(100% - 280px); 
+    margin-top: 25px;
+    overflow: auto;
+}
+
+.add-collab-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+
+.add-collab-header {
+    position: relative; 
+    top: 60px;
+}
+
+.add-collab-arrow {
+    color: #FFFFFF;
+}
+
+.add-collab-word {
+    margin-left: 8px;
+    color: #FFFFFF;
+    font-size: 16px;
+}
+
+.add-collab-title {
+    color: #FFFFFF; 
+    font-size: 1.5rem;
+}
+
+.add-collab-back {
+    padding: 8px 15px;
+    cursor: pointer;
+    position: absolute;
+}
+
+@media (min-width: 1280px) {
+    .add-collab-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+    }
+
+    .add-collab-container{
+        border-radius: 30px;
+        width: 480px;
+        height: 650px;
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%);
+        position: absolute;
+        background-color: white;
+        display: flex;
+        flex-direction: column; /* Ensures children stack vertically */
+        overflow: hidden;
+        z-index: 300;
+    }
+
+    .add-collab-list {
+        width: 480px;
+    }
+
+    .add-collab-header {
+        z-index: 300;
+        width: 100%;
+        top: 0;
+        padding: 25px;
+    }
+
+    .add-collab-word, .add-collab-title, .add-collab-arrow {
+        color: #404040;
+    }
+
+    .add-collab-back {
+        padding: 8px 0;
+    }
+}

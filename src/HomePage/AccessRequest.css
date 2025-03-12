@@ -1,0 +1,12 @@
+.access-request-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+
+@media (min-width: 1280px) {
+    .access-request-container {
+        width: 480px;
+    }
+}

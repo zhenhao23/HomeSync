@@ -1,0 +1,118 @@
+.remove-room-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    height: 160px;
+    text-align: center;
+}
+
+.remove-room-title {
+    color: #000000; 
+    font-size: 20px;
+}
+
+.remove-room-message {
+    font-size: 15px;
+    color: #000000;
+}
+
+.remove-room-cancel {
+    background-color: #ffffff;
+    color: #4285f4;
+    border: none;
+    cursor: pointer;
+    font-weight: 650;
+    width: 49vw;
+    font-size: 18px;
+}
+
+.remove-room-confirm {
+    background-color: #ffffff;
+    color: #f34235;
+    border: none;
+    cursor: pointer;
+    font-weight: 650;
+    width: 49vw;
+    font-size: 18px;
+}
+
+@media (min-width: 1280px) {
+
+    .remove-room-container {
+        padding: 30px;
+        width: 350px;
+        height: 200px;
+    }
+    
+    .remove-room-title {
+        font-size: 22px;
+    }
+
+    .remove-room-message {
+        font-size: 17px;
+    }
+
+    .remove-room-cancel, .remove-room-confirm {
+        font-size: 20px;
+    }
+
+    .remove-room-button-div {
+        margin-top: 5px;
+    }
+
+    .horizontal-line {
+        margin-top: 14px;
+    }
+
+}
+
+@media (min-width: 1440px) {
+
+    .remove-room-container {
+        width: 360px;
+        height: 210px;
+    }
+    
+    .remove-room-title {
+        font-size: 23px;
+    }
+
+    .remove-room-message {
+        font-size: 18px;
+    }
+
+    .remove-room-cancel, .remove-room-confirm {
+        font-size: 22px;
+    }
+
+}
+
+@media (min-width: 1920px) {
+
+    .remove-room-container {
+        width: 400px;
+        height: 230px;
+    }
+    
+    .remove-room-title {
+        font-size: 24px;
+    }
+
+    .remove-room-message {
+        font-size: 19px;
+    }
+
+    .remove-room-cancel, .remove-room-confirm {
+        font-size: 23px;
+    }
+
+    .remove-room-button-div {
+        margin-top: 15px;
+    }
+
+    .horizontal-line {
+        margin-top: 18px;
+    }
+
+}

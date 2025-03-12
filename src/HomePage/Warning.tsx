@@ -1,4 +1,5 @@
 import React from "react";
+import "./Warning.css";
 
 interface WarningProps {
   title: string;
@@ -7,13 +8,7 @@ interface WarningProps {
 
 const Warning: React.FC<WarningProps> = ({ title, message }) => {
   return (
-    <div
-      className="d-flex justify-content-center align-items-center"
-      style={{
-        width: "100vw",
-        marginTop: "calc(100% - 94%)",
-      }}
-    >
+    <div className="warning-container">
       <div
         className="p-3 mb-3 d-flex justify-content-between flex-column"
         style={{
