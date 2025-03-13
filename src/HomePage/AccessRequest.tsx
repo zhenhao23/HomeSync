@@ -1,27 +1,24 @@
 import React from "react";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import "./AccessRequest.css";
 
 interface AccessRequestProps {
+  requestId: number;
   image: string;
   person: string;
   requestItem: string;
+  handleRemoveRequest: (id: number) => void;
 }
 
 const AccessRequest: React.FC<AccessRequestProps> = ({
+  requestId,
   image,
   person,
   requestItem,
+  handleRemoveRequest,
 }) => {
   return (
-    <div
-      className="mb-1"
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100vw",
-      }}
-    >
+    <div className="mb-1 access-request-container">
       <div
         className="p-3 mb-3 d-flex justify-content-between align-items-center flex-row"
         style={{
@@ -40,8 +37,16 @@ const AccessRequest: React.FC<AccessRequestProps> = ({
         </div>
 
         <div className="d-flex ms-1 justify-content-around align-items-center col-3">
-          <FaCheckCircle color="green" size={32} />
-          <FaTimesCircle color="red" size={32} />
+          <FaCheckCircle
+            color="green"
+            size={32}
+            onClick={() => handleRemoveRequest(requestId)}
+          />
+          <FaTimesCircle
+            color="red"
+            size={32}
+            onClick={() => handleRemoveRequest(requestId)}
+          />
         </div>
       </div>
     </div>

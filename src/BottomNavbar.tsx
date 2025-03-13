@@ -1,5 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaHome, FaBolt, FaSun, FaUser } from "react-icons/fa";
+import "./HomePage/BottomNavBar.css";
+import useWindowSize from "./HomePage/Layout.tsx";
 
 interface NavItem {
   id: string;
@@ -48,50 +50,39 @@ const BottomNavbar: React.FC = () => {
   const isEnergyActive =
     activeTab === "/energy" || activeTab === "/energy-limit";
 
+  const isLaptop = useWindowSize();
+
   return (
-    <nav
-      className="fixed-bottom d-flex justify-content-between align-items-center px-3 py-2"
-      style={{
-        backgroundColor: "#204160",
-        gap: "8px",
-      }}
-    >
+    <nav className="fixed-bottom px-3 py-2 bottom-navbar">
       {navItems.map((item) => (
         <button
           key={item.id}
           onClick={() => handleNavClick(item.path)}
-          className={`btn d-flex align-items-center flex-grow-0 ${
+          className={`btn flex-grow-0 nav-button ${
             (item.path === "/energy" ? isEnergyActive : activeTab === item.path)
               ? "active"
               : ""
           }`}
           style={{
-            backgroundColor: "#ffffff",
-            color: "#204160",
-            borderRadius: "8px",
-            height: "40px",
             padding: (
               item.path === "/energy" ? isEnergyActive : activeTab === item.path
             )
               ? "0 20px"
               : "0 12px",
-            transition: "all 0.2s ease",
             minWidth: (
               item.path === "/energy" ? isEnergyActive : activeTab === item.path
             )
               ? "110px"
               : "auto",
-            flexShrink: 1,
           }}
         >
           <div className="d-flex align-items-center">
             {item.icon}
-            {(item.path === "/energy"
-              ? isEnergyActive
-              : activeTab === item.path) && (
-              <span className="ms-2 fw-medium" style={{ fontSize: "14px" }}>
-                {item.label}
-              </span>
+            {(isLaptop ||
+              (item.path === "/energy"
+                ? isEnergyActive
+                : activeTab === item.path)) && (
+              <span className="ms-2 fw-medium nav-label">{item.label}</span>
             )}
           </div>
         </button>

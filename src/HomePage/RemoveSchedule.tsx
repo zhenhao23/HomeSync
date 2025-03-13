@@ -1,19 +1,16 @@
-import { Collaborator } from "./HomePage";
-import "./RemoveCollabModal.css";
+import { Schedule } from "./DeviceSmartFeature";
 
-interface RemoveCollabModalProps {
-  removeCollab: Collaborator | null;
-  handleCollabCancel: () => void;
-  handleRemoveCollab: (collab: Collaborator) => void;
+interface RemoveScheduleProps {
+  handleCancel: () => void;
+  handleConfirm: (f: Schedule) => void;
+  removeSchedule: Schedule | null;
 }
 
-const RemoveCollabModal: React.FC<RemoveCollabModalProps> = ({
-  removeCollab,
-  handleCollabCancel,
-  handleRemoveCollab,
+const RemoveScheduleModal: React.FC<RemoveScheduleProps> = ({
+  handleCancel,
+  handleConfirm,
+  removeSchedule,
 }) => {
-  if (!removeCollab) return null; // Ensure removeCollab is not null
-
   return (
     <div
       style={{
@@ -26,20 +23,30 @@ const RemoveCollabModal: React.FC<RemoveCollabModalProps> = ({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        zIndex: "300",
+        zIndex: "200",
       }}
     >
-      <div className="remove-collab-container">
-        <div>
-          <img
-            style={{ width: "60px", height: "60px" }}
-            src={removeCollab?.image}
-          ></img>
-          <h4 className="p-2" style={{ color: "#000000", fontSize: "18px" }}>
-            {removeCollab?.name}
-          </h4>
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          padding: "20px",
+          borderRadius: "8px",
+          width: "300px",
+          height: "160px",
+          textAlign: "center",
+        }}
+      >
+        <h4 style={{ color: "#000000", fontSize: "20px" }}>Remove Schedule</h4>
+        <div className="pb-2">
+          <span
+            style={{
+              fontSize: "15px",
+              color: "#000000",
+            }}
+          >
+            Are you sure you want to remove this schedule?
+          </span>
         </div>
-
         <div
           style={{
             borderTop: "1px solid #979797",
@@ -48,6 +55,7 @@ const RemoveCollabModal: React.FC<RemoveCollabModalProps> = ({
         ></div>
         <div className="p-1 d-flex justify-content-around">
           <button
+            onClick={handleCancel}
             style={{
               backgroundColor: "#ffffff",
               color: "#4285f4",
@@ -57,7 +65,6 @@ const RemoveCollabModal: React.FC<RemoveCollabModalProps> = ({
               width: "49vw",
               fontSize: "18px",
             }}
-            onClick={handleCollabCancel}
           >
             Cancel
           </button>
@@ -68,7 +75,11 @@ const RemoveCollabModal: React.FC<RemoveCollabModalProps> = ({
             }}
           ></div>
           <button
-            onClick={() => handleRemoveCollab(removeCollab)}
+            onClick={() => {
+              if (removeSchedule) {
+                handleConfirm(removeSchedule); // Ensuring removeSchedule is not null
+              }
+            }}
             style={{
               backgroundColor: "#ffffff",
               color: "#f34235",
@@ -86,4 +97,5 @@ const RemoveCollabModal: React.FC<RemoveCollabModalProps> = ({
     </div>
   );
 };
-export default RemoveCollabModal;
+
+export default RemoveScheduleModal;

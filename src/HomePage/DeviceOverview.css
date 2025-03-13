@@ -1,0 +1,163 @@
+.device-overview {
+  position: relative;
+  top: 60px;
+}
+
+.device-title-pen-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.device-image-icon {
+  z-index: 0;
+}
+
+.device-title {
+  color: #FFFFFF;
+  font-size: 1.5rem;
+}
+
+.device-data {
+  font-size: 55px;
+  color: white;
+  margin-right: 4px;
+}
+
+.device-data-unit {
+  font-size: 30px; 
+  color: white;
+}
+
+.device-label {
+    font-size: 20px;
+    color: white;
+    word-wrap: break-word;
+    max-width: 150px;
+}
+
+.device-button {
+    background-color: #ffffff;
+    width: 70px;
+    height: 50px;
+    border-radius: 15px;
+}
+
+.unit-label {
+    font-size: 16px;
+    color: white;
+    font-weight: 600;
+}
+
+.drag-line {
+  border-top: 1px solid #cdcdcd;
+  width: calc(100% - 30%);
+}
+
+
+@media (min-width: 1600px) {
+  .drag-line {
+    width: 65%;
+  }
+}
+
+
+@media (min-width: 1280px) and (min-height: 720px) {
+
+    .device-overview {
+      top: -10px;
+      width: 100vw;
+      height: 40vh; 
+    }
+
+    .device-feature-button {
+      height: 9vh;
+    }
+
+    .device-info {
+      height: 22vh;
+    }
+    
+  }
+
+  @media (min-width: 1440px) and (min-height: 900px) {
+
+    .device-info {
+      height: 22vh;
+    }
+
+    .device-title {
+      font-size: 1.7rem;
+    }
+
+    .device-data {
+      font-size: 60px;
+    }
+
+    .device-data-unit {
+      font-size: 35px; 
+    }
+
+    .device-label {
+      font-size: 22px;
+    }
+
+    .unit-label {
+      font-size: 20px;
+    }
+
+  }
+
+  @media (min-width: 1920px) and (min-height: 1080px) {
+
+    .device-overview {
+      top: 0px;
+      width: 50vw;
+      height: 40vh; 
+    }
+
+    .device-info {
+      height: 20vh;
+    }
+
+    .device-title {
+      font-size: 1.9rem;
+    }
+
+    .device-data {
+      font-size: 70px;
+    }
+
+    .device-data-unit {
+      font-size: 45px; 
+    }
+
+    .device-label {
+      font-size: 25px;
+    }
+
+    .device-button {
+      width: 80px;
+      height: 60px;
+  }
+
+    .unit-label {
+      font-size: 22px;
+    }
+
+    .drag-content {
+      width: 100%;
+    }
+
+    .drag-line {
+      width: 63%;
+      margin-right: 20px;
+    }
+
+  }
+
+
+  
+
+
+  

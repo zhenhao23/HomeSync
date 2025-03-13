@@ -1,0 +1,100 @@
+.dev-smart-feature-container {
+    background-color: white; 
+    position: fixed; 
+    overflow: auto;
+    top: 50%;
+    height: 45%;
+    border-radius: 18px;
+    padding-bottom: 15%;
+}
+
+.schedule, .smart-feature {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+
+.smart-feature-plus {
+    background-color: #204160;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-button-div {
+    display: flex;
+    justify-content: end;
+}
+
+.smart-feature-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+@media (min-width: 1280px) {
+    .dev-smart-feature-container {
+        border-radius: 30px;
+        width: 480px;
+        height: 650px;
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%);
+        position: absolute;
+        background-color: white;
+        display: flex;
+        flex-direction: column; /* Ensures children stack vertically */
+        overflow: hidden;
+        z-index: 300;
+    }
+
+    .smart-feature-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+    }
+
+    .schedule, .smart-feature {
+        width: 480px;
+    }
+
+    .smart-feature-back {
+        padding: 0 15px;
+        position: absolute;
+        top: 5%;
+    }
+
+    .feature-button-div {
+        margin: 0 10px;
+    }
+
+    .smart-feature-title, .feature-button-div {
+        padding-top: 10%;
+    }
+
+}
+
+@media (min-width: 1920px) {
+
+    .dev-smart-feature-container {
+        width: 550px;
+        height: 700px;
+    }
+
+    .schedule1, .schedule2, .smart-feature {
+        width: 550px;
+    }
+
+}
