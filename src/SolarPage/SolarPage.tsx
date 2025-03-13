@@ -1,5 +1,5 @@
 const SolarPage: React.FC = () => {
-  return <div className="solar-container"></div>;
+  return <div></div>;
 };
 
 export default SolarPage;
