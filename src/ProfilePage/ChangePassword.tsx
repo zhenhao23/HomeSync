@@ -24,7 +24,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
   return (
     <>
       <div className="container-fluid p-3 pb-2">
-        <div className="row align-items-center mb-3">
+        <div className="row align-items-center mb-333">
           <div className="col-4 text-start">
             <button className="btn p-0" onClick={onBack}>
               <FaArrowLeft />
@@ -32,7 +32,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
           </div>
 
           <div className="col-4 text-center">
-            <h3 className="mb-0">Change Password</h3>
+            <h3 className="header-change-password">Change Password</h3>
           </div>
           <div className="col-4" />
         </div>

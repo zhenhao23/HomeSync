@@ -65,7 +65,7 @@ const Register: React.FC = () => {
       </button>
 
       {/* Divider */}
-      <div className="divider">or Register with</div>
+      <div className="divider2">or Register with</div>
 
       {/* Google Register Button */}
       <button onClick={() => navigate("/otp-ver")} className="google-btn">

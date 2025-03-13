@@ -11,22 +11,11 @@ interface UserType {
 
 interface ManageUsersProps {
   onBack: () => void;
+  users: UserType[];
+  setUsers: React.Dispatch<React.SetStateAction<UserType[]>>;
 }
 
-const ManageUsers: React.FC<ManageUsersProps> = ({ onBack }) => {
-  const [users, setUsers] = useState<UserType[]>([
-    {
-      id: 1,
-      name: "Alvin (You)",
-      profilePic: "https://via.placeholder.com/40",
-    },
-    { id: 2, name: "Alice", profilePic: "" },
-    { id: 3, name: "Anna", profilePic: "https://via.placeholder.com/40" },
-    { id: 4, name: "Adrian", profilePic: "https://via.placeholder.com/40" },
-    { id: 5, name: "Joshua", profilePic: "https://via.placeholder.com/40" },
-    { id: 6, name: "Lily", profilePic: "https://via.placeholder.com/40" },
-  ]);
-
+const ManageUsers: React.FC<ManageUsersProps> = ({ onBack, users, setUsers }) => {
   const [showInvite, setShowInvite] = useState(false);
   const [email, setEmail] = useState("");
   const [swipedUserId, setSwipedUserId] = useState<number | null>(null);
@@ -94,7 +83,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onBack }) => {
   const addUser = () => {
     if (!email) return;
     const newUser: UserType = {
-      id: users.length + 1,
+      id: Math.max(...users.map(user => user.id)) + 1, // Generate new ID
       name: email.split("@")[0],
       profilePic: "",
     };

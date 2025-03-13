@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaArrowLeft, FaBed, FaCouch, FaUtensils } from 'react-icons/fa';
+import { FaArrowLeft, FaBed, FaCouch, FaUtensils, FaUser } from 'react-icons/fa';
 import './UserDevices.css';
 
 interface UserType {
@@ -25,7 +25,7 @@ const UserDevices: React.FC<UserDevicesProps> = ({ onBack, user }) => {
       {/* Header Section */}
       <div className="header">
         <FaArrowLeft className="back-icon" onClick={onBack} />
-        <h2>Manage Users</h2>
+        <h2 className="header-title">Manage Users</h2>
       </div>
 
       {/* Content Container */}
@@ -33,9 +33,15 @@ const UserDevices: React.FC<UserDevicesProps> = ({ onBack, user }) => {
         {/* User Profile Section */}
         <div className="user-profile">
           <div className="profile-image">
-            <img src={user.profilePic} alt={user.name} />
+            {user.profilePic ? (
+              <img src={user.profilePic} alt={user.name} />
+            ) : (
+              <div className="default-avatar">
+                {user.name.charAt(0)}
+              </div>
+            )}
           </div>
-          <h3>{user.name}</h3>
+          <h3 className="user-name">{user.name}</h3>
         </div>
 
         {/* Devices List */}

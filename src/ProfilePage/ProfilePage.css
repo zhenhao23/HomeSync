@@ -27,6 +27,7 @@
   border-radius: 48px;
   padding: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Profile section */
@@ -44,7 +45,7 @@
   margin-bottom: 16px;
 }
 
-.profile-image {
+.profile-image.profile-image2 {
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -69,7 +70,7 @@
   text-align: center;
 }
 
-.user-details h2 {
+.user-name {
   color: #000;
   font-size: 24px;
   margin: 0;
@@ -77,21 +78,22 @@
   display: inherit;
 }
 
-.user-details p {
+.user-email {
   color: #666;
   margin: 0;
   font-size: 14px;
 }
 
 /* Divider line */
-.divider {
+.divider333 {
   height: 1px;
+  width: 87%;
   background-color: #000000;
-  width: 100%;
-  margin: 0;
   position: relative;
   top: -3%;
+  margin-left: 6%;
 }
+
 
 /* Menu containers */
 .profile-menu {
@@ -158,8 +160,42 @@
 .form-check-input {
   width: 44px;
   height: 24px;
-  background-color: #1c3e57;
+  background-color: #84888c;
   border: none;
   cursor: pointer;
   margin: 0;
+}
+
+
+/* Mobile View - Add Home and Log Out */
+.mobile-action-buttons {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+.add-home-button, .log-out-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.add-home-button {
+  color: #4285F4;
+  margin-bottom: 8px;
+}
+
+.log-out-button {
+  color: #EA4335;
+}
+
+.button-icon {
+  margin-right: 12px;
+  font-size: 20px;
 }

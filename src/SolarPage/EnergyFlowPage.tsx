@@ -157,7 +157,7 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
           <ArrowLeft size={24} />
           <span>Back</span>
         </button>
-        <h1>Energy Flow</h1>
+        <h1 className="energy-flow">Energy Flow</h1>
         <button className="share-button" onClick={handleShareClick}>
           <Share2 size={24} />
         </button>
@@ -505,8 +505,8 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
       {showDownloadConfirm && (
         <div className="download-confirm-overlay">
           <div className="download-confirm-dialog">
-            <h3>Download Energy Report</h3>
-            <p>Do you want to download the energy report?</p>
+            <h3 >Download Energy Report</h3>
+            <p >Do you want to download the energy report?</p>
             <div className="dialog-buttons">
               <button onClick={handleDownloadCancel}>Cancel</button>
               <button
