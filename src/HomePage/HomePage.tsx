@@ -98,403 +98,400 @@ type DeviceTrigger = {
   isUserAdded: boolean;
 };
 
-// Homepage component definition
-const HomePage: React.FC = () => {
-  // Predefined room array
-  const rooms: Room[] = [
-    {
-      id: 0,
-      image: LivingRoomImage,
-      title: "Living Room",
-      devices: 1,
-      collaborators: [
-        { id: 0, name: "Adrian", image: collabIcon, type: "Owner" },
-        { id: 1, name: "Joshua", image: collabIcon, type: "Dweller" },
-      ],
-    },
-    {
-      id: 1,
-      image: BedRoomImage,
-      title: "Bedroom",
-      devices: 3,
-      collaborators: [],
-    },
-    {
-      id: 2,
-      image: KitchenImage,
-      title: "Kitchen",
-      devices: 0,
-      collaborators: [
-        { id: 4, name: "Mike", image: collabIcon, type: "Owner" },
-        { id: 5, name: "Emma", image: collabIcon, type: "Dweller" },
-        { id: 5, name: "Lily", image: collabIcon, type: "Dweller" },
-      ],
-    },
-    {
-      id: 3,
-      image: GardenImage,
-      title: "Garden",
-      devices: 1,
-      collaborators: [
-        { id: 4, name: "Rose", image: collabIcon, type: "Dweller" },
-        { id: 5, name: "Lisa", image: collabIcon, type: "Dweller" },
-      ],
-    },
-    {
-      id: 4,
-      image: BathroomImage,
-      title: "Bathroom",
-      devices: 5,
-      collaborators: [
-        { id: 4, name: "Fuko", image: collabIcon, type: "Dweller" },
-        { id: 5, name: "Elly", image: collabIcon, type: "Dweller" },
-      ],
-    },
-  ];
-
-  // state to keep track changes in Room
-  const [room, setRoom] = useState<Room>({
+// Predefined room array
+const rooms: Room[] = [
+  {
     id: 0,
-    image: "",
-    title: "",
-    devices: 0,
+    image: LivingRoomImage,
+    title: "Living Room",
+    devices: 1,
+    collaborators: [
+      { id: 0, name: "Adrian", image: collabIcon, type: "Owner" },
+      { id: 1, name: "Joshua", image: collabIcon, type: "Dweller" },
+    ],
+  },
+  {
+    id: 1,
+    image: BedRoomImage,
+    title: "Bedroom",
+    devices: 3,
     collaborators: [],
-  });
+  },
+  {
+    id: 2,
+    image: KitchenImage,
+    title: "Kitchen",
+    devices: 0,
+    collaborators: [
+      { id: 4, name: "Mike", image: collabIcon, type: "Owner" },
+      { id: 5, name: "Emma", image: collabIcon, type: "Dweller" },
+      { id: 5, name: "Lily", image: collabIcon, type: "Dweller" },
+    ],
+  },
+  {
+    id: 3,
+    image: GardenImage,
+    title: "Garden",
+    devices: 1,
+    collaborators: [
+      { id: 4, name: "Rose", image: collabIcon, type: "Dweller" },
+      { id: 5, name: "Lisa", image: collabIcon, type: "Dweller" },
+    ],
+  },
+  {
+    id: 4,
+    image: BathroomImage,
+    title: "Bathroom",
+    devices: 5,
+    collaborators: [
+      { id: 4, name: "Fuko", image: collabIcon, type: "Dweller" },
+      { id: 5, name: "Elly", image: collabIcon, type: "Dweller" },
+    ],
+  },
+];
 
-  // Predefined exisitng device array
-  const devices: Device[] = [
-    {
-      device_id: 0,
-      room_id: 0,
-      image: petfeederIcon,
-      title: "Pet Feeder 1",
-      deviceType: "petfeeder",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: managePetfeeder,
-        percentage: 10,
-        celsius: 0,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Every Monday",
-          label: "9:00am",
-          status: false,
-          isUserAdded: true,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "8:00am, 12:00pm, 7:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 1,
-      room_id: 1,
-      image: airCondIcon,
-      title: "Air Cond",
-      deviceType: "aircond",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageAircond,
-        percentage: 0,
-        celsius: 30,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Air Cond",
-          label: "Turn on when room temp > 25°C",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "9:00am to 4:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 2,
-      room_id: 1,
-      image: lampIcon,
-      title: "Lamp 1",
-      deviceType: "light",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageLamp,
-        percentage: 40,
-        celsius: 0,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Lighting",
-          label: "Infrared Detection",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "8:00am to 7:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 3,
-      room_id: 1,
-      image: lampIcon,
-      title: "Lamp 2",
-      deviceType: "light",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageLamp,
-        percentage: 60,
-        celsius: 0,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Lighting",
-          label: "Infrared Detection",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "8:00am to 7:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 4,
-      room_id: 3,
-      image: sprinklerIcon,
-      title: "Irrigation 1",
-      deviceType: "irrigation",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageIrrigation,
-        percentage: 30,
-        celsius: 0,
-        waterFlow: 30,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Irrigation",
-          label: "Soil Moisture Sensor",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Every monday",
-          label: "8:00am (10 minutes)",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 5,
-      room_id: 4,
-      image: airCondIcon,
-      title: "Air Cond",
-      deviceType: "aircond",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageAircond,
-        percentage: 0,
-        celsius: 16,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Air Cond",
-          label: "Turn on when room temp > 25°C",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "9:00am to 4:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 6,
-      room_id: 4,
-      image: airCondIcon,
-      title: "Air Cond",
-      deviceType: "aircond",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageAircond,
-        percentage: 0,
-        celsius: 18,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Air Cond",
-          label: "Turn on when room temp > 25°C",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "9:00am to 4:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 7,
-      room_id: 4,
-      image: airCondIcon,
-      title: "Air Cond",
-      deviceType: "aircond",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageAircond,
-        percentage: 0,
-        celsius: 20,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Air Cond",
-          label: "Turn on when room temp > 25°C",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "9:00am to 4:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 8,
-      room_id: 4,
-      image: airCondIcon,
-      title: "Air Cond",
-      deviceType: "aircond",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageAircond,
-        percentage: 0,
-        celsius: 25,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Air Cond",
-          label: "Turn on when room temp > 25°C",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "9:00am to 4:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-    {
-      device_id: 9,
-      room_id: 4,
-      image: airCondIcon,
-      title: "Air Cond",
-      deviceType: "aircond",
-      status: false,
-      swiped: false,
-      devData: {
-        iconImage: manageAircond,
-        percentage: 0,
-        celsius: 28,
-        waterFlow: 0,
-      },
-      content: [
-        {
-          feature_id: 1,
-          feature: "Auto Air Cond",
-          label: "Turn on when room temp > 25°C",
-          status: false,
-          isUserAdded: false,
-        },
-        {
-          feature_id: 2,
-          feature: "Daily",
-          label: "9:00am to 4:00pm",
-          status: false,
-          isUserAdded: true,
-        },
-      ],
-    },
-  ];
-
-  // A default device when no device is seleted to avoid null situation
-  const defaultDevice: Device = {
-    device_id: -1,
-    room_id: -1,
-    title: "Default",
-    image: "No device selected",
-    deviceType: "",
+// Predefined exisitng device array
+const devices: Device[] = [
+  {
+    device_id: 0,
+    room_id: 0,
+    image: petfeederIcon,
+    title: "Pet Feeder 1",
+    deviceType: "petfeeder",
     status: false,
     swiped: false,
     devData: {
-      iconImage: "",
-      percentage: 0,
+      id: 0,
+      iconImage: managePetfeeder,
+      percentage: 10,
       celsius: 0,
       waterFlow: 0,
     },
-    content: [],
-  };
+    content: [
+      {
+        feature_id: 1,
+        feature: "Every Monday",
+        label: "9:00am",
+        status: false,
+        isUserAdded: true,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "8:00am, 12:00pm, 7:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 1,
+    room_id: 1,
+    image: airCondIcon,
+    title: "Air Cond",
+    deviceType: "aircond",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageAircond,
+      percentage: 0,
+      celsius: 30,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Air Cond",
+        label: "Turn on when room temp > 25°C",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "9:00am to 4:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 2,
+    room_id: 1,
+    image: lampIcon,
+    title: "Lamp 1",
+    deviceType: "light",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageLamp,
+      percentage: 40,
+      celsius: 0,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Lighting",
+        label: "Infrared Detection",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "8:00am to 7:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 3,
+    room_id: 1,
+    image: lampIcon,
+    title: "Lamp 2",
+    deviceType: "light",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageLamp,
+      percentage: 60,
+      celsius: 0,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Lighting",
+        label: "Infrared Detection",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "8:00am to 7:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 4,
+    room_id: 3,
+    image: sprinklerIcon,
+    title: "Irrigation 1",
+    deviceType: "irrigation",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageIrrigation,
+      percentage: 30,
+      celsius: 0,
+      waterFlow: 30,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Irrigation",
+        label: "Soil Moisture Sensor",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Every monday",
+        label: "8:00am (10 minutes)",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 5,
+    room_id: 4,
+    image: airCondIcon,
+    title: "Air Cond",
+    deviceType: "aircond",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageAircond,
+      percentage: 0,
+      celsius: 16,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Air Cond",
+        label: "Turn on when room temp > 25°C",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "9:00am to 4:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 6,
+    room_id: 4,
+    image: airCondIcon,
+    title: "Air Cond",
+    deviceType: "aircond",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageAircond,
+      percentage: 0,
+      celsius: 18,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Air Cond",
+        label: "Turn on when room temp > 25°C",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "9:00am to 4:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 7,
+    room_id: 4,
+    image: airCondIcon,
+    title: "Air Cond",
+    deviceType: "aircond",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageAircond,
+      percentage: 0,
+      celsius: 20,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Air Cond",
+        label: "Turn on when room temp > 25°C",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "9:00am to 4:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 8,
+    room_id: 4,
+    image: airCondIcon,
+    title: "Air Cond",
+    deviceType: "aircond",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageAircond,
+      percentage: 0,
+      celsius: 25,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Air Cond",
+        label: "Turn on when room temp > 25°C",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "9:00am to 4:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+  {
+    device_id: 9,
+    room_id: 4,
+    image: airCondIcon,
+    title: "Air Cond",
+    deviceType: "aircond",
+    status: false,
+    swiped: false,
+    devData: {
+      id: 0,
+      iconImage: manageAircond,
+      percentage: 0,
+      celsius: 28,
+      waterFlow: 0,
+    },
+    content: [
+      {
+        feature_id: 1,
+        feature: "Auto Air Cond",
+        label: "Turn on when room temp > 25°C",
+        status: false,
+        isUserAdded: false,
+      },
+      {
+        feature_id: 2,
+        feature: "Daily",
+        label: "9:00am to 4:00pm",
+        status: false,
+        isUserAdded: true,
+      },
+    ],
+  },
+];
 
-  // state to keep track the current device to display when user click on specific device in a room
-  const [device, setDevice] = useState<Device>(defaultDevice);
+// A default device when no device is seleted to avoid null situation
+const defaultDevice: Device = {
+  device_id: -1,
+  room_id: -1,
+  title: "Default",
+  image: "No device selected",
+  deviceType: "",
+  status: false,
+  swiped: false,
+  devData: {
+    id: 0,
+    iconImage: "",
+    percentage: 0,
+    celsius: 0,
+    waterFlow: 0,
+  },
+  content: [],
+};
 
 const initialCollaborators: Collaborator[] = [
   {
@@ -517,43 +514,55 @@ const initialCollaborators: Collaborator[] = [
   },
 ];
 
-const defaultDevice: Device = {
-  device_id: 0,
-  room_id: 0,
-  title: "Default",
-  image: LivingRoomImage,
-  deviceType: "light",
-  status: false,
-  swiped: false,
-  devData: {
-    id: 0,
-    iconImage: manageLamp,
-    percentage: 80,
-    celsius: 0,
-    waterFlow: 0,
-  },
-  content: {
-    feature: "Auto Lighting",
-    smartFeature: "Infrared Detection",
-    toggle1: false,
-    featurePeriod: "Daily",
-    featureDetail: "8:00pm to 7:00am",
-    toggle2: false,
-  },
-};
-
 const defaultRoom: Room = {
   id: 0,
   image: LivingRoomImage,
   title: "Default",
   devices: 0,
+  collaborators: [],
 };
+
+// Add API interface definitions
+interface ApiRoom {
+  id: number;
+  name: string;
+  iconType: string;
+  devices: ApiDevice[];
+}
+
+interface ApiDevice {
+  id: number;
+  roomId: number;
+  displayName: string;
+  type: string;
+  status: boolean;
+  swiped: boolean;
+  controls: {
+    id: number;
+    controlType: string;
+    currentValue: string;
+  }[];
+  triggers: {
+    id?: number;
+    triggerType?: string;
+    conditionOperator?: string;
+    isActive?: boolean;
+    featurePeriod?: string;
+    featureDetail?: string;
+  }[];
+}
+
+// Initial rooms and devices arrays
+const initialRooms = rooms;
+const initialDevices = devices;
 
 const HomePage: React.FC = () => {
   // State management
   const [roomsState, setRoomsState] = useState(initialRooms);
   const [devicesState, setDevicesState] = useState(initialDevices);
   const [collabState, setCollabState] = useState(initialCollaborators);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [room, setRoom] = useState<Room>(defaultRoom);
   const [device, setDevice] = useState<Device>(defaultDevice);
@@ -563,7 +572,7 @@ const HomePage: React.FC = () => {
   const [isRoomEditing, setRoomEditing] = useState(false);
   const [removeRoom, setRemoveRoom] = useState<Room | null>(null);
   const [isRequestAccess, setRequestAccess] = useState(false);
-  const [addFeature, setAddFeature] = useState(false);
+  const navigate = useNavigate();
 
   // function to handle room clicked by user
   const handleRoomClick = (selectedRoom: {
@@ -745,6 +754,7 @@ const HomePage: React.FC = () => {
         image: getRoomImage(room.iconType),
         title: room.name,
         devices: 0, // We'll update this count later
+        collaborators: [], // Add the missing collaborators property
       }));
 
       // Then transform devices
@@ -853,19 +863,36 @@ const HomePage: React.FC = () => {
                   ?.currentValue
               ) || 0,
           },
-          content: {
-            feature: device.triggers[0]?.triggerType || "Default Feature",
-            smartFeature:
-              device.triggers[0]?.conditionOperator || "Default Operator",
-            toggle1: device.triggers[0]?.isActive ?? false,
-            featurePeriod: device.triggers[0]?.featurePeriod || "Daily",
-            featureDetail:
-              device.triggers[0]?.featureDetail || "8:00am, 12:00pm, 7:00pm",
-            toggle2: false,
-          },
+          content:
+            device.triggers.map((trigger) => ({
+              feature_id: trigger.id || 0,
+              feature: trigger.triggerType || "Default Feature",
+              label: trigger.featureDetail || "Default Detail",
+              status: trigger.isActive || false,
+              isUserAdded: true,
+            })) || [],
         })
       )
     );
+  };
+
+  // Add this helper function to count devices for each room
+  const updateDeviceCounts = (devices: Device[], rooms: Room[]): Room[] => {
+    // Create a map to count devices per room
+    const deviceCountMap = new Map<number, number>();
+
+    // Count devices for each room
+    devices.forEach((device) => {
+      const roomId = device.room_id;
+      const currentCount = deviceCountMap.get(roomId) || 0;
+      deviceCountMap.set(roomId, currentCount + 1);
+    });
+
+    // Update room objects with device counts
+    return rooms.map((room) => ({
+      ...room,
+      devices: deviceCountMap.get(room.id) || 0,
+    }));
   };
 
   // Initial data fetch
@@ -973,10 +1000,10 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handleRoomClick = (selectedRoom: Room) => {
-    setRoom(selectedRoom);
-    setActiveContent("viewDeviceStatus");
-  };
+  // const handleRoomClick = (selectedRoom: Room) => {
+  //   setRoom(selectedRoom);
+  //   setActiveContent("viewDeviceStatus");
+  // };
 
   const handleRoomEdit = () => {
     setRoomEditing((prev) => !prev);
@@ -1666,6 +1693,7 @@ const HomePage: React.FC = () => {
             roomsState={roomsState}
             setRoomsState={setRoomsState}
             setActiveContent={setActiveContent}
+            homeId={parseInt(localStorage.getItem("currentHomeId") || "0")}
           />
         </>
       )}

@@ -1,6 +1,21 @@
 import { Device, Room } from "./HomePage";
 import DeviceOverview from "./DeviceOverview";
 import DeviceSmartFeature from "./DeviceSmartFeature";
+import { useState, useEffect } from "react";
+
+// Import missing icons/assets
+// import bulbOn from "../assets/bulb_on.svg";
+// import bulbOff from "../assets/bulb_off.svg";
+// import foodOn from "../assets/food_on.svg";
+// import foodOff from "../assets/food_off.svg";
+// import irrigationOn from "../assets/irrigation_on.svg";
+// import irrigationOff from "../assets/irrigation_off.svg";
+
+// Define the Day type
+interface Day {
+  name: string;
+  letter: string;
+}
 
 interface ManageDeviceProps {
   devType: string | null;
@@ -474,26 +489,26 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   };
 
   // Function to display different intensity icon based on the current device type (i need todo only for light and petfeeder, currently still apply for irrigation)
-  const getIntensityIcon = (
-    deviceType: string
-  ): { on: string; off: string } => {
-    const iconMap: { [key: string]: { on: string; off: string } } = {
-      petfeeder: {
-        on: foodOff,
-        off: foodOn,
-      },
-      light: {
-        on: bulbOn,
-        off: bulbOff,
-      },
-      irrigation: {
-        on: irrigationOn,
-        off: irrigationOff,
-      },
-    };
+  // const getIntensityIcon = (
+  //   deviceType: string
+  // ): { on: string; off: string } => {
+  //   const iconMap: { [key: string]: { on: string; off: string } } = {
+  //     petfeeder: {
+  //       on: foodOff,
+  //       off: foodOn,
+  //     },
+  //     light: {
+  //       on: bulbOn,
+  //       off: bulbOff,
+  //     },
+  //     irrigation: {
+  //       on: irrigationOn,
+  //       off: irrigationOff,
+  //     },
+  //   };
 
-    return iconMap[deviceType];
-  };
+  //   return iconMap[deviceType];
+  // };
 
   // Static small circles positions (percentage values)
   const smallCircles = [14, 25.8, 37.6, 49.4, 61.2, 73];
@@ -567,7 +582,7 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   const [activeDay, setActiveDay] = useState<Day | null>(null);
 
   // function to handle day click by user
-  const handleDayClick = (day: { name: string; letter: string }) => {
+  const handleDayClick = (day: Day) => {
     setActiveDay(day);
   };
 
@@ -577,9 +592,9 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   const [isEditTime, setIsEditTime] = useState(false);
 
   // state to track the toggled period by user (not yet done)
-  const toggleTime = (time: string) => {
-    setPeriod(time); // Update the selected state
-  };
+  // const toggleTime = (time: string) => {
+  //   setPeriod(time); // Update the selected state
+  // };
 
   // state to track the toggled edit time by user (not yet done)
   const toggleEditTime = () => {
@@ -593,21 +608,27 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
     setTempTitle("Edit time"); // Set temp title to the current device title
   };
 
-  // function to handle the toggle of smart feature in manageDevice page
+  // Rename the local toggleTime function to avoid name collision
+  const togglePeriod = (time: string) => {
+    setPeriod(time); // Update the selected state
+  };
+
+  // Fix the handleContentToggle function to work with the array structure
   const handleContentToggle = (
     roomId: number,
     deviceId: number,
-    toggleKey: "toggle1" | "toggle2"
+    featureId: number
   ) => {
     setDevicesState((prevDevicesState) =>
       prevDevicesState.map((d) =>
         d.room_id === roomId && d.device_id === deviceId
           ? {
               ...d,
-              content: {
-                ...d.content,
-                [toggleKey]: !d.content[toggleKey],
-              },
+              content: d.content.map((item) =>
+                item.feature_id === featureId
+                  ? { ...item, status: !item.status }
+                  : item
+              ),
             }
           : d
       )
