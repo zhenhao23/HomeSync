@@ -175,7 +175,7 @@ const SignIn: React.FC = () => {
       </form>
 
       {/* Divider */}
-      <div className="divider">or Sign In with</div>
+      <div className="divider1">or Sign In with</div>
 
       {/* Google Sign-In Button */}
       <button className="google-btn" onClick={handleGoogleSignIn}>

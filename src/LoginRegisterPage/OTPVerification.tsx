@@ -76,7 +76,7 @@ const OTPVerification: React.FC = () => {
             </div>
           </div>
         </div>
-        <h4 className="signin-logo-text">OTP Verification</h4>
+        <h4 className="forgot-logo-text">Forgot Password?</h4>
 
         <div className="image-container">
           <img src={OTPImage} alt="OTP Illustration" className="image" />

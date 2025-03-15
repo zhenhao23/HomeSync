@@ -1,0 +1,188 @@
+/* ManageUsers.css */
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  text-align: center;
+  margin-bottom: 10%;
+  margin-top: 4%;
+  margin-left: 30%;
+}
+
+.back-icon {
+  font-size: 1.2rem;
+  color: #000000;
+  margin-right: 1rem;
+}
+
+.content-container {
+  position: fixed;
+  top: 18%;
+  bottom: 1%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  background: white;
+  border-radius: 48px 48px 0 0;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.total-users {
+  color: #333;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.add-user-btn {
+  background: rgb(32, 65, 96);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-list {
+  display: grid;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+.user-item {
+  background: white;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  border-bottom: inset;
+  border-bottom-color: #cfcfcf;
+}
+
+.user-item.swiping {
+  transition: none;
+}
+
+.delete-indicator {
+  position: absolute;
+  right: -100px;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  background: #ff4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+
+.user-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #007bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.invite-modal {
+  background: white;
+  width: 90%;
+  max-width: 400px;
+  padding: 1.5rem;
+  border-radius: 16px;
+}
+
+.invite-modal h3 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+}
+
+.invite-modal p {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.invite-modal input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
+  border: none;
+  font-weight: 500;
+}
+
+.modal-actions button:first-child {
+  background: #eee;
+  color: #333;
+}
+
+.modal-actions button:last-child {
+  background: rgb(32, 65, 96);
+  color: white;
+}
+
+/* Prevent swiping for owner */
+.user-item:first-child {
+  touch-action: none;
+  background: #f8f8f8;
+}
+
