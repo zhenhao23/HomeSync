@@ -53,7 +53,14 @@ const BottomNavbar: React.FC = () => {
   const isLaptop = useWindowSize();
 
   return (
-    <nav className="fixed-bottom px-3 py-2 bottom-navbar">
+    // <nav className="fixed-bottom px-3 py-2 bottom-navbar">
+    <nav
+      className="fixed-bottom d-flex justify-content-between align-items-center px-3 py-2 bottom-navbar"
+      style={{
+        backgroundColor: "#204160",
+        gap: "8px",
+      }}
+    >
       {navItems.map((item) => (
         <button
           key={item.id}

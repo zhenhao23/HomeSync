@@ -1,0 +1,378 @@
+/* Energy Flow Page Styles */
+/* Main container and layout */
+.energy-flow-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10%;
+}
+.energy-flow-container * {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+  /* Header styles */
+  .flow-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .energy-flow {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .ef-back-button, .ef-share-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+  
+  .back-button span {
+    margin-left: 8px;
+  }
+  
+  /* Main content area */
+  .content-wrapper {
+    flex: 1;
+    background-color: white;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    z-index: 2; /* Above header for clean border-radius look */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Yield summary styles */
+  .yield-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .yield-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .yield-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+  }
+  
+  .yield-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a3b5d;
+  }
+  
+  .yield-unit {
+    font-size: 14px;
+    color: #666;
+    margin-left: 4px;
+  }
+  
+  /* Energy stats table styles */
+  .energy-stats {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+  }
+  
+  .stat-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  
+  .stat-label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    color: #333;
+    position: relative;
+  }
+  
+  .color-indicator {
+    width: 3px;
+    height: 16px;
+    margin-right: 10px;
+    border-radius: 2px;
+  }
+  
+  .color-indicator.pv {
+    background-color: #ffd700;
+  }
+  
+  .color-indicator.imported {
+    background-color: #ff5252;
+  }
+  
+  .color-indicator.exported {
+    background-color: #2196f3;
+  }
+  
+  .color-indicator.load {
+    background-color: #ff9800;
+  }
+  
+  .stat-values {
+    flex: 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    text-align: right;
+    gap: 8px;
+    color: #666;
+  }
+  
+  /* Table headers */
+  .energy-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    text-align: right;
+    margin-bottom: 8px;
+    padding: 0 0 8px 120px;
+    color: #999;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Info button styling */
+  .info-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 4px;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .info-button:hover {
+    color: #999;
+  }
+  
+  /* Tooltip styling */
+  .tooltip {
+    position: absolute;
+    left: 30px;
+    top: -5px;
+    width: 250px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    font-size: 14px;
+    color: #333;
+    font-weight: normal;
+  }
+  
+  /* Download confirmation dialog */
+  .energy-flow-container .download-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+  
+  .download-confirm-dialog {
+    background-color: white;
+    border-radius: 16px;
+    padding: 24px;
+    width: 80%;
+    max-width: 320px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .download-confirm-dialog h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #1a3b5d;
+    font-size: 18px;
+  }
+  
+  .download-confirm-dialog p {
+    color: #4a5568;
+    margin-bottom: 24px;
+  }
+  
+  .dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  
+  .energy-flow-container .dialog-buttons button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+}
+  
+  .dialog-buttons button:first-child {
+    background-color: #f1f5f9;
+    color: #4a5568;
+  }
+  
+  .confirm-button {
+    background-color: #1a3b5d;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .confirm-button:hover {
+    background-color: #153251;
+  }
+  
+  /* Navigation bar at bottom */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    background-color: #1a3b5d;
+    padding: 12px 0;
+  }
+  
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    color: white;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  
+  .nav-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .nav-icon {
+    margin-bottom: 4px;
+  }
+  
+  /* Cloud decoration in header */
+  .cloud-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    z-index: 0;
+    overflow: hidden;
+  }
+  
+  .cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+  }
+  
+  .cloud-1 {
+    width: 100px;
+    height: 60px;
+    top: -30px;
+    left: -20px;
+  }
+  
+  .cloud-2 {
+    width: 120px;
+    height: 70px;
+    top: -35px;
+    right: -30px;
+  }
+  
+  /* Status bar */
+  .status-bar {
+    height: 24px;
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1a3b5d;
+    color: white;
+    font-size: 14px;
+  }
+  
+  .time {
+    font-weight: 500;
+  }
+  
+  .status-icons {
+    display: flex;
+    gap: 5px;
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 375px) {
+    .yield-value {
+      font-size: 16px;
+    }
+    
+    .stat-values {
+      font-size: 14px;
+    }
+    
+    .node-circle {
+      width: 70px;
+      height: 70px;
+    }
+    
+    .flow-header h1 {
+      font-size: 20px;
+    }
+  }
+  
+  @media screen and (min-width: 768px) {
+    .content-wrapper {
+      padding: 32px;
+    }
+    
+    .yield-value {
+      font-size: 22px;
+    }
+    
+    .flow-diagram {
+      height: 400px;
+    }
+    
+    .node-circle {
+      width: 100px;
+      height: 100px;
+    }
+  }

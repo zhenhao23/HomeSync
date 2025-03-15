@@ -227,7 +227,7 @@ const Register: React.FC = () => {
       </form>
 
       {/* Divider */}
-      <div className="divider">or Register with</div>
+      <div className="divider2">or Register with</div>
 
       {/* Google Register Button */}
       <button onClick={handleGoogleRegister} className="google-btn">
