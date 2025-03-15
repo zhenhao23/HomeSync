@@ -27,54 +27,54 @@ const EditProfile: React.FC<EditProfileProps> = ({ onBack, userData, setUserData
 
   return (
     <>
-      <div className="container-fluid p-3 pb-2">
-        <div className="row align-items-center mb-3">
-          <div className="col-4 text-start">
-            <button className="btn p-0" onClick={onBack}>
+      <div className="ep-container-fluid p-3 pb-2">
+        <div className="ep-row align-items-center ep-mb-3">
+          <div className="ep-col-4 text-start">
+            <button className="ep-btn p-0" onClick={onBack}>
               <FaArrowLeft />
             </button>
           </div>
-          <div className="col-4 text-center">
-            <h1 className="edit-profile">Edit Profile</h1>
+          <div className="ep-col-4 text-center">
+            <h1 className="ep-edit-profile">Edit Profile</h1>
           </div>
-          <div className="col-4" />
+          <div className="ep-col-4" />
         </div>
       </div>
 
-      <div className="content-container">
-        <form onSubmit={handleSubmit} className="edit-profile-form">
-          <div className="profile-image-upload">
-            <img className="profile-image1"
+      <div className="ep-content-container">
+        <form onSubmit={handleSubmit} className="ep-edit-profile-form">
+          <div className="ep-profile-image-upload">
+            <img className="ep-profile-image1"
               src={ProfileImage} 
               alt="Profile" 
             />
-            <button type="button" className="upload-button">
+            <button type="button" className="ep-upload-button">
               <FaCamera />
             </button>
           </div>
 
-          <div className="form-group">
+          <div className="ep-form-group">
             <label>Full Name:</label>
             <input
               type="text"
-              className="form-control"
+              className="ep-form-control"
               value={formData.fullName}
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
             />
           </div>
 
-          <div className="form-group">
+          <div className="ep-form-group">
             <label>Email Address:</label>
             <input
               type="email"
-              className="form-control"
+              className="ep-form-control"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
             />
           </div>
 
-          <div className="save-button-container">
-            <button type="submit" className="btn btn-primary w-100">
+          <div className="ep-save-button-container">
+            <button type="submit" className="ep-btn ep-btn-primary w-100">
               Save
             </button>
           </div>

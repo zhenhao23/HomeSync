@@ -1,37 +1,38 @@
 /* Edit Profile Styling */
 
-.edit-profile {
+/* Adjust "Edit Profile" title position */
+.ep-edit-profile {
   color: white;
   font-size: 24px;
   margin-bottom: 24px;
   text-align: center;
   font-weight: 600;
   position: relative;
-  margin-top: 57%;
+  margin-top: 18%; /* Moved higher */
 }
 
-.text-start {
+.ep-text-start {
   text-align: left !important;
   margin-bottom: 60px;
 }
 
-.profile-image1 {
+.ep-profile-image1 {
   vertical-align: middle;
   color: white;
 }
 
-.container-fluid.p-3.pb-2 {
+.ep-container-fluid.p-3.pb-2 {
   position: relative;
   z-index: 2;
 }
 
-.edit-profile-form {
+.ep-edit-profile-form {
   max-width: 500px;
   margin: 0 auto;
   margin-top: 38px;
 }
 
-.content-container {
+.ep-content-container {
   position: fixed;
   top: 18%;
   bottom: 1%; /* Moved Up from 0% */
@@ -45,14 +46,14 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.profile-image-upload {
+.ep-profile-image-upload {
   position: relative;
   width: 100px;
   height: 100px;
   margin: 1.5rem auto;
 }
 
-.profile-image-upload img {
+.ep-profile-image-upload img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -61,7 +62,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.upload-button {
+.ep-upload-button {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -77,11 +78,11 @@
   padding: 0;
 }
 
-.form-group {
+.ep-form-group {
   margin-bottom: 1.5rem;
 }
 
-.form-group label {
+.ep-form-group label {
   display: block;
   margin-bottom: 0.5rem;
   color: #666;
@@ -89,7 +90,7 @@
   margin-top: 40px;
 }
 
-.form-control {
+.ep-form-control {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;
@@ -98,13 +99,13 @@
   transition: border-color 0.2s;
 }
 
-.form-control:focus {
+.ep-form-control:focus {
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-.btn-primary {
+.ep-btn-primary {
   background-color: rgb(32, 65, 96);
   border: none;
   text-transform: capitalize;
@@ -114,29 +115,35 @@
   border-radius: 32px; /* More rounded shape */
   padding: 0.75rem;
   margin-top: 90px;
+  color: #fff;
 }
 
-.btn-primary:active {
+.ep-btn-primary:active {
   background-color: rgb(25, 50, 75);
 }
 
 /* Header Alignment */
-.row.align-items-center.mb-3 {
+.ep-row.align-items-center.ep-mb-3 {
   padding: 0 1rem;
 }
-
-.col-4.text-center h3 {
+/* Ensure title is centered properly */
+.ep-col-4.text-center h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: #333;
+  margin-top: -10px; /* Moves title a bit higher */
 }
 
-.btn.p-0 {
-  color: #333;
+.ep-btn.p-0 {
+  background: none; /* Removes any default background */
+  border: none; /* Removes any border */
+  color: #fcfcfc;
   font-size: 1.2rem;
+  padding: 0;
+  margin-top: 3%;
 }
 
-.save-button-container {
+.ep-save-button-container {
   margin-top: 2.5rem; /* Increased spacing above button */
   padding: 0 1rem;
 }

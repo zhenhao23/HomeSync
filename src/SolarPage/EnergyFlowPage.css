@@ -1,15 +1,14 @@
 /* Energy Flow Page Styles */
-
 /* Main container and layout */
 .energy-flow-container {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    margin-top: 10%; 
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10%;
 }
-
-  
+.energy-flow-container * {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
   /* Header styles */
   .flow-header {
     padding: 16px 20px;
@@ -29,7 +28,7 @@
     margin: 0;
   }
   
-  .back-button, .share-button {
+  .ef-back-button, .ef-share-button {
     background: none;
     border: none;
     color: white;
@@ -37,7 +36,7 @@
     display: flex;
     align-items: center;
     font-size: 16px;
-  }
+}
   
   .back-button span {
     margin-left: 8px;
@@ -87,123 +86,6 @@
     font-size: 14px;
     color: #666;
     margin-left: 4px;
-  }
-  
-  /* Flow diagram styles */
-  .flow-diagram {
-    position: relative;
-    height: 320px;
-    margin-bottom: 30px;
-  }
-  
-  .node {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .node-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-    position: relative;
-  }
-  
-  .node-icon {
-    font-size: 24px;
-    margin-bottom: 4px;
-  }
-  
-  .node-value {
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .node-label {
-    font-size: 14px;
-    color: #666;
-    background-color: #f0f0f0;
-    padding: 2px 10px;
-    border-radius: 12px;
-  }
-  
-  /* Position and style for each specific node */
-  .pv-node {
-    top: 50px;
-    left: 10%;
-  }
-  
-  
-.pv-node .node-circle {
-    border: 3px solid #ffe100; /* Brighter yellow matching the image */
-    background-color: rgba(255, 225, 0, 0.1);
-  }
-  
-  .grid-node {
-    top: 50px;
-    right: 10%;
-  }
-  
-  .grid-node .node-circle {
-    border: 3px solid #4a90e2; /* More blue-toned matching the image */
-    background-color: rgba(74, 144, 226, 0.1);
-  }
-  
-  .battery-node {
-    top: 150px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .battery-node .node-circle {
-    border: 3px solid #ff9800;
-    background-color: rgba(255, 152, 0, 0.1);
-  }
-  
-  .home-node {
-    bottom: 20px;
-    right: 15%;
-  }
-  
-  .home-node .node-circle {
-    border: 3px solid #ffbb80; /* Lighter orange for home node */
-    background-color: rgba(255, 187, 128, 0.05);
-  }
-  
-  /* Flow arrows SVG styles */
-  .flow-arrows {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
-  
-  .flow-path {
-    fill: none;
-    stroke-width: 2;
-  }
-  
-  .pv-to-battery {
-    stroke: #ffe100;
-    marker-end: url(#arrow-yellow);
-  }
-
-  .battery-to-grid {
-    stroke: #4a90e2;
-    marker-end: url(#arrow-blue);
-  }
-  
-  .battery-to-home {
-    stroke: #ffbb80;
-    marker-end: url(#arrow-orange);
   }
   
   /* Energy stats table styles */
@@ -308,7 +190,7 @@
   }
   
   /* Download confirmation dialog */
-  .download-confirm-overlay {
+  .energy-flow-container .download-confirm-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -319,7 +201,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-  }
+}
   
   .download-confirm-dialog {
     background-color: white;
@@ -348,14 +230,14 @@
     gap: 12px;
   }
   
-  .dialog-buttons button {
+  .energy-flow-container .dialog-buttons button {
     padding: 8px 16px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
     font-weight: 500;
     font-size: 14px;
-  }
+}
   
   .dialog-buttons button:first-child {
     background-color: #f1f5f9;

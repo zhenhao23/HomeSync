@@ -13,7 +13,11 @@ import {
   FaTrash,
   FaSignOutAlt,
   FaCheck,
-  FaEllipsisV
+  FaEllipsisV,
+  FaArrowLeft,
+  FaBed,
+  FaCouch,
+  FaUtensils
 } from "react-icons/fa";
 import EditProfilePage from "./EditProfile";
 import LanguagesPage from "./Languages";
@@ -35,6 +39,13 @@ interface UserType {
   profilePic: string;
 }
 
+// Define Device Type
+interface DeviceType {
+  name: string;
+  location: string;
+  icon: JSX.Element;
+}
+
 const ProfilePage = () => {
   const [currentPage, setCurrentPage] = useState("profile");
   const [userData, setUserData] = useState({
@@ -48,6 +59,9 @@ const ProfilePage = () => {
     { id: 1, name: "Smart Home 1", selected: false },
     { id: 2, name: "Smart Home 2", selected: true }
   ]);
+  // State for adding new home
+  const [newHomeName, setNewHomeName] = useState("");
+  const [showAddHomeInput, setShowAddHomeInput] = useState(false);
   
   // Shared state for users that will be used across both mobile and laptop views
   const [users, setUsers] = useState<UserType[]>([
@@ -88,6 +102,10 @@ const ProfilePage = () => {
   const [email, setEmail] = useState("");
   const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number, y: number } | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  
+  // State for user devices modal
+  const [showUserDevices, setShowUserDevices] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -143,6 +161,21 @@ const ProfilePage = () => {
     })));
   };
   
+  // Function to add a new home
+  const addNewHome = () => {
+    if (newHomeName.trim() === "") return;
+    
+    const newHome = {
+      id: Math.max(...homes.map(home => home.id)) + 1,
+      name: newHomeName.trim(),
+      selected: false
+    };
+    
+    setHomes([...homes, newHome]);
+    setNewHomeName("");
+    setShowAddHomeInput(false);
+  };
+  
   // Handle adding a new user
   const addUser = () => {
     if (!email) return;
@@ -174,6 +207,12 @@ const ProfilePage = () => {
     setSelectedUserId(userId);
   };
 
+  // Handle clicking on a user to show their devices
+  const handleUserClick = (user: UserType) => {
+    setSelectedUser(user);
+    setShowUserDevices(true);
+  };
+
   const HomeModal = () => {
     return (
       <div className="home-modal">
@@ -193,10 +232,60 @@ const ProfilePage = () => {
             ))}
           </ul>
           
-          <div className="add-new-home">
-            <span className="plus-icon"><FaPlus size={14} /></span>
-            <span>Add New Home</span>
-          </div>
+          {!showAddHomeInput ? (
+            <div 
+              className="add-new-home"
+              onClick={() => setShowAddHomeInput(true)}
+            >
+              <span className="plus-icon"><FaPlus size={14} /></span>
+              <span>Add New Home</span>
+            </div>
+          ) : (
+            <div className="add-new-home-input">
+              <input
+                type="text"
+                placeholder="Enter home name"
+                value={newHomeName}
+                onChange={(e) => setNewHomeName(e.target.value)}
+                autoFocus
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                  width: "100%",
+                  marginBottom: "8px"
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <button 
+                  onClick={() => {
+                    setShowAddHomeInput(false);
+                    setNewHomeName("");
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                    background: "#f5f5f5"
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={addNewHome}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    border: "1px solid #0066cc",
+                    background: "#0066cc",
+                    color: "white"
+                  }}
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
           
           <div className="modal-actions">
             <button className="cancel-button" onClick={() => setShowHomeModal(false)}>
@@ -229,6 +318,93 @@ const ProfilePage = () => {
           <div className="modal-actions">
             <button onClick={() => setShowInvite(false)}>Cancel</button>
             <button onClick={addUser}>Done</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // User Devices Modal
+  const UserDevicesModal = () => {
+    if (!selectedUser) return null;
+    
+    // Generate some example devices for the user
+    const devices: DeviceType[] = [
+      { name: "Living Room Light", location: "Living Room", icon: <FaCouch size={24} /> },
+      { name: "Bedroom AC", location: `${selectedUser.name}'s Bedroom`, icon: <FaBed size={24} /> },
+      { name: "Kitchen Light", location: "Kitchen", icon: <FaUtensils size={24} /> }
+    ];
+    
+    return (
+      <div className="modal-overlay">
+        <div className="invite-modal user-devices-modal">
+          <div className="user-devices-header">
+            <FaArrowLeft 
+              className="back-icon" 
+              onClick={() => setShowUserDevices(false)} 
+              style={{ cursor: 'pointer' }}
+            />
+            <h3>User Devices</h3>
+          </div>
+          
+          <div className="user-profile">
+            <div className="profile-image">
+              {selectedUser.profilePic ? (
+                <img 
+                  src={selectedUser.profilePic} 
+                  alt={selectedUser.name} 
+                  style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }}
+                />
+              ) : (
+                <div 
+                  className="default-avatar"
+                  style={{ 
+                    width: '60px', 
+                    height: '60px', 
+                    borderRadius: '50%', 
+                    backgroundColor: '#e0e0e0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '24px'
+                  }}
+                >
+                  {selectedUser.name.charAt(0)}
+                </div>
+              )}
+            </div>
+            <h3 className="user-name" style={{ marginTop: '10px' }}>{selectedUser.name}</h3>
+          </div>
+          
+          <ul className="device-list" style={{ listStyle: 'none', padding: '0', marginTop: '20px' }}>
+            {devices.map((device, index) => (
+              <li 
+                key={index} 
+                className="device-item"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '12px',
+                  marginBottom: '8px',
+                  backgroundColor: '#f5f5f5',
+                  borderRadius: '8px'
+                }}
+              >
+                <div className="device-icon" style={{ marginRight: '12px' }}>
+                  {device.icon}
+                </div>
+                <div className="device-info">
+                  <div style={{ fontWeight: 'bold' }}>{device.name}</div>
+                  <span className="device-location" style={{ color: '#666', fontSize: '14px' }}>
+                    {device.location}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+          
+          <div className="modal-actions" style={{ marginTop: '20px' }}>
+            <button onClick={() => setShowUserDevices(false)}>Close</button>
           </div>
         </div>
       </div>
@@ -516,6 +692,8 @@ const ProfilePage = () => {
                     key={user.id} 
                     className="laptop-user-item"
                     onContextMenu={(e) => handleUserContextMenu(e, user.id)}
+                    onClick={() => handleUserClick(user)}
+                    style={{ cursor: 'pointer' }}
                   >
                     <div className="laptop-user-profile">
                       {user.profilePic ? (
@@ -530,7 +708,10 @@ const ProfilePage = () => {
                     {user.id !== 1 && (
                       <div 
                         className="laptop-delete-indicator"
-                        onClick={() => deleteUser(user.id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent opening devices modal
+                          deleteUser(user.id);
+                        }}
                       >
                         <FaTrash />
                         <span>Delete</span>
@@ -551,6 +732,7 @@ const ProfilePage = () => {
       {isLaptopView ? renderLaptopView() : renderMobileView()}
       {showHomeModal && <HomeModal />}
       {showInvite && <InviteModal />}
+      {showUserDevices && <UserDevicesModal />}
       {contextMenuPosition && <ContextMenu />}
     </div>
   );
