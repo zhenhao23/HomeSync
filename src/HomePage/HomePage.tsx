@@ -344,134 +344,6 @@ const devices: Device[] = [
       },
     ],
   },
-  {
-    device_id: 6,
-    room_id: 4,
-    image: airCondIcon,
-    title: "Air Cond",
-    deviceType: "aircond",
-    status: false,
-    swiped: false,
-    devData: {
-      id: 0,
-      iconImage: manageAircond,
-      percentage: 0,
-      celsius: 18,
-      waterFlow: 0,
-    },
-    content: [
-      {
-        feature_id: 1,
-        feature: "Auto Air Cond",
-        label: "Turn on when room temp > 25°C",
-        status: false,
-        isUserAdded: false,
-      },
-      {
-        feature_id: 2,
-        feature: "Daily",
-        label: "9:00am to 4:00pm",
-        status: false,
-        isUserAdded: true,
-      },
-    ],
-  },
-  {
-    device_id: 7,
-    room_id: 4,
-    image: airCondIcon,
-    title: "Air Cond",
-    deviceType: "aircond",
-    status: false,
-    swiped: false,
-    devData: {
-      id: 0,
-      iconImage: manageAircond,
-      percentage: 0,
-      celsius: 20,
-      waterFlow: 0,
-    },
-    content: [
-      {
-        feature_id: 1,
-        feature: "Auto Air Cond",
-        label: "Turn on when room temp > 25°C",
-        status: false,
-        isUserAdded: false,
-      },
-      {
-        feature_id: 2,
-        feature: "Daily",
-        label: "9:00am to 4:00pm",
-        status: false,
-        isUserAdded: true,
-      },
-    ],
-  },
-  {
-    device_id: 8,
-    room_id: 4,
-    image: airCondIcon,
-    title: "Air Cond",
-    deviceType: "aircond",
-    status: false,
-    swiped: false,
-    devData: {
-      id: 0,
-      iconImage: manageAircond,
-      percentage: 0,
-      celsius: 25,
-      waterFlow: 0,
-    },
-    content: [
-      {
-        feature_id: 1,
-        feature: "Auto Air Cond",
-        label: "Turn on when room temp > 25°C",
-        status: false,
-        isUserAdded: false,
-      },
-      {
-        feature_id: 2,
-        feature: "Daily",
-        label: "9:00am to 4:00pm",
-        status: false,
-        isUserAdded: true,
-      },
-    ],
-  },
-  {
-    device_id: 9,
-    room_id: 4,
-    image: airCondIcon,
-    title: "Air Cond",
-    deviceType: "aircond",
-    status: false,
-    swiped: false,
-    devData: {
-      id: 0,
-      iconImage: manageAircond,
-      percentage: 0,
-      celsius: 28,
-      waterFlow: 0,
-    },
-    content: [
-      {
-        feature_id: 1,
-        feature: "Auto Air Cond",
-        label: "Turn on when room temp > 25°C",
-        status: false,
-        isUserAdded: false,
-      },
-      {
-        feature_id: 2,
-        feature: "Daily",
-        label: "9:00am to 4:00pm",
-        status: false,
-        isUserAdded: true,
-      },
-    ],
-  },
 ];
 
 // A default device when no device is seleted to avoid null situation
@@ -493,27 +365,6 @@ const defaultDevice: Device = {
   content: [],
 };
 
-const initialCollaborators: Collaborator[] = [
-  {
-    id: 0,
-    name: "Alvin",
-    image: collaboratorIcon,
-    type: "Owner",
-  },
-  {
-    id: 1,
-    name: "Alice",
-    image: collaboratorIcon,
-    type: "Dweller",
-  },
-  {
-    id: 2,
-    name: "Anna",
-    image: collaboratorIcon,
-    type: "Dweller",
-  },
-];
-
 const defaultRoom: Room = {
   id: 0,
   image: LivingRoomImage,
@@ -521,36 +372,6 @@ const defaultRoom: Room = {
   devices: 0,
   collaborators: [],
 };
-
-// Add API interface definitions
-interface ApiRoom {
-  id: number;
-  name: string;
-  iconType: string;
-  devices: ApiDevice[];
-}
-
-interface ApiDevice {
-  id: number;
-  roomId: number;
-  displayName: string;
-  type: string;
-  status: boolean;
-  swiped: boolean;
-  controls: {
-    id: number;
-    controlType: string;
-    currentValue: string;
-  }[];
-  triggers: {
-    id?: number;
-    triggerType?: string;
-    conditionOperator?: string;
-    isActive?: boolean;
-    featurePeriod?: string;
-    featureDetail?: string;
-  }[];
-}
 
 // Initial rooms and devices arrays
 const initialRooms = rooms;
@@ -560,7 +381,6 @@ const HomePage: React.FC = () => {
   // State management
   const [roomsState, setRoomsState] = useState(initialRooms);
   const [devicesState, setDevicesState] = useState(initialDevices);
-  const [collabState, setCollabState] = useState(initialCollaborators);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -645,7 +465,6 @@ const HomePage: React.FC = () => {
     }
   };
 
-  // Update your fetch function:
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -692,15 +511,15 @@ const HomePage: React.FC = () => {
           const firstHomeId = homesData[0].id;
           localStorage.setItem("currentHomeId", firstHomeId.toString());
 
-          // Fetch rooms for this home
-          await fetchRoomsForHome(firstHomeId, token);
+          // Fetch home data using the new endpoint
+          await fetchHomeData(firstHomeId, token);
         } else {
           setError("No homes found for your account");
           setIsLoading(false);
         }
       } else {
-        // Use the stored homeId to fetch rooms
-        await fetchRoomsForHome(parseInt(homeId), token);
+        // Use the stored homeId to fetch home data
+        await fetchHomeData(parseInt(homeId), token);
       }
     } catch (err) {
       setError(
@@ -713,84 +532,48 @@ const HomePage: React.FC = () => {
     }
   };
 
-  // Helper function to fetch rooms for a specific home
-  const fetchRoomsForHome = async (homeId: number, token: string) => {
+  // New helper function to fetch home data in the right format
+  const fetchHomeData = async (homeId: number, token: string) => {
     try {
-      // Set timeout for the fetch request
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
       const response = await fetch(
-        `http://localhost:5000/api/rooms/home/${homeId}`,
+        `http://localhost:5000/api/homedata/${homeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          signal: controller.signal,
         }
       );
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         if (response.status === 401) {
-          // Token might be expired, navigate to login
-          console.error("Authentication token expired or invalid");
           navigate("/signin");
           return;
         }
+
         if (response.status === 403) {
-          throw new Error("You don't have access to this home");
+          setError("You don't have permission to access this home");
+          return;
         }
-        throw new Error(`Server error: ${response.status}`);
+
+        throw new Error(`Failed to fetch home data: ${response.status}`);
       }
 
-      const roomsData: ApiRoom[] = await response.json();
+      // Get the data in the format your frontend expects
+      const data = await response.json();
 
-      // First, update rooms from API
-      const updatedRooms = roomsData.map((room) => ({
-        id: room.id,
-        image: getRoomImage(room.iconType),
-        title: room.name,
-        devices: 0, // We'll update this count later
-        collaborators: [], // Add the missing collaborators property
-      }));
-
-      // Then transform devices
-      const transformedDevices = transformApiData(roomsData);
-
-      // Finally, update device counts
-      const roomsWithCounts = updateDeviceCounts(
-        transformedDevices,
-        updatedRooms
-      );
-
-      setDevicesState(transformedDevices);
-      setRoomsState(roomsWithCounts);
-
-      // Log for debugging
-      console.log("Rooms after update:", roomsWithCounts);
-      console.log("Devices after update:", transformedDevices);
-    } catch (err) {
-      // Handle AbortError separately
-      if (err instanceof DOMException && err.name === "AbortError") {
-        setError("Request timed out. Please try again.");
-      } else {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "An error occurred while fetching rooms"
-        );
-      }
-      console.error("API Error:", err);
-    } finally {
+      // Update your state with the fetched data
+      setRoomsState(data.roomsState);
+      setDevicesState(data.devicesState);
       setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching home data:", error);
+      throw error;
     }
   };
 
-  // Add these helper functions to map room IDs to images and titles
   const getRoomImage = (roomIconType: string): string => {
+    // Use the same mapping as on the server
     const roomImages: Record<string, string> = {
       "living-room": LivingRoomImage,
       bedroom: BedRoomImage,
@@ -798,32 +581,22 @@ const HomePage: React.FC = () => {
       garden: GardenImage,
       bathroom: BathroomImage,
     };
-    return roomImages[roomIconType] || LivingRoomImage; // Default to LivingRoom if not found
+    return roomImages[roomIconType] || LivingRoomImage;
   };
 
-  const getRoomTitle = (roomId: number): string => {
-    const roomTitles: Record<number, string> = {
-      52: "Living Room",
-      53: "Bedroom",
-      54: "Kitchen",
-      3: "Garden",
-      4: "Bathroom",
-    };
-    return roomTitles[roomId] || "Unknown Room";
-  };
-
-  // Update your device mapping function to handle the correct device types
   const getDeviceImage = (type: string): string => {
+    // Use the same mapping as on the server
     const deviceImages: Record<string, string> = {
       petfeeder: petfeederIcon,
       light: lampIcon,
-      aircond: airCondIcon, // Note the AC type mapping
+      aircond: airCondIcon,
       irrigation: sprinklerIcon,
     };
     return deviceImages[type] || "../assets/default-device.svg";
   };
 
   const getDeviceIcon = (type: string): string => {
+    // Use the same mapping as on the server
     const deviceIcons: Record<string, string> = {
       petfeeder: managePetfeeder,
       aircond: manageAircond,
@@ -833,72 +606,51 @@ const HomePage: React.FC = () => {
     return deviceIcons[type] || "../assets/default-icon.svg";
   };
 
-  const transformApiData = (roomsData: ApiRoom[]): Device[] => {
-    return roomsData.flatMap((room) =>
-      room.devices.map(
-        (device: ApiDevice): Device => ({
-          device_id: device.id,
-          room_id: device.roomId,
-          image: getDeviceImage(device.type),
-          title: device.displayName,
-          deviceType: device.type,
-          status: device.status,
-          swiped: device.swiped,
-          devData: {
-            id: device.controls[0]?.id,
-            iconImage: getDeviceIcon(device.type),
-            percentage:
-              Number(
-                device.controls.find((c) => c.controlType === "percentage")
-                  ?.currentValue
-              ) || 0,
-            celsius:
-              Number(
-                device.controls.find((c) => c.controlType === "temperature")
-                  ?.currentValue
-              ) || 0,
-            waterFlow:
-              Number(
-                device.controls.find((c) => c.controlType === "waterFlow")
-                  ?.currentValue
-              ) || 0,
-          },
-          content:
-            device.triggers.map((trigger) => ({
-              feature_id: trigger.id || 0,
-              feature: trigger.triggerType || "Default Feature",
-              label: trigger.featureDetail || "Default Detail",
-              status: trigger.isActive || false,
-              isUserAdded: true,
-            })) || [],
-        })
-      )
-    );
-  };
-
-  // Add this helper function to count devices for each room
-  const updateDeviceCounts = (devices: Device[], rooms: Room[]): Room[] => {
-    // Create a map to count devices per room
-    const deviceCountMap = new Map<number, number>();
-
-    // Count devices for each room
-    devices.forEach((device) => {
-      const roomId = device.room_id;
-      const currentCount = deviceCountMap.get(roomId) || 0;
-      deviceCountMap.set(roomId, currentCount + 1);
-    });
-
-    // Update room objects with device counts
-    return rooms.map((room) => ({
-      ...room,
-      devices: deviceCountMap.get(room.id) || 0,
-    }));
-  };
-
   // Initial data fetch
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Replace your existing image-mapping effect with this one
+  useEffect(() => {
+    // Only run this when data is first loaded from API
+    if (roomsState.length > 0 && devicesState.length > 0) {
+      // Create a flag to check if we need to update images
+      const needsImageUpdate = roomsState.some(
+        (room) => typeof room.image === "string" && room.image.includes("-")
+      );
+
+      if (needsImageUpdate) {
+        console.log("Updating image references...");
+
+        // Update rooms first with both room image and collaborator images
+        setRoomsState((prevRooms) =>
+          prevRooms.map((room) => ({
+            ...room,
+            image: getRoomImage(room.image),
+            collaborators: room.collaborators.map((collab) => ({
+              ...collab,
+              image: collab.image.includes("collab-profile.svg")
+                ? collaboratorIcon
+                : collab.image,
+            })),
+          }))
+        );
+
+        // Then update devices
+        setDevicesState((prevDevices) =>
+          prevDevices.map((device) => ({
+            ...device,
+            image: getDeviceImage(device.deviceType),
+            devData: {
+              ...device.devData,
+              iconImage: getDeviceIcon(device.deviceType),
+            },
+          }))
+        );
+      }
+    }
+  }, [roomsState, devicesState]);
 
   // Memoized devices map for efficient lookups
   const devicesMap = useMemo(() => {
@@ -922,16 +674,6 @@ const HomePage: React.FC = () => {
     return device ? device.status : false;
   };
 
-  // Function to handle the curennt selected device's smart feature toggle in manageDevice page
-  // const getSelectedDeviceToggle = (
-  //   roomId: number,
-  //   deviceId: number,
-  //   toggleKey: "toggle1" | "toggle2"
-  // ) => {
-  //   const device = devicesMap.get(roomId)?.get(deviceId); // Perform a fast lookup for the device using roomId and deviceId.
-  //   return device ? device.content[toggleKey] : false; // Return the toggle value or false if the device is not found.
-  // };
-
   const getSelectedDeviceToggle = (
     roomId: number,
     deviceId: number,
@@ -945,17 +687,6 @@ const HomePage: React.FC = () => {
       : false;
   };
 
-  // Event handlers
-  // const handleToggle = (roomId: number, deviceId: number) => {
-  //   setDevicesState((prevDevicesState) =>
-  //     prevDevicesState.map((dev) =>
-  //       dev.room_id === roomId && dev.device_id === deviceId
-  //         ? { ...dev, status: !dev.status }
-  //         : dev
-  //     )
-  //   );
-  //   console.log("thissss");
-  // };
   // Updated handleToggle function with API integration
   const handleToggle = async (roomId: number, deviceId: number) => {
     try {
@@ -1112,6 +843,71 @@ const HomePage: React.FC = () => {
     setRequestAccess(false);
   };
 
+  // API function to add a new smart feature/trigger to a device
+  const addDeviceFeatureAPI = async (
+    deviceId: number,
+    featureData: {
+      triggerType: string; // maps to 'feature'
+      conditionOperator: string; // maps to 'label'
+      isActive: boolean; // maps to 'status'
+      featurePeriod: string; // repeat option (Daily, Weekly, etc)
+      featureDetail: string; // time details
+    }
+  ) => {
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      // If no token is available, show error
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      // Get the current homeId from localStorage
+      const homeId = localStorage.getItem("currentHomeId");
+
+      if (!homeId) {
+        throw new Error("Home ID not found");
+      }
+
+      // Send request to add the new feature as a device trigger
+      const response = await fetch(
+        `http://localhost:5000/api/devices/${deviceId}/triggers`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...featureData,
+            homeId: parseInt(homeId), // Send homeId for server-side validation
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid
+          navigate("/signin");
+          throw new Error("Authentication token expired");
+        }
+
+        if (response.status === 403) {
+          throw new Error("You don't have permission to modify this device");
+        }
+
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add smart feature");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error adding smart feature:", error);
+      throw error;
+    }
+  };
+
   // state to track if user wants to add new smart feature schedule in manageDevice page
   const [addFeature, setAddFeature] = useState(false);
 
@@ -1121,42 +917,67 @@ const HomePage: React.FC = () => {
   };
 
   // Function to handle adding smart feature schedule
-  const handleAddFeature = (deviceId: number) => {
-    // Find the selected device
-    const selectedDevice = devicesState.find(
-      (device) => device.device_id === deviceId
-    );
+  const handleAddFeature = async (deviceId: number) => {
+    try {
+      // Find the selected device
+      const selectedDevice = devicesState.find(
+        (device) => device.device_id === deviceId
+      );
 
-    // Ensure selected device exists
-    if (!selectedDevice) return;
+      // Ensure selected device exists
+      if (!selectedDevice) return;
 
-    // Define new smart feature schedule
-    const newFeature = {
-      feature_id: selectedDevice.content.length + 2,
-      feature: repeatOption,
-      label:
-        turnOn +
-        turnOnPeriod.toLowerCase() +
-        " to " +
-        turnOff +
-        turnOffPeriod.toLowerCase(),
-      status: false,
-      isUserAdded: true,
-    };
+      // Format the label based on time settings
+      const timeLabel = `${turnOn}${turnOnPeriod.toLowerCase()} to ${turnOff}${turnOffPeriod.toLowerCase()}`;
 
-    // Update the device's content array to include the new feature
-    setDevicesState((prevDevices) =>
-      prevDevices.map((device) =>
-        device.device_id === deviceId
-          ? {
-              ...device,
-              content: [...device.content, newFeature], // Correct structure
-            }
-          : device
-      )
-    );
+      // Prepare feature data in the format expected by the API
+      const featureData = {
+        triggerType: repeatOption, // Feature name (e.g. "Daily")
+        conditionOperator: timeLabel, // Time details as a descriptive string
+        isActive: false, // Start as inactive
+        featurePeriod: repeatOption, // The repeat option (Daily, Weekly, etc)
+        featureDetail: timeLabel, // Time details for display
+      };
 
-    handleAddFeatureToggle();
+      // Update UI optimistically for responsive feel
+      const newFeature = {
+        feature_id: selectedDevice.content.length + 2,
+        feature: repeatOption,
+        label: timeLabel,
+        status: false,
+        isUserAdded: true,
+      };
+
+      // Update local state optimistically
+      setDevicesState((prevDevices) =>
+        prevDevices.map((device) =>
+          device.device_id === deviceId
+            ? {
+                ...device,
+                content: [...device.content, newFeature],
+              }
+            : device
+        )
+      );
+
+      // Call the API to persist the change
+      await addDeviceFeatureAPI(deviceId, featureData);
+
+      // Close the add feature UI
+      handleAddFeatureToggle();
+    } catch (error) {
+      console.error("Failed to add smart feature:", error);
+      // Revert optimistic update if API call failed
+      // This would require keeping a copy of the original state
+      // and restoring it in case of failure
+
+      // Show error to user
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to add smart feature. Please try again."
+      );
+    }
   };
 
   // funciton to find current device
@@ -1257,28 +1078,99 @@ const HomePage: React.FC = () => {
   // State to track if a swipe is in progress
   const [isSwiping, setIsSwiping] = useState(false);
 
+  // Add this function alongside other API functions in HomePage.tsx
+  const removeDeviceAPI = async (deviceId: number) => {
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      // If no token is available, show error
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      // Get the current homeId from localStorage for logging purposes
+      const homeId = localStorage.getItem("currentHomeId");
+
+      if (!homeId) {
+        throw new Error("Home ID not found");
+      }
+
+      // Send the delete request with authentication
+      const response = await fetch(
+        `http://localhost:5000/api/devices/${deviceId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid
+          navigate("/signin");
+          throw new Error("Authentication token expired");
+        }
+
+        if (response.status === 403) {
+          throw new Error("You don't have permission to delete this device");
+        }
+
+        if (response.status === 404) {
+          throw new Error("Device not found");
+        }
+
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete device");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error deleting device:", error);
+      throw error;
+    }
+  };
+
   // Function to remove device if swiped
-  const handleRemoveDevice = () => {
+  const handleRemoveDevice = async () => {
     if (removeDevice) {
-      // Remove the device from the devicesState based on removeDevice's device_id
-      setDevicesState((prevDevicesState) =>
-        prevDevicesState.filter(
-          (device) => device.device_id !== removeDevice.device_id
-        )
-      );
+      try {
+        setIsLoading(true);
 
-      // Update the room's devices count in roomsState
-      setRoomsState((prevRoomsState) =>
-        prevRoomsState.map((room) =>
-          room.id === removeDevice.room_id
-            ? { ...room, devices: Math.max(0, room.devices - 1) }
-            : room
-        )
-      );
+        // Call the API to delete the device
+        await removeDeviceAPI(removeDevice.device_id);
 
-      setIsSwiping(false);
-      setSwipedDevice(null);
-      setRemoveDevice(null); // Reset after removal
+        // Update the local state to remove the device
+        setDevicesState((prevDevicesState) =>
+          prevDevicesState.filter(
+            (device) => device.device_id !== removeDevice.device_id
+          )
+        );
+
+        // Update the room's devices count in roomsState
+        setRoomsState((prevRoomsState) =>
+          prevRoomsState.map((room) =>
+            room.id === removeDevice.room_id
+              ? { ...room, devices: Math.max(0, room.devices - 1) }
+              : room
+          )
+        );
+
+        // Reset UI states
+        setIsSwiping(false);
+        setSwipedDevice(null);
+        setRemoveDevice(null);
+      } catch (error) {
+        console.error("Failed to remove device:", error);
+        // Optionally show an error message to the user
+        alert(
+          error instanceof Error ? error.message : "Failed to remove device"
+        );
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

@@ -110,30 +110,128 @@ const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
     //setTempTitle("Edit time"); // Set temp title to the current device title
   };
 
+  // API function to toggle a device feature/trigger status
+  const toggleDeviceFeatureAPI = async (
+    deviceId: number,
+    triggerId: number,
+    newStatus: boolean
+  ) => {
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      // If no token is available, show error
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      // Get the current homeId from localStorage
+      const homeId = localStorage.getItem("currentHomeId");
+
+      if (!homeId) {
+        throw new Error("Home ID not found");
+      }
+
+      // Send request to update the feature status
+      const response = await fetch(
+        `http://localhost:5000/api/devices/${deviceId}/triggers/${triggerId}`,
+        {
+          method: "PUT", // Changed from PATCH to PUT
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isActive: newStatus,
+            homeId: parseInt(homeId), // Send homeId for server-side validation
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication token expired");
+        }
+
+        if (response.status === 403) {
+          throw new Error("You don't have permission to modify this device");
+        }
+
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update feature status");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating feature status:", error);
+      throw error;
+    }
+  };
+
   // function to handle the toggle of smart feature in manageDevice page
-  const handleContentToggle = (
+  const handleContentToggle = async (
     roomId: number,
     deviceId: number,
     featureId: number
   ) => {
-    setDevicesState((prevDevices) =>
-      prevDevices.map((device) => {
-        if (
-          getDevice().room_id === roomId &&
-          getDevice().device_id === deviceId
-        ) {
-          return {
-            ...device,
-            content: device.content.map((feature) =>
-              feature.feature_id === featureId
-                ? { ...feature, status: !feature.status }
-                : feature
-            ),
-          };
-        }
-        return device;
-      })
-    );
+    try {
+      // Find the current feature status
+      const device = getDevice();
+      const feature = device.content.find((f) => f.feature_id === featureId);
+
+      if (!feature) return;
+
+      // Calculate the new status (toggle the current status)
+      const newStatus = !feature.status;
+
+      // Update local state optimistically for immediate UI feedback
+      setDevicesState((prevDevices) =>
+        prevDevices.map((device) => {
+          if (device.room_id === roomId && device.device_id === deviceId) {
+            return {
+              ...device,
+              content: device.content.map((feature) =>
+                feature.feature_id === featureId
+                  ? { ...feature, status: newStatus }
+                  : feature
+              ),
+            };
+          }
+          return device;
+        })
+      );
+
+      // Call the API to persist the change
+      await toggleDeviceFeatureAPI(deviceId, featureId, newStatus);
+
+      console.log(`Feature ${featureId} status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Failed to update feature status:", error);
+
+      // Revert optimistic update if API call failed
+      setDevicesState((prevDevices) =>
+        prevDevices.map((device) => {
+          if (device.room_id === roomId && device.device_id === deviceId) {
+            return {
+              ...device,
+              content: device.content.map((feature) =>
+                feature.feature_id === featureId
+                  ? { ...feature, status: !feature.status } // Toggle back
+                  : feature
+              ),
+            };
+          }
+          return device;
+        })
+      );
+
+      // Show error to user
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to update feature status. Please try again."
+      );
+    }
   };
 
   // function to handle cancel add feature

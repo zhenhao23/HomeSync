@@ -33,6 +33,345 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
   setDevice,
   devicesState,
 }) => {
+  // Add a new function to update device controls via API
+  const updateDeviceControl = async (
+    deviceId: number,
+    controlValue: number,
+    controlProperty: string // Like 'waterFlow', 'celsius', 'percentage'
+  ) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
+      // First fetch the device to get its controls
+      const getDeviceResponse = await fetch(
+        `http://localhost:5000/api/devices/${deviceId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!getDeviceResponse.ok) {
+        throw new Error("Failed to get device data");
+      }
+
+      const deviceData = await getDeviceResponse.json();
+
+      // Find the right control based on controlType
+      let controlType;
+      switch (controlProperty) {
+        case "waterFlow":
+          controlType = "waterFlow";
+          break;
+        case "celsius":
+          controlType = "temperature";
+          break;
+        case "percentage":
+          controlType = "percentage";
+          break;
+        default:
+          throw new Error(`Unknown control property: ${controlProperty}`);
+      }
+
+      const control = deviceData.controls.find(
+        (c: any) => c.controlType === controlType
+      );
+
+      if (!control) {
+        throw new Error(`Control of type ${controlType} not found`);
+      }
+
+      // Now update with the correct control ID
+      const response = await fetch(
+        `http://localhost:5000/api/devices/${deviceId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            controls: [
+              {
+                id: control.id,
+                currentValue: controlValue,
+                // Only include currentValue for partial update
+              },
+            ],
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update device control");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating device control:", error);
+      throw error;
+    }
+  };
+
+  // Add a function to update device title via API
+  const updateDeviceTitle = async (deviceId: number, newTitle: string) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
+      const response = await fetch(
+        `http://localhost:5000/api/devices/${deviceId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            displayName: newTitle,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update device title");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error updating device title:", error);
+      throw error;
+    }
+  };
+
+  // Modify the handler functions to use API
+  const handleDecreaseWaterFlow = async () => {
+    const currentDevice = getDevice();
+    if (currentDevice.devData.waterFlow <= 2) return;
+
+    const newValue = currentDevice.devData.waterFlow - 1;
+    const deviceId = currentDevice.device_id;
+    const controlID = currentDevice.devData.id; // Get the id from devData
+
+    try {
+      await updateDeviceControl(deviceId, newValue, "waterFlow"); // Pass the controlID
+      // Update local state after successful API call
+      setDevicesState((prevDevices) =>
+        prevDevices.map((device) =>
+          device.device_id === deviceId
+            ? {
+                ...device,
+                devData: {
+                  ...device.devData,
+                  waterFlow: newValue,
+                },
+              }
+            : device
+        )
+      );
+    } catch (error) {
+      console.error("Failed to decrease water flow:", error);
+    }
+  };
+
+  const handleIncreaseWaterFlow = async () => {
+    const currentDevice = getDevice();
+    if (currentDevice.devData.waterFlow >= 60) return;
+
+    const newValue = currentDevice.devData.waterFlow + 1;
+    const deviceId = currentDevice.device_id;
+    const controlID = currentDevice.devData.id; // Get the id from devData
+
+    try {
+      await updateDeviceControl(deviceId, newValue, "waterFlow"); // Pass the controlID
+      // Update local state after successful API call
+      setDevicesState((prevDevices) =>
+        prevDevices.map((device) =>
+          device.device_id === deviceId
+            ? {
+                ...device,
+                devData: {
+                  ...device.devData,
+                  waterFlow: newValue,
+                },
+              }
+            : device
+        )
+      );
+    } catch (error) {
+      console.error("Failed to increase water flow:", error);
+    }
+  };
+  // Update the celsius handlers
+  const handleIncreaseCelsius = async () => {
+    const currentDevice = getDevice();
+    if (currentDevice.devData.celsius >= 30) return;
+
+    const newValue = currentDevice.devData.celsius + 1;
+    const deviceId = currentDevice.device_id;
+    const controlID = currentDevice.devData.id; // Get the id from devData
+
+    try {
+      await updateDeviceControl(deviceId, newValue, "temperature"); // Pass the controlID
+      // Update local state after successful API call
+      setDevicesState((prevDevices) =>
+        prevDevices.map((device) =>
+          device.device_id === deviceId
+            ? {
+                ...device,
+                devData: {
+                  ...device.devData,
+                  celsius: newValue,
+                },
+              }
+            : device
+        )
+      );
+    } catch (error) {
+      console.error("Failed to increase celsius:", error);
+    }
+  };
+
+  const handleDecreaseCelsius = async () => {
+    const currentDevice = getDevice();
+    if (currentDevice.devData.celsius <= 14) return;
+
+    const newValue = currentDevice.devData.celsius - 1;
+    const deviceId = currentDevice.device_id;
+    const controlID = currentDevice.devData.id; // Get the id from devData
+
+    try {
+      await updateDeviceControl(deviceId, newValue, "temperature"); // Pass the controlID
+      // Update local state after successful API call
+      setDevicesState((prevDevices) =>
+        prevDevices.map((device) =>
+          device.device_id === deviceId
+            ? {
+                ...device,
+                devData: {
+                  ...device.devData,
+                  celsius: newValue,
+                },
+              }
+            : device
+        )
+      );
+    } catch (error) {
+      console.error("Failed to decrease celsius:", error);
+    }
+  };
+
+  // Update the handleDecrease and handleIncrease functions
+  const handleDecrease = (deviceType: string) => {
+    switch (deviceType) {
+      case "aircond":
+        return () => handleDecreaseCelsius();
+      case "irrigation":
+        return () => handleDecreaseWaterFlow();
+      default:
+        return () => {}; // Return an empty function instead of void
+    }
+  };
+
+  const handleIncrease = (deviceType: string) => {
+    switch (deviceType) {
+      case "aircond":
+        return () => handleIncreaseCelsius();
+      case "irrigation":
+        return () => handleIncreaseWaterFlow();
+      default:
+        return () => {}; // Return an empty function instead of void
+    }
+  };
+
+  // Update the handleSmallCircleClick function to use the API
+  const handleSmallCircleClick = async (index: number) => {
+    setCirclePosition(smallCircles[index]);
+    const newPercentage = mapToPercentage(smallCircles[index]);
+    const currentDevice = getDevice(); // Get current device to access its data
+    const deviceId = currentDevice.device_id;
+    const controlID = currentDevice.devData.id; // Get the id from devData
+
+    try {
+      await updateDeviceControl(deviceId, newPercentage, "percentage"); // Pass the controlID
+      // Update local state after successful API call
+      setDevicesState((prevDevices) => {
+        return prevDevices.map((device) =>
+          device.device_id === deviceId
+            ? {
+                ...device,
+                devData: { ...device.devData, percentage: newPercentage },
+              }
+            : device
+        );
+      });
+    } catch (error) {
+      console.error("Failed to update percentage via circle click:", error);
+    }
+  };
+
+  // Update the touchMove handler for the circle
+  const handleTouchMoveCircle = async (e: React.TouchEvent<HTMLDivElement>) => {
+    if (dragging) {
+      // Get the movement relative to the parent container
+      const target = e.target as HTMLElement;
+      const parent = target.parentElement as HTMLElement;
+      const parentRect = parent.getBoundingClientRect();
+
+      // Movement of the touch from start position
+      const moveX = e.touches[0].clientX - startXCircle - 50;
+
+      // Calculate the new position as a percentage of the container's width
+      let newPosition = ((moveX + startXCircle) / parentRect.width) * 100;
+
+      // Ensure that the new position is between 14% and 73% (in smallCircles)
+      let circlepos = Math.max(
+        smallCircles[0],
+        Math.min(newPosition, smallCircles[smallCircles.length - 1])
+      );
+      // Find the closest value in smallCircles to snap to
+      circlepos = smallCircles.reduce((prev, curr) =>
+        Math.abs(curr - circlepos) < Math.abs(prev - circlepos) ? curr : prev
+      );
+
+      // Update the circle position based on the constrained position
+      setCirclePosition(circlepos);
+
+      // Update mapped percentage when dragged
+      const newPercentage = mapToPercentage(circlepos);
+      const currentDevice = getDevice(); // Get current device to access its data
+      const deviceId = currentDevice.device_id;
+      const controlID = currentDevice.devData.id; // Get the id from devData
+
+      try {
+        await updateDeviceControl(deviceId, newPercentage, "percentage"); // Pass the controlID
+        // Update local state after successful API call
+        setDevicesState((prevDevices) => {
+          return prevDevices.map((device) =>
+            device.device_id === deviceId
+              ? {
+                  ...device,
+                  devData: { ...device.devData, percentage: newPercentage },
+                }
+              : device
+          );
+        });
+      } catch (error) {
+        console.error("Failed to update percentage via touch move:", error);
+      }
+    }
+  };
   // state to track if user is editing title
   const [isEditing, setIsEditing] = useState(false); // State to manage edit mode or exit mode
   // state to track the temporary title changed
@@ -78,98 +417,6 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
     }
   };
 
-  const handleDecrease = (deviceType: string) => {
-    switch (deviceType) {
-      case "aircond":
-        return () => handleDecreaseCelsius();
-      case "irrigation":
-        return () => handleDecreaseWaterFlow();
-      default:
-        return () => {}; // Return an empty function instead of void
-    }
-  };
-
-  const handleIncrease = (deviceType: string) => {
-    switch (deviceType) {
-      case "aircond":
-        return () => handleIncreaseCelsius();
-      case "irrigation":
-        return () => handleIncreaseWaterFlow();
-      default:
-        return () => {}; // Return an empty function instead of void
-    }
-  };
-
-  const handleDecreaseWaterFlow = () => {
-    setDevicesState((prevDevices) =>
-      prevDevices.map((device) =>
-        device.device_id === getDevice().device_id &&
-        device.devData.waterFlow > 2
-          ? {
-              ...device,
-              devData: {
-                ...device.devData,
-                waterFlow: device.devData.waterFlow - 1,
-              },
-            }
-          : device
-      )
-    );
-  };
-
-  const handleIncreaseWaterFlow = () => {
-    setDevicesState((prevDevices) =>
-      prevDevices.map((device) =>
-        device.device_id === getDevice().device_id &&
-        device.devData.waterFlow < 60
-          ? {
-              ...device,
-              devData: {
-                ...device.devData,
-                waterFlow: device.devData.waterFlow + 1,
-              },
-            }
-          : device
-      )
-    );
-  };
-
-  // Handle Increase Celsius
-  const handleIncreaseCelsius = () => {
-    setDevicesState((prevDevices) =>
-      prevDevices.map((device) =>
-        device.device_id === getDevice().device_id &&
-        device.devData.celsius < 30
-          ? {
-              ...device,
-              devData: {
-                ...device.devData,
-                celsius: device.devData.celsius + 1,
-              },
-            }
-          : device
-      )
-    );
-  };
-
-  // handle decrease celsius
-  const handleDecreaseCelsius = () => {
-    setDevicesState((prevDevices) =>
-      prevDevices.map((device) =>
-        device.device_id === getDevice().device_id &&
-        device.devData.celsius > 14
-          ? {
-              ...device,
-              devData: {
-                ...device.devData,
-                celsius: device.devData.celsius - 1,
-              },
-            }
-          : device
-      )
-    );
-  };
-
   // Track the interval ID for device
   const [intervalId, setIntervalId] = useState<any>(null);
 
@@ -188,23 +435,34 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
     }
   };
 
-  const handleConfirm = () => {
-    // Update the device title
-    const updatedDeviceTitle = devicesState.map((d) => {
-      if (d.device_id === getDevice().device_id) {
-        return { ...d, title: tempTitle }; // Update device title
-      }
-      return d;
-    });
-    setDevicesState(updatedDeviceTitle); // Update the state with the new title for the device
+  const handleConfirm = async () => {
+    try {
+      const currentDevice = getDevice();
+      const deviceId = currentDevice.device_id;
 
-    setDevice((prevDevice) => ({
-      ...prevDevice,
-      title: tempTitle, // Update the device title
-    }));
+      // Call the API to update the title
+      await updateDeviceTitle(deviceId, tempTitle);
 
-    setEditingType(null);
-    setIsEditing(false); // Exit edit mode after confirming
+      // Update the local state with the new title
+      const updatedDeviceTitle = devicesState.map((d) => {
+        if (d.device_id === deviceId) {
+          return { ...d, title: tempTitle }; // Update device title
+        }
+        return d;
+      });
+      setDevicesState(updatedDeviceTitle); // Update the state with the new title for the device
+
+      setDevice((prevDevice) => ({
+        ...prevDevice,
+        title: tempTitle, // Update the device title
+      }));
+
+      setEditingType(null);
+      setIsEditing(false); // Exit edit mode after confirming
+    } catch (error) {
+      console.error("Failed to update device title:", error);
+      // Optionally, show an error message to the user
+    }
   };
 
   // function to handle cancel if user wants to cancel their action
@@ -303,72 +561,9 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
     setStartXCircle(circlePosition);
   };
 
-  // Event handler for touch move
-  const handleTouchMoveCircle = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (dragging) {
-      // Get the movement relative to the parent container
-      const target = e.target as HTMLElement;
-      const parent = target.parentElement as HTMLElement;
-      const parentRect = parent.getBoundingClientRect();
-
-      // Movement of the touch from start position
-      const moveX = e.touches[0].clientX - startXCircle - 50;
-
-      // Calculate the new position as a percentage of the container's width
-      let newPosition = ((moveX + startXCircle) / parentRect.width) * 100;
-
-      // Ensure that the new position is between 14% and 73% (in smallCircles)
-      let circlepos = Math.max(
-        smallCircles[0],
-        Math.min(newPosition, smallCircles[smallCircles.length - 1])
-      );
-      // Find the closest value in smallCircles to snap to
-      circlepos = smallCircles.reduce((prev, curr) =>
-        Math.abs(curr - circlepos) < Math.abs(prev - circlepos) ? curr : prev
-      );
-
-      // Update the circle position based on the constrained position
-      setCirclePosition(circlepos);
-
-      // Update mapped percentage when dragged
-      const newPercentage = mapToPercentage(circlepos);
-
-      // Update the state for the specific device
-      setDevicesState((prevDevices) => {
-        return prevDevices.map((device) =>
-          device.device_id === getDevice().device_id
-            ? {
-                ...device,
-                devData: { ...device.devData, percentage: newPercentage },
-              }
-            : device
-        );
-      });
-    }
-  };
-
   // Event handler for touch end (touchend)
   const handleTouchEndCircle = () => {
     setDragging(false); // End the dragging when touch ends
-  };
-
-  // function to handle if user click on circles as an alternative to swipe the intensity (could have make the duplicated code to one function and just directly call that function for set device state)
-  const handleSmallCircleClick = (index: number) => {
-    setCirclePosition(smallCircles[index]);
-
-    const newPercentage = mapToPercentage(smallCircles[index]);
-
-    // Update the state for the specific device
-    setDevicesState((prevDevices) => {
-      return prevDevices.map((device) =>
-        device.device_id === getDevice().device_id
-          ? {
-              ...device,
-              devData: { ...device.devData, percentage: newPercentage },
-            }
-          : device
-      );
-    });
   };
 
   const isLaptop = useWindowSize();
@@ -545,8 +740,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
                 onTouchEnd={handleTouchEndCircle}
               ></div>
 
-              <div className="drag-line"
-              ></div>
+              <div className="drag-line"></div>
 
               <img src={getIntensityIcon(getDevice().deviceType).on} />
             </div>

@@ -467,9 +467,9 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
           <>
             <div className="dev-container">
               {/* Render devices for the selected room  */}
-              {getRoom() !== null && roomsState[getRoom().id] && (
+              {getRoom() !== null && (
                 <div key={getRoom().id}>
-                  {roomsState[getRoom().id].devices != 0 ? (
+                  {filteredDevices.length > 0 ? (
                     // Filter devices for the current room and map over them
                     filteredDevices.map((device) => (
                       <div className="devices-container" key={device.device_id}>

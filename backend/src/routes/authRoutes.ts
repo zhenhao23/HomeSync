@@ -66,7 +66,7 @@ router.post("/register", (req: Request, res: Response) => {
         data: {
           userId: user.id,
           homeId: home.id,
-          permissionLevel: "admin", // Homeowner gets admin permissions
+          permissionLevel: "OWNER", // Homeowner gets admin permissions
           status: "active", // Already active
         },
       });

@@ -1112,4 +1112,199 @@ function aggregateDailyTotals(
   return [];
 }
 
+// POST new trigger for a specific device
+router.post(
+  "/:deviceId/triggers",
+  verifyToken,
+  (req: Request, res: Response) => {
+    try {
+      const createDeviceTrigger = async () => {
+        const deviceId = parseInt(req.params.deviceId);
+        const {
+          triggerType,
+          conditionOperator,
+          isActive,
+          featurePeriod,
+          featureDetail,
+          homeId, // For validation
+        } = req.body;
+
+        // Validate required fields
+        if (!triggerType || !conditionOperator || isActive === undefined) {
+          return res.status(400).json({
+            error: "Missing required fields",
+            required: ["triggerType", "conditionOperator", "isActive"],
+          });
+        }
+
+        // Authentication check
+        if (!req.user) {
+          return res.status(401).json({ error: "Authentication required" });
+        }
+
+        const userId = req.user.id;
+
+        // Check if device exists and get its related room and home
+        const device = await prisma.device.findUnique({
+          where: { id: deviceId },
+          include: {
+            room: true,
+          },
+        });
+
+        if (!device) {
+          return res.status(404).json({ error: "Device not found" });
+        }
+
+        // Check if the homeId matches the device's home
+        if (homeId && device.room.homeId !== homeId) {
+          return res.status(403).json({
+            error: "Device does not belong to the specified home",
+          });
+        }
+
+        // Check if user has access to the home containing this device
+        const hasAccess = await prisma.homeDweller.findFirst({
+          where: {
+            homeId: device.room.homeId,
+            userId: userId,
+            status: "active",
+          },
+        });
+
+        if (!hasAccess) {
+          return res.status(403).json({
+            error: "You don't have permission to modify this device",
+          });
+        }
+
+        // Create the new device trigger
+        const newTrigger = await prisma.deviceTrigger.create({
+          data: {
+            deviceId,
+            triggerType,
+            conditionOperator,
+            isActive,
+            featurePeriod: featurePeriod || "Daily",
+            featureDetail: featureDetail || "",
+          },
+        });
+
+        return res.status(201).json(newTrigger);
+      };
+
+      createDeviceTrigger().catch((error) => {
+        console.error("Error creating device trigger:", error);
+        res.status(500).json({
+          error: "Failed to create device trigger",
+          details: error instanceof Error ? error.message : "Unknown error",
+        });
+      });
+    } catch (error) {
+      console.error("Error creating device trigger:", error);
+      res.status(500).json({
+        error: "Failed to create device trigger",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+);
+
+// PUT update a device trigger status (changed from PATCH)
+router.put(
+  "/:deviceId/triggers/:triggerId",
+  verifyToken,
+  (req: Request, res: Response) => {
+    try {
+      const updateTriggerStatus = async () => {
+        const deviceId = parseInt(req.params.deviceId);
+        const triggerId = parseInt(req.params.triggerId);
+        const { isActive, homeId } = req.body;
+
+        // Validate required fields
+        if (isActive === undefined) {
+          return res.status(400).json({
+            error: "Missing required field",
+            required: ["isActive"],
+          });
+        }
+
+        // Authentication check
+        if (!req.user) {
+          return res.status(401).json({ error: "Authentication required" });
+        }
+
+        const userId = req.user.id;
+
+        // Check if trigger exists and get its related device, room and home
+        const trigger = await prisma.deviceTrigger.findUnique({
+          where: { id: triggerId },
+          include: {
+            device: {
+              include: {
+                room: true,
+              },
+            },
+          },
+        });
+
+        if (!trigger) {
+          return res.status(404).json({ error: "Device trigger not found" });
+        }
+
+        // Check if the deviceId in the URL matches the trigger's deviceId
+        if (trigger.deviceId !== deviceId) {
+          return res.status(400).json({
+            error: "Trigger does not belong to the specified device",
+          });
+        }
+
+        // Check if the homeId matches the device's home
+        if (homeId && trigger.device.room.homeId !== homeId) {
+          return res.status(403).json({
+            error: "Device does not belong to the specified home",
+          });
+        }
+
+        // Check if user has access to the home containing this device
+        const hasAccess = await prisma.homeDweller.findFirst({
+          where: {
+            homeId: trigger.device.room.homeId,
+            userId: userId,
+            status: "active",
+          },
+        });
+
+        if (!hasAccess) {
+          return res.status(403).json({
+            error: "You don't have permission to modify this device",
+          });
+        }
+
+        // Update the trigger status
+        const updatedTrigger = await prisma.deviceTrigger.update({
+          where: { id: triggerId },
+          data: { isActive },
+        });
+
+        return res.json(updatedTrigger);
+      };
+
+      updateTriggerStatus().catch((error) => {
+        console.error("Error updating device trigger:", error);
+        res.status(500).json({
+          error: "Failed to update device trigger",
+          details: error instanceof Error ? error.message : "Unknown error",
+        });
+      });
+    } catch (error) {
+      console.error("Error updating device trigger:", error);
+      res.status(500).json({
+        error: "Failed to update device trigger",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+);
+
 export default router;
