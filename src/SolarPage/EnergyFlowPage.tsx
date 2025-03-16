@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Share2, Info, Download } from "lucide-react";
 import "./EnergyFlowPage.css";
+import { useNavigate } from "react-router-dom";
+
 interface EnergyData {
   pv: {
     daily: number;
@@ -33,30 +35,37 @@ interface EnergyFlowPageProps {
 }
 
 const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
-  const [energyData, setEnergyData] = React.useState<EnergyData>({
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Add homeId state
+  const [homeId, setHomeId] = useState<number | null>(null);
+
+  const [energyData, setEnergyData] = useState<EnergyData>({
     pv: {
-      daily: 22.7,
-      monthly: 631,
-      annual: 649,
-      current: 7.93,
+      daily: 0,
+      monthly: 0,
+      annual: 0,
+      current: 0,
     },
     imported: {
-      daily: 0.6,
-      monthly: 365.4,
-      annual: 403.8,
+      daily: 0,
+      monthly: 0,
+      annual: 0,
       current: 0,
     },
     exported: {
-      daily: 18.6,
-      monthly: 450.9,
-      annual: 451.2,
-      current: 7.17,
+      daily: 0,
+      monthly: 0,
+      annual: 0,
+      current: 0,
     },
     load: {
-      daily: 4.7,
-      monthly: 545.5,
-      annual: 601.5,
-      current: 0.76,
+      daily: 0,
+      monthly: 0,
+      annual: 0,
+      current: 0,
     },
   });
 
@@ -76,21 +85,110 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
     load: "Load - The total amount of electricity your home is consuming.",
   };
 
-  const fetchEnergyData = async () => {
+  useEffect(() => {
+    // Get the current homeId from localStorage
+    const storedHomeId = localStorage.getItem("currentHomeId");
+
+    if (!storedHomeId) {
+      console.error("No home ID found in localStorage");
+      setError("No home selected. Please select a home first.");
+      return;
+    }
+
+    setHomeId(parseInt(storedHomeId));
+  }, []);
+
+  // Fetch energy data from API when homeId is available
+  useEffect(() => {
+    if (homeId) {
+      fetchEnergyFlowData();
+    }
+  }, [homeId]);
+
+  // New function to fetch energy flow data with auth token
+  const fetchEnergyFlowData = async () => {
+    if (!homeId) return;
+
     try {
-      const response = await fetch("https://api.example.com/energy-flow");
+      setLoading(true);
+      setError(null);
+
+      // Get auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        console.error("No authentication token found");
+        navigate("/signin");
+        return;
+      }
+
+      // First try the authenticated endpoint
+      let response;
+      try {
+        response = await fetch(
+          `http://localhost:5000/api/solar/energy-flow/${homeId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (err) {
+        // If that fails, try the debug endpoint
+        console.log("Falling back to debug endpoint");
+        response = await fetch(
+          `http://localhost:5000/api/solar/debug/energy-flow/${homeId}`
+        );
+      }
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Redirect to sign in page if unauthorized
+          navigate("/signin");
+          return;
+        }
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setEnergyData(data);
+
+      // Transform the API response to match our component's data structure
+      const transformedData: EnergyData = {
+        pv: {
+          daily: Number(data.today.pvGeneration) || 0,
+          monthly: Number(data.monthly.pvGeneration) || 0,
+          annual: Number(data.total.pvGeneration) || 0,
+          current: 0, // Current value not provided by API
+        },
+        imported: {
+          daily: Number(data.today.importedEnergy) || 0,
+          monthly: Number(data.monthly.importedEnergy) || 0,
+          annual: Number(data.total.importedEnergy) || 0,
+          current: 0,
+        },
+        exported: {
+          daily: Number(data.today.exportedEnergy) || 0,
+          monthly: Number(data.monthly.exportedEnergy) || 0,
+          annual: Number(data.total.exportedEnergy) || 0,
+          current: 0,
+        },
+        load: {
+          daily: Number(data.today.loadEnergy) || 0,
+          monthly: Number(data.monthly.loadEnergy) || 0,
+          annual: Number(data.total.loadEnergy) || 0,
+          current: 0,
+        },
+      };
+
+      setEnergyData(transformedData);
     } catch (error) {
       console.error("Error fetching energy flow data:", error);
+      setError("Failed to load energy data. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
-
-  React.useEffect(() => {
-    fetchEnergyData();
-    const interval = setInterval(fetchEnergyData, 60000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Function to handle info icon click
   const handleInfoClick = (type: string, e: React.MouseEvent) => {
@@ -105,18 +203,13 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
 
   // Function to handle download confirmation
   const handleDownloadConfirm = () => {
-    // Handle the actual download here
-    console.log("Downloading energy report...");
-    // You would implement the actual download functionality here
-    // For example, generate a PDF or CSV file with the energy data
-
-    // Example: creating a simple CSV
+    // Create a simple CSV
     const csvContent = `
-     Type,Daily (kWh),Monthly (kWh),Annual (kWh),Current (kW)
-     PV,${energyData.pv.daily},${energyData.pv.monthly},${energyData.pv.annual},${energyData.pv.current}
-     Imported,${energyData.imported.daily},${energyData.imported.monthly},${energyData.imported.annual},${energyData.imported.current}
-     Exported,${energyData.exported.daily},${energyData.exported.monthly},${energyData.exported.annual},${energyData.exported.current}
-     Load,${energyData.load.daily},${energyData.load.monthly},${energyData.load.annual},${energyData.load.current}
+     Type,Daily (kWh),Monthly (kWh),Annual (kWh)
+     PV,${energyData.pv.daily},${energyData.pv.monthly},${energyData.pv.annual}
+     Imported,${energyData.imported.daily},${energyData.imported.monthly},${energyData.imported.annual}
+     Exported,${energyData.exported.daily},${energyData.exported.monthly},${energyData.exported.annual}
+     Load,${energyData.load.daily},${energyData.load.monthly},${energyData.load.annual}
    `.trim();
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -163,21 +256,33 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
         </button>
       </header>
 
+      {loading && (
+        <div className="loading-indicator">Loading energy data...</div>
+      )}
+
+      {error && <div className="error-message">{error}</div>}
+
       <div className="content-wrapper">
         <div className="yield-summary">
           <div className="yield-item">
             <span className="yield-label">Today Yield</span>
-            <strong className="yield-value">{energyData.pv.daily}</strong>
+            <strong className="yield-value">
+              {energyData.pv.daily.toFixed(1)}
+            </strong>
             <span className="yield-unit">kWh</span>
           </div>
           <div className="yield-item">
             <span className="yield-label">Monthly Yield</span>
-            <strong className="yield-value">{energyData.pv.monthly}</strong>
+            <strong className="yield-value">
+              {energyData.pv.monthly.toFixed(1)}
+            </strong>
             <span className="yield-unit">kWh</span>
           </div>
           <div className="yield-item">
             <span className="yield-label">Total Yield</span>
-            <strong className="yield-value">{energyData.pv.annual}</strong>
+            <strong className="yield-value">
+              {energyData.pv.annual.toFixed(1)}
+            </strong>
             <span className="yield-unit">kWh</span>
           </div>
         </div>
@@ -198,9 +303,9 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
               )}
             </div>
             <div className="stat-values">
-              <span>{energyData.pv.daily}kWh</span>
-              <span>{energyData.pv.monthly}kWh</span>
-              <span>{energyData.pv.annual}kWh</span>
+              <span>{energyData.pv.daily.toFixed(1)}kWh</span>
+              <span>{energyData.pv.monthly.toFixed(1)}kWh</span>
+              <span>{energyData.pv.annual.toFixed(1)}kWh</span>
             </div>
           </div>
           <div className="stat-row">
@@ -218,9 +323,9 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
               )}
             </div>
             <div className="stat-values">
-              <span>{energyData.imported.daily}kWh</span>
-              <span>{energyData.imported.monthly}kWh</span>
-              <span>{energyData.imported.annual}kWh</span>
+              <span>{energyData.imported.daily.toFixed(1)}kWh</span>
+              <span>{energyData.imported.monthly.toFixed(1)}kWh</span>
+              <span>{energyData.imported.annual.toFixed(1)}kWh</span>
             </div>
           </div>
           <div className="stat-row">
@@ -238,9 +343,9 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
               )}
             </div>
             <div className="stat-values">
-              <span>{energyData.exported.daily}kWh</span>
-              <span>{energyData.exported.monthly}kWh</span>
-              <span>{energyData.exported.annual}kWh</span>
+              <span>{energyData.exported.daily.toFixed(1)}kWh</span>
+              <span>{energyData.exported.monthly.toFixed(1)}kWh</span>
+              <span>{energyData.exported.annual.toFixed(1)}kWh</span>
             </div>
           </div>
           <div className="stat-row">
@@ -258,9 +363,9 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
               )}
             </div>
             <div className="stat-values">
-              <span>{energyData.load.daily}kWh</span>
-              <span>{energyData.load.monthly}kWh</span>
-              <span>{energyData.load.annual}kWh</span>
+              <span>{energyData.load.daily.toFixed(1)}kWh</span>
+              <span>{energyData.load.monthly.toFixed(1)}kWh</span>
+              <span>{energyData.load.annual.toFixed(1)}kWh</span>
             </div>
           </div>
         </div>
@@ -270,8 +375,8 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
       {showDownloadConfirm && (
         <div className="download-confirm-overlay">
           <div className="download-confirm-dialog">
-            <h3 >Download Energy Report</h3>
-            <p >Do you want to download the energy report?</p>
+            <h3>Download Energy Report</h3>
+            <p>Do you want to download the energy report?</p>
             <div className="dialog-buttons">
               <button onClick={handleDownloadCancel}>Cancel</button>
               <button

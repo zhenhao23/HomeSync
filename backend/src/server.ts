@@ -15,6 +15,7 @@ import homeRoutes from "./routes/homeRoutes";
 import authRoutes from "./routes/authRoutes";
 import dwellerRoutes from "./routes/dwellerRoutes";
 import homeDataRoutes from "./routes/homeDataRoutes";
+import solarRoutes from "./routes/solarRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,6 +51,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/homes", homeRoutes);
 app.use("/api/dwellers", dwellerRoutes);
 app.use("/api/homedata", homeDataRoutes);
+app.use("/api/solar", solarRoutes);
 app.use("/auth", authRoutes);
 
 // Error handling middleware
