@@ -98,7 +98,10 @@ router.post("/register", (req: Request, res: Response) => {
 });
 
 // Helper function to generate realistic daily energy usage based on device type
-function generateEnergyUsage(deviceType: string): {
+function generateEnergyUsage(
+  deviceType: string,
+  date: Date
+): {
   energy: number;
   hours: number;
 } {
@@ -118,8 +121,20 @@ function generateEnergyUsage(deviceType: string): {
     avgHours: 4,
   };
 
+  // Add seasonal variation (more AC in summer, more lights in winter)
+  const month = date.getMonth(); // 0-11
+  let seasonalFactor = 1.0;
+
+  if (deviceType.toLowerCase() === "aircond") {
+    // Higher in summer months (May-Sept: 5-9)
+    seasonalFactor = month >= 5 && month <= 9 ? 1.5 : 0.6;
+  } else if (deviceType.toLowerCase() === "light") {
+    // Higher in winter months (Nov-Feb: 0-1, 11)
+    seasonalFactor = month <= 1 || month === 11 ? 1.3 : 1.0;
+  }
+
   // Add some random variation (±40%)
-  const hoursVariation = 0.6 + Math.random() * 0.8;
+  const hoursVariation = (0.6 + Math.random() * 0.8) * seasonalFactor;
   const actualHours = Math.min(pattern.avgHours * hoursVariation, 24);
 
   const energyUsed = pattern.baseWatts * actualHours;
@@ -264,8 +279,8 @@ async function populateHomeWithSampleData(homeId: number) {
       },
     ];
 
-    // Generate timestamps for the past 30 days
-    const generateTimestamps = (days: number = 30): Date[] => {
+    // Generate timestamps for the past 90 days (for energy consumption logs)
+    const generateTimestamps = (days: number = 400): Date[] => {
       const timestamps: Date[] = [];
       for (let i = 0; i < days; i++) {
         const date = new Date();
@@ -276,15 +291,22 @@ async function populateHomeWithSampleData(homeId: number) {
       return timestamps.sort((a, b) => a.getTime() - b.getTime());
     };
 
-    const timestamps = generateTimestamps(30);
+    const timestamps = generateTimestamps(400);
 
-    // Create daily timestamps for energy breakdowns (one per day)
-    const dailyTimestamps = Array.from({ length: 30 }, (_, i) => {
+    // Create daily timestamps for energy breakdowns (one per day for the past 900 days)
+    const dailyTimestamps = Array.from({ length: 400 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
       date.setHours(0, 0, 0, 0);
       return date;
     }).sort((a, b) => a.getTime() - b.getTime());
+
+    console.log(
+      "Creating 400 days of energy data from",
+      dailyTimestamps[0],
+      "to",
+      dailyTimestamps[dailyTimestamps.length - 1]
+    );
 
     // Create each device and its related data
     for (const deviceData of devices) {
@@ -321,7 +343,7 @@ async function populateHomeWithSampleData(homeId: number) {
         });
       }
 
-      // Create energy consumption logs with historical data for the past 30 days
+      // Create energy consumption logs with historical data for the past 90 days
       const energyLogs = timestamps.map((timestamp) => ({
         deviceId: device.id,
         actionType: deviceData.status ? "active" : "idle",
@@ -333,51 +355,90 @@ async function populateHomeWithSampleData(homeId: number) {
         data: energyLogs,
       });
 
-      // Create daily energy breakdowns for the past 30 days
-      for (const date of dailyTimestamps) {
-        const usage = generateEnergyUsage(deviceData.type);
-        await prisma.energyDeviceBreakdown.create({
-          data: {
+      // Create daily energy breakdowns for the past 900 days - using batch insertion for efficiency
+      const breakdownBatchSize = 100;
+
+      for (let i = 0; i < dailyTimestamps.length; i += breakdownBatchSize) {
+        const batch = dailyTimestamps.slice(i, i + breakdownBatchSize);
+        const breakdownData = batch.map((date) => {
+          const usage = generateEnergyUsage(deviceData.type, date);
+
+          // ADD THIS LOG HERE - to check specific older data points
+          if (i === 0 && date < new Date("2025-01-01")) {
+            console.log(
+              `Creating energy data for ${
+                date.toISOString().split("T")[0]
+              }: device=${deviceData.type}, energy=${usage.energy}`
+            );
+          }
+
+          return {
             deviceId: device.id,
             energyUsed: usage.energy,
             activeHours: usage.hours,
             timestamp: date,
-          },
+          };
         });
+
+        await prisma.energyDeviceBreakdown.createMany({
+          data: breakdownData,
+        });
+
+        // Log progress for long operations
+        console.log(
+          `Created energy breakdowns for device ${device.id}: ${i} to ${
+            i + batch.length
+          } of ${dailyTimestamps.length}`
+        );
       }
     }
 
-    // Create solar energy metrics and details for the past 30 days
-    for (const timestamp of dailyTimestamps) {
-      // Create solar metrics
-      await prisma.solarEnergyMetric.create({
-        data: {
-          homeId: homeId,
-          batteryLevel: 50 + Math.random() * 30,
-          equivalentTrees: Math.floor(10 + Math.random() * 5),
-          co2EmissionsSaved: 100 + Math.random() * 50,
-          standardCoalSaved: 50 + Math.random() * 25,
-          timeframe: "DAILY",
-          recordedDate: timestamp,
-        },
-      });
+    // Create solar energy metrics and details for the past 90 days
+    // We'll only do 90 days of solar data to keep the DB size reasonable
+    const recentTimestamps = dailyTimestamps.slice(-90);
 
-      // Create solar details
-      await prisma.solarEnergyDetail.create({
-        data: {
-          homeId: homeId,
-          pvGeneration: 30 + Math.random() * 10,
-          importedEnergy: 5 + Math.random() * 5,
-          exportedEnergy: 8 + Math.random() * 4,
-          loadEnergy: 25 + Math.random() * 10,
-          timeframe: "DAILY",
-          recordedDate: timestamp,
+    const solarMetricsBatch = recentTimestamps.map((timestamp) => ({
+      homeId: homeId,
+      batteryLevel: 50 + Math.random() * 30,
+      equivalentTrees: Math.floor(10 + Math.random() * 5),
+      co2EmissionsSaved: 100 + Math.random() * 50,
+      standardCoalSaved: 50 + Math.random() * 25,
+      timeframe: "DAILY",
+      recordedDate: timestamp,
+    }));
+
+    await prisma.solarEnergyMetric.createMany({
+      data: solarMetricsBatch,
+    });
+
+    const solarDetailsBatch = recentTimestamps.map((timestamp) => ({
+      homeId: homeId,
+      pvGeneration: 30 + Math.random() * 10,
+      importedEnergy: 5 + Math.random() * 5,
+      exportedEnergy: 8 + Math.random() * 4,
+      loadEnergy: 25 + Math.random() * 10,
+      timeframe: "DAILY",
+      recordedDate: timestamp,
+    }));
+
+    await prisma.solarEnergyDetail.createMany({
+      data: solarDetailsBatch,
+    });
+
+    // ADD THIS LOG HERE - after creating all data
+    const count = await prisma.energyDeviceBreakdown.count({
+      where: {
+        device: {
+          room: {
+            homeId: homeId,
+          },
         },
-      });
-    }
+      },
+    });
+    console.log(`Created ${count} energy breakdown records for home ${homeId}`);
 
     console.log(
-      `Successfully populated home ${homeId} with sample data including historical energy data`
+      `Successfully populated home ${homeId} with sample data including 900 days of historical energy data`
     );
     return true;
   } catch (error) {

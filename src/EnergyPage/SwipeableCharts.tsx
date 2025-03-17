@@ -42,7 +42,6 @@ const TimeRangeDropdown: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
 
   const timeRangeDisplay = {
-    today: "Today",
     week: "This Week",
     month: "This Month",
     year: "This Year",
@@ -230,19 +229,160 @@ const PieChartComponent: React.FC<{
   );
 };
 
+// Add this helper function before LineChartComponent
+const transformChartData = (
+  data: EnergyData["dailyTotals"],
+  timeRange: TimeRange
+) => {
+  if (!data || data.length === 0) return [];
+
+  if (timeRange === "week") {
+    // For week: show current day on right, then past 6 days (7 days total)
+    const today = new Date();
+    const days: string[] = [];
+    const dayTotals: Record<string, number> = {};
+
+    // Initialize all days of the week with 0
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(today.getDate() - i);
+      const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+      days.push(dayName);
+      dayTotals[dayName] = 0;
+    }
+
+    // Fill in existing data
+    data.forEach((item) => {
+      if (days.includes(item.day)) {
+        dayTotals[item.day] = item.total;
+      }
+    });
+
+    // Return in correct order (oldest to newest, left to right)
+    return days.map((day) => ({
+      day,
+      total: dayTotals[day],
+    }));
+  }
+
+  if (timeRange === "month") {
+    // For month: show current week on right, then past 3 weeks
+    const today = new Date();
+
+    // Add this log to see what data is coming from the API
+    // console.log("Raw month data from API:", data);
+
+    const currentWeek = Math.ceil(today.getDate() / 7);
+    const weekTotals: Record<string, number> = {};
+    const weeks: string[] = [];
+
+    // Use data directly from the backend since we now have proper week numbers
+    // Just ensure we have the 4 weeks we expect, or create empty weeks if needed
+    if (data && data.length > 0) {
+      // The backend now sends the correct week numbers, so we can use them directly
+      data.forEach((item) => {
+        weeks.push(item.day);
+        weekTotals[item.day] = item.total;
+      });
+    } else {
+      // Fallback if no data is available
+      for (let i = 3; i >= 0; i--) {
+        const weekNum = Math.max(
+          1,
+          currentWeek - i > 0 ? currentWeek - i : currentWeek - i + 4
+        );
+        const weekLabel = `Week ${weekNum}`;
+        weeks.push(weekLabel);
+        weekTotals[weekLabel] = 0;
+      }
+    }
+
+    // Return in correct order (oldest to newest, left to right)
+    return weeks.map((week) => ({
+      day: week,
+      total: weekTotals[week],
+    }));
+  }
+
+  // In transformChartData function in SwipeableCharts.tsx
+  if (timeRange === "year") {
+    // The data should already be properly formatted from the backend
+    // Just use it directly if it exists, or display empty data if not
+
+    // console.log("Raw year data from API:", data);
+
+    if (!data || data.length === 0) {
+      // If no data, create empty placeholder data for all 12 months
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      return monthNames.map((month) => ({
+        day: month,
+        total: 0,
+      }));
+    }
+
+    // Use the data directly from the backend
+    return data;
+  }
+
+  return data;
+};
+
 const LineChartComponent: React.FC<{
   data: EnergyData;
   timeRange: TimeRange;
   setTimeRange: (range: TimeRange) => void;
 }> = ({ data, timeRange, setTimeRange }) => {
   const navigate = useNavigate();
-  const maxTotal = Math.ceil(Math.max(...data.dailyTotals.map((d) => d.total)));
-  const yAxisTicks = [
-    0,
-    Math.round(maxTotal / 3),
-    Math.round((maxTotal * 2) / 3),
-    Math.round(maxTotal),
-  ];
+
+  // Transform the data to handle historical view correctly
+  const transformedData = transformChartData(data.dailyTotals, timeRange);
+
+  // Create nice Y-axis values
+  const generateNiceYAxisTicks = (data: any[]) => {
+    // Get max value from data
+    const maxValue = Math.max(...data.map((d) => d.total || 0));
+
+    if (maxValue === 0) return [0, 25, 50, 75, 100]; // Default for empty data
+
+    // Determine appropriate rounding based on magnitude
+    let roundTo = 1;
+    if (maxValue >= 1000000) roundTo = 100000; // Millions: round to 100,000s
+    else if (maxValue >= 100000)
+      roundTo = 10000; // Hundreds of thousands: round to 10,000s
+    else if (maxValue >= 10000)
+      roundTo = 1000; // Tens of thousands: round to 1,000s
+    else if (maxValue >= 1000) roundTo = 100; // Thousands: round to 100s
+    else if (maxValue >= 100) roundTo = 10; // Hundreds: round to 10s
+
+    // Calculate nice maximum (round up to next multiple of roundTo)
+    const niceMax = Math.ceil(maxValue / roundTo) * roundTo;
+
+    // Create four evenly spaced ticks
+    return [0, Math.round(niceMax / 3), Math.round((niceMax * 2) / 3), niceMax];
+  };
+
+  // Format display values - FIXED to always return string
+  const formatYAxisTick = (value: number): string => {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+    return value.toString(); // Always return string
+  };
+
+  const yAxisTicks = generateNiceYAxisTicks(transformedData);
 
   return (
     <div
@@ -290,7 +430,7 @@ const LineChartComponent: React.FC<{
         <div className="col-12 p-0" style={{ height: "180px" }}>
           <ResponsiveContainer width="100%" height="100%">
             <RechartsLineChart
-              data={data.dailyTotals}
+              data={transformedData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid
@@ -307,8 +447,9 @@ const LineChartComponent: React.FC<{
                 stroke="white"
                 tick={{ fill: "white" }}
                 ticks={yAxisTicks}
-                domain={[0, maxTotal]}
+                domain={[0, yAxisTicks[yAxisTicks.length - 1]]}
                 style={{ color: "white", fontSize: "12px" }}
+                tickFormatter={formatYAxisTick}
               />
               <Tooltip
                 contentStyle={{

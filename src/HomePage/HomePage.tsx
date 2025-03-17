@@ -1320,7 +1320,7 @@ const HomePage: React.FC = () => {
                             }}
                           >
                             <p className="mb-0 text-center">
-                              <h5 className="room-title">{r.title}</h5>
+                              <p className="room-title">{r.title}</p>
                             </p>
                             <p className="mb-0 text-center device-count">
                               <span

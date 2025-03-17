@@ -93,6 +93,7 @@ const EnergyPage: React.FC = () => {
         }
 
         const data = await response.json();
+        console.log(`Received ${timeRange} data:`, data.deviceTotals);
         setAggregatedData(data);
         setError(null);
       } catch (err) {

@@ -820,20 +820,32 @@ router.get(
 
         const { timeRange = "week", aggregationType = "daily" } = req.query;
         let startDate: Date;
+        let endDate = new Date(); // Current date
 
+        // In the /energy/aggregated route
         switch (timeRange) {
-          case "today":
-            startDate = getStartOfDay(new Date());
-            break;
           case "week":
-            startDate = getStartOfWeek(new Date());
+            // For week view: Fetch data for last 14 days (current 7 days + previous 7 days)
+            startDate = new Date();
+            startDate.setDate(startDate.getDate() - 14); // Go back 14 days
+            startDate.setHours(0, 0, 0, 0);
             break;
+
           case "month":
-            startDate = getStartOfMonth(new Date());
+            // For month view: Fetch data for last 56 days (current 28 days + previous 28 days)
+            startDate = new Date();
+            startDate.setDate(startDate.getDate() - 56); // Go back 56 days
+            startDate.setHours(0, 0, 0, 0);
             break;
+
           case "year":
-            startDate = getStartOfYear(new Date());
+            // For year view: Fetch data for last 2 years
+            startDate = new Date();
+            startDate.setFullYear(startDate.getFullYear() - 2); // Go back 2 years
+            startDate.setDate(1); // First day of month
+            startDate.setHours(0, 0, 0, 0);
             break;
+
           default:
             return res.status(400).json({ error: "Invalid time range" });
         }
@@ -955,6 +967,7 @@ function aggregateDeviceTotals(
   previousValue?: number;
   previousActiveHours?: number;
 }[] {
+  // Map to store device totals
   const deviceTotalsMap = new Map<
     string,
     {
@@ -967,40 +980,67 @@ function aggregateDeviceTotals(
     }
   >();
 
+  // Calculate start date for current period and previous period based on time range
   const currentDate = new Date();
   let comparisonDate: Date;
+  let previousPeriodStart: Date;
 
-  // Determine comparison date based on timeRange
   switch (timeRange) {
-    case "today":
-      comparisonDate = new Date(currentDate);
-      comparisonDate.setDate(currentDate.getDate() - 1);
-      break;
     case "week":
-      comparisonDate = new Date(currentDate);
-      comparisonDate.setDate(currentDate.getDate() - 7);
+      // Current period: Last 7 days
+      comparisonDate = new Date();
+      comparisonDate.setDate(comparisonDate.getDate() - 7);
+      comparisonDate.setHours(0, 0, 0, 0);
+
+      // Previous period: 7 days before that
+      previousPeriodStart = new Date(comparisonDate);
+      previousPeriodStart.setDate(previousPeriodStart.getDate() - 7);
       break;
+
     case "month":
-      comparisonDate = new Date(currentDate);
-      comparisonDate.setMonth(currentDate.getMonth() - 1);
+      // Current period: Last 28 days
+      comparisonDate = new Date();
+      comparisonDate.setDate(comparisonDate.getDate() - 28);
+      comparisonDate.setHours(0, 0, 0, 0);
+
+      // Previous period: 28 days before that
+      previousPeriodStart = new Date(comparisonDate);
+      previousPeriodStart.setDate(previousPeriodStart.getDate() - 28);
       break;
+
     case "year":
-      comparisonDate = new Date(currentDate);
-      comparisonDate.setFullYear(currentDate.getFullYear() - 1);
+      // Current year data
+      comparisonDate = new Date();
+      comparisonDate.setFullYear(comparisonDate.getFullYear() - 1);
+
+      // Previous year data
+      previousPeriodStart = new Date(comparisonDate);
+      previousPeriodStart.setFullYear(previousPeriodStart.getFullYear() - 1);
       break;
+
     default:
-      comparisonDate = new Date(currentDate);
-      comparisonDate.setDate(currentDate.getDate() - 1); // Default to daily comparison
+      // Default to today
+      comparisonDate = getStartOfDay(new Date());
+      previousPeriodStart = new Date(comparisonDate);
+      previousPeriodStart.setDate(previousPeriodStart.getDate() - 1);
   }
 
+  // Add debug logs to verify date calculations
+  console.log(`Time Range: ${timeRange}`);
+  console.log(
+    `Current Period: ${comparisonDate.toISOString()} to ${currentDate.toISOString()}`
+  );
+  console.log(
+    `Previous Period: ${previousPeriodStart.toISOString()} to ${comparisonDate.toISOString()}`
+  );
+
+  // Process each breakdown record
   breakdown.forEach((log) => {
     const deviceName = log.device.displayName;
     const deviceType = log.device.type;
     const roomName = log.device.room.name;
-    const energyUsed = Number(log.energyUsed);
-    const activeHours = Number(log.activeHours);
-    const logDate = new Date(log.timestamp);
 
+    // Initialize device data if not already in map
     if (!deviceTotalsMap.has(deviceName)) {
       deviceTotalsMap.set(deviceName, {
         type: deviceType,
@@ -1013,16 +1053,24 @@ function aggregateDeviceTotals(
     }
 
     const deviceData = deviceTotalsMap.get(deviceName)!;
+    const logDate = new Date(log.timestamp);
+    const energyUsed = Number(log.energyUsed);
+    const activeHours = Number(log.activeHours);
 
-    if (logDate >= comparisonDate && logDate < currentDate) {
+    // Determine if this record belongs to current period or previous period
+    if (logDate >= comparisonDate && logDate <= currentDate) {
+      // Current period
       deviceData.currentValue += energyUsed;
       deviceData.currentActiveHours += activeHours;
-    } else {
+    } else if (logDate >= previousPeriodStart && logDate < comparisonDate) {
+      // Previous period
       deviceData.previousValue += energyUsed;
       deviceData.previousActiveHours += activeHours;
     }
+    // Ignore data outside both periods
   });
 
+  // Return the processed data
   return Array.from(deviceTotalsMap, ([name, data]) => ({
     name,
     type: data.type,
@@ -1039,73 +1087,201 @@ function aggregateDailyTotals(
   timeRange: string
 ): { day: string; total: number }[] {
   if (timeRange === "week") {
+    // Show past 7 days with current day on the right
     const dailyTotals: Record<string, number> = {};
-    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    days.forEach((day) => {
-      dailyTotals[day] = 0;
-    });
+    const days: string[] = [];
+    const dayLabels: Record<string, string> = {}; // Store full dates with day labels
+
+    // Get today and the past 6 days (7 days total)
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+
+      // Create a unique key using date for matching
+      const dateKey = date.toISOString().split("T")[0]; // YYYY-MM-DD format
+
+      days.push(dateKey);
+      dailyTotals[dateKey] = 0;
+      dayLabels[dateKey] = dayName; // Store day name for display
+    }
 
     breakdown.forEach((log) => {
-      const date = new Date(log.timestamp);
-      const day = date.toLocaleDateString("en-US", { weekday: "short" });
-      if (days.includes(day)) {
-        dailyTotals[day] += Number(log.energyUsed);
+      const logDate = new Date(log.timestamp);
+      // Create the same format key for the log date
+      const logDateKey = logDate.toISOString().split("T")[0];
+
+      if (days.includes(logDateKey)) {
+        dailyTotals[logDateKey] += Number(log.energyUsed);
       }
     });
 
-    return days.map((day) => ({
-      day,
-      total: Number(dailyTotals[day].toFixed(2)),
+    // console.log(
+    //   "Day data after aggregation:",
+    //   days.map((day) => ({
+    //     date: day,
+    //     day: dayLabels[day],
+    //     value: dailyTotals[day],
+    //   }))
+    // );
+
+    // Return in the format expected by frontend - using stored day names for display
+    return days.map((dateKey) => ({
+      day: dayLabels[dateKey],
+      total: Number(dailyTotals[dateKey].toFixed(2)),
     }));
   }
 
   if (timeRange === "month") {
-    const weeklyTotals: Record<string, number> = {
-      "Week 1": 0,
-      "Week 2": 0,
-      "Week 3": 0,
-      "Week 4": 0,
-    };
+    // Show past 4 weeks with current week on the right
+    const weeklyTotals: Record<string, number> = {};
+    const weeks: {
+      key: string;
+      label: string;
+      startDate: Date;
+      endDate: Date;
+    }[] = [];
 
+    // Generate 4 weeks going back from today
+    for (let i = 3; i >= 0; i--) {
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - i * 7);
+
+      const startDate = new Date(endDate);
+      startDate.setDate(endDate.getDate() - 6);
+
+      // Calculate actual week number in the year
+      // Get the first Thursday of the year (used in ISO week numbering)
+      function getWeekNumber(d: Date): number {
+        const target = new Date(d.valueOf());
+        const dayNumber = (d.getDay() + 6) % 7; // Adjust day number
+        target.setDate(target.getDate() - dayNumber + 3); // Nearest Thursday
+        const firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() !== 4) {
+          target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
+        }
+        return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
+      }
+
+      // Get the week number for the end date (most recent day of the week)
+      const weekNum = getWeekNumber(endDate);
+
+      // Create week ranges for display and data matching
+      const weekLabel = `Week ${weekNum}`; // Use actual week number in year
+      const weekKey = `week-${startDate.toISOString().split("T")[0]}`; // Unique key
+
+      weeks.push({
+        key: weekKey,
+        label: weekLabel,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+      });
+
+      weeklyTotals[weekKey] = 0;
+    }
+
+    // Match each log with its corresponding week
     breakdown.forEach((log) => {
-      const date = new Date(log.timestamp);
-      const weekOfMonth = Math.floor((date.getDate() - 1) / 7) + 1;
-      weeklyTotals[`Week ${weekOfMonth}`] += Number(log.energyUsed);
+      const logDate = new Date(log.timestamp);
+
+      // Find which week this log belongs to
+      const matchingWeek = weeks.find(
+        (week) => logDate >= week.startDate && logDate <= week.endDate
+      );
+
+      if (matchingWeek) {
+        weeklyTotals[matchingWeek.key] += Number(log.energyUsed);
+      }
     });
 
-    return Object.entries(weeklyTotals).map(([day, total]) => ({
-      day,
-      total: Number(total.toFixed(2)),
+    // console.log(
+    //   "Week data after aggregation:",
+    //   weeks.map((week) => ({
+    //     week: week.label,
+    //     range: `${week.startDate.toDateString()} - ${week.endDate.toDateString()}`,
+    //     value: weeklyTotals[week.key],
+    //   }))
+    // );
+
+    // Return in the expected format for the frontend
+    return weeks.map((week) => ({
+      day: week.label,
+      total: Number(weeklyTotals[week.key].toFixed(2)),
     }));
   }
 
+  // Replace this entire "year" case block
   if (timeRange === "year") {
-    const monthlyTotals: Record<string, number> = {};
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
+    // Get exactly 12 months from today's date backwards
+    const months: Array<{
+      name: string;
+      value: number;
+      date: Date;
+      key: string;
+    }> = [];
 
+    // Create array of the past 12 months (including current month)
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const monthName = date.toLocaleDateString("en-US", { month: "short" });
+      const monthYearKey = `${monthName}-${year}`; // Unique key for aggregation
+
+      months.push({
+        name: monthName,
+        value: 0,
+        date: new Date(year, month, 1), // First day of month
+        key: monthYearKey,
+      });
+    }
+
+    // Aggregate energy data for each month-year combination
     breakdown.forEach((log) => {
-      const date = new Date(log.timestamp);
-      const monthName = monthNames[date.getMonth()];
-      monthlyTotals[monthName] =
-        (monthlyTotals[monthName] || 0) + Number(log.energyUsed);
+      const logDate = new Date(log.timestamp);
+      const logMonthName = logDate.toLocaleDateString("en-US", {
+        month: "short",
+      });
+      const logYear = logDate.getFullYear();
+      const logMonthYearKey = `${logMonthName}-${logYear}`;
+
+      // Find the matching month in our array
+      const month = months.find((m) => m.key === logMonthYearKey);
+
+      if (month) {
+        month.value += Number(log.energyUsed);
+      }
     });
 
-    return monthNames.map((month) => ({
-      day: month,
-      total: Number((monthlyTotals[month] || 0).toFixed(2)),
+    // Sort chronologically (oldest to newest)
+    months.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    // console.log(
+    //   "Month data after aggregation:",
+    //   months.map((m) => ({
+    //     month: m.name,
+    //     year: m.date.getFullYear(),
+    //     value: m.value,
+    //   }))
+    // );
+
+    // // Add before returning the data
+    // console.log(
+    //   "Sending monthly data to frontend:",
+    //   months.map((m) => ({
+    //     month: m.name,
+    //     year: m.date.getFullYear(),
+    //     value: m.value,
+    //   }))
+    // );
+
+    // Return in the format expected by frontend
+    return months.map((month) => ({
+      day: month.name, // Just the month name for display
+      total: Number(month.value.toFixed(2)),
     }));
   }
 
