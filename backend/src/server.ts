@@ -23,9 +23,14 @@ const PORT = process.env.PORT || 5000;
 // More comprehensive CORS configuration
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"], // Add your frontend URLs
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "https://home-sync-pi.vercel.app", // Add your Vercel frontend URL
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Add this if you're using cookies/credentials
   })
 );
 
