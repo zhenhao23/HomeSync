@@ -71,6 +71,9 @@ router.post("/register", (req: Request, res: Response) => {
         },
       });
 
+      // Add 2 random users to the home
+      await addRandomUsersToHome(home.id);
+
       // Populate the home with sample rooms and devices
       await populateHomeWithSampleData(home.id);
 
@@ -96,6 +99,86 @@ router.post("/register", (req: Request, res: Response) => {
     });
   }
 });
+
+// Add this helper function to create random users and add them to the home
+async function addRandomUsersToHome(homeId: number) {
+  try {
+    // List of potential users based on ProfilePage.tsx with actual image paths
+    const potentialUsers = [
+      {
+        name: "Alice",
+        email: "alice@example.com",
+        profilePictureUrl: "/img1.jpeg", // Using default ProfileImage
+        firstName: "Alice",
+        lastName: "",
+      },
+      {
+        name: "Anna",
+        email: "anna@example.com",
+        profilePictureUrl: "/anna-profile.avif", // Using AnnaProfilePic
+        firstName: "Anna",
+        lastName: "Johnson",
+      },
+      {
+        name: "Adrian",
+        email: "adrian@example.com",
+        profilePictureUrl: "/adrian-profile.avif", // Using AdrianProfilePic
+        firstName: "Adrian",
+        lastName: "Smith",
+      },
+      {
+        name: "Joshua",
+        email: "joshua@example.com",
+        profilePictureUrl: "/joshua-profile.avif", // Using JoshuaProfilePic
+        firstName: "Joshua",
+        lastName: "Williams",
+      },
+      {
+        name: "Lily",
+        email: "lily@example.com",
+        profilePictureUrl: "/lily-profile.avif", // Using LilyProfilePic
+        firstName: "Lily",
+        lastName: "Chen",
+      },
+    ];
+
+    // Shuffle the array and pick 2 random users
+    const shuffled = [...potentialUsers].sort(() => 0.5 - Math.random());
+    const selectedUsers = shuffled.slice(0, 2);
+
+    for (const userInfo of selectedUsers) {
+      // Create the user in the database
+      const user = await prisma.user.create({
+        data: {
+          firebaseUid: null, // No Firebase auth for demo users
+          email: userInfo.email,
+          passwordHash: await hashPassword("demoPassword123"), // Simple password that won't be used
+          role: "user",
+          firstName: userInfo.firstName,
+          lastName: userInfo.lastName,
+          profilePictureUrl: userInfo.profilePictureUrl,
+        },
+      });
+
+      // Add the user to the home as a dweller
+      await prisma.homeDweller.create({
+        data: {
+          userId: user.id,
+          homeId: homeId,
+          permissionLevel: "MEMBER", // Regular member permissions
+          status: "active",
+        },
+      });
+
+      console.log(`Added user ${userInfo.name} to home ${homeId}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error adding random users to home:", error);
+    return false;
+  }
+}
 
 // Helper function to generate realistic daily energy usage based on device type
 function generateEnergyUsage(
@@ -446,93 +529,6 @@ async function populateHomeWithSampleData(homeId: number) {
     return false;
   }
 }
-// // POST route for user registration
-// router.post("/register", (req: Request, res: Response) => {
-//   try {
-//     const registerUser = async () => {
-//       const {
-//         email,
-//         password,
-//         firstName,
-//         lastName,
-//         role = "user",
-//         firebaseUid,
-//         homeName = "My Home",
-//       } = req.body;
-
-//       // If firebaseUid is provided, use it instead of creating a new Firebase user
-//       let uid = firebaseUid;
-
-//       if (!uid) {
-//         // Only create Firebase user if no firebaseUid was provided
-//         const userRecord = await auth().createUser({
-//           email,
-//           password,
-//         });
-//         uid = userRecord.uid;
-//       }
-
-//       // Create user in Prisma database
-//       const user = await prisma.user.create({
-//         data: {
-//           firebaseUid: uid,
-//           email,
-//           passwordHash: password
-//             ? await hashPassword(password)
-//             : "google-auth-user",
-//           firstName,
-//           lastName,
-//           role,
-//         },
-//       });
-
-//       // Generate a unique invitation code for the home
-//       const invitationCode = `HOME${Date.now()
-//         .toString()
-//         .slice(-6)}${Math.floor(Math.random() * 1000)}`;
-
-//       // Create a default home for the new user
-//       const home = await prisma.smartHome.create({
-//         data: {
-//           name: homeName,
-//           invitationCode: invitationCode,
-//           homeownerId: user.id,
-//         },
-//       });
-
-//       // Also add the user as a dweller with admin permissions
-//       // This makes the data model more consistent
-//       await prisma.homeDweller.create({
-//         data: {
-//           userId: user.id,
-//           homeId: home.id,
-//           permissionLevel: "admin", // Homeowner gets admin permissions
-//           status: "active", // Already active
-//         },
-//       });
-
-//       return res.status(201).json({
-//         message: "User registered successfully",
-//         userId: user.id,
-//         homeId: home.id,
-//       });
-//     };
-
-//     registerUser().catch((error) => {
-//       console.error("Registration error:", error);
-//       res.status(500).json({
-//         error: "Registration failed",
-//         details: error instanceof Error ? error.message : "Unknown error",
-//       });
-//     });
-//   } catch (error) {
-//     console.error("Registration error:", error);
-//     res.status(500).json({
-//       error: "Registration failed",
-//       details: error instanceof Error ? error.message : "Unknown error",
-//     });
-//   }
-// });
 
 // POST route for login verification
 router.post("/login", (req: Request, res: Response) => {

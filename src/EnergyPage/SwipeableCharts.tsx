@@ -442,6 +442,10 @@ const LineChartComponent: React.FC<{
                 stroke="white"
                 tick={{ fill: "white" }}
                 style={{ color: "white", fontSize: "12px" }}
+                interval={timeRange === "year" ? 0 : 0}
+                angle={timeRange === "year" ? -45 : 0}
+                textAnchor={timeRange === "year" ? "end" : "middle"}
+                height={timeRange === "year" ? 50 : 30}
               />
               <YAxis
                 stroke="white"

@@ -60,12 +60,65 @@ const AppLayout = () => {
   );
 };
 
+import React, { createContext, useContext, useState, useEffect } from "react";
+
+interface HomeContextType {
+  currentHomeId: string | null;
+  switchHome: (homeId: number) => void;
+}
+
+const HomeContext = createContext<HomeContextType | undefined>(undefined);
+
+export const HomeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [currentHomeId, setCurrentHomeId] = useState<string | null>(
+    localStorage.getItem("currentHomeId")
+  );
+
+  // Function to switch homes
+  const switchHome = (homeId: number) => {
+    const homeIdString = homeId.toString();
+    localStorage.setItem("currentHomeId", homeIdString);
+    setCurrentHomeId(homeIdString);
+  };
+
+  // Listen for localStorage changes from other components
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "currentHomeId" && e.newValue !== currentHomeId) {
+        setCurrentHomeId(e.newValue);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [currentHomeId]);
+
+  return (
+    <HomeContext.Provider value={{ currentHomeId, switchHome }}>
+      {children}
+    </HomeContext.Provider>
+  );
+};
+
+// Custom hook for using the home context
+export const useHome = () => {
+  const context = useContext(HomeContext);
+  if (context === undefined) {
+    throw new Error("useHome must be used within a HomeProvider");
+  }
+  return context;
+};
+
 const App = () => {
   return (
     <AuthProvider>
-      <Router>
-        <AppLayout />
-      </Router>
+      <HomeProvider>
+        <Router>
+          <AppLayout />
+        </Router>
+      </HomeProvider>
     </AuthProvider>
   );
 };

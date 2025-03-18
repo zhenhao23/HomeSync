@@ -352,4 +352,110 @@ router.delete("/:id", (req: Request, res: Response) => {
   }
 });
 
+// GET users by homeId (formatted for the ProfilePage component)
+router.get("/home/:homeId/users", (req: Request, res: Response) => {
+  try {
+    const getUsersByHome = async () => {
+      const homeId = parseInt(req.params.homeId);
+
+      if (isNaN(homeId)) {
+        return res.status(400).json({ error: "Invalid home ID" });
+      }
+
+      // Get the home to verify it exists
+      const home = await prisma.smartHome.findUnique({
+        where: { id: homeId },
+      });
+
+      if (!home) {
+        return res.status(404).json({ error: "Home not found" });
+      }
+
+      // Get all dwellers with their user information
+      const dwellers = await prisma.homeDweller.findMany({
+        where: {
+          homeId: homeId,
+          status: "active", // Only get active users
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              profilePictureUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          permissionLevel: "asc", // Order by permission level - OWNER first
+        },
+      });
+
+      // Custom mapping for profile pictures based on user emails
+      const getProfilePic = (email: string, defaultPic: string | null) => {
+        // If there's already a valid profile picture, use it
+        if (defaultPic && defaultPic.startsWith("/")) {
+          return defaultPic;
+        }
+
+        // Otherwise map based on email
+        switch (email) {
+          case "alice@example.com":
+            return "/img1.jpeg";
+          case "anna@example.com":
+            return "/anna-profile.avif";
+          case "adrian@example.com":
+            return "/adrian-profile.avif";
+          case "joshua@example.com":
+            return "/joshua-profile.avif";
+          case "lily@example.com":
+            return "/lily-profile.avif";
+          default:
+            return "/img1.jpeg"; // Default image
+        }
+      };
+
+      // Format the response for the ProfilePage component
+      const formattedUsers = dwellers.map((dweller) => {
+        const fullName =
+          dweller.user.firstName +
+          (dweller.user.lastName ? " " + dweller.user.lastName : "");
+
+        // Mark the owner with "(You)" if applicable
+        const displayName =
+          dweller.permissionLevel === "OWNER" ? `${fullName} (You)` : fullName;
+
+        return {
+          id: dweller.user.id,
+          name: displayName,
+          profilePic: getProfilePic(
+            dweller.user.email,
+            dweller.user.profilePictureUrl
+          ),
+          email: dweller.user.email,
+          permissionLevel: dweller.permissionLevel,
+        };
+      });
+
+      return res.json(formattedUsers);
+    };
+
+    getUsersByHome().catch((error) => {
+      console.error("Error fetching home users:", error);
+      res.status(500).json({
+        error: "Failed to fetch home users",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    });
+  } catch (error) {
+    console.error("Error fetching home users:", error);
+    res.status(500).json({
+      error: "Failed to fetch home users",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 export default router;

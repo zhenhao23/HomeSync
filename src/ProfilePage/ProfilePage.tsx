@@ -31,6 +31,14 @@ import JoshuaProfilePic from "./joshua-profile.avif";
 import LilyProfilePic from "./lily-profile.avif";
 import "./ProfilePage.css";
 import "./laptop333.css";
+import { useHome } from "../App.tsx";
+import { useNavigate } from "react-router-dom";
+
+interface HomeItem {
+  id: number;
+  name: string;
+  selected: boolean;
+}
 
 // Define User Type
 interface UserType {
@@ -47,12 +55,14 @@ interface DeviceType {
 }
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState("profile");
   const [userData, setUserData] = useState({
     name: "Alvin",
     email: "alvin1112@gmail.com",
     profileImage: ProfileImage,
   });
+
   const [isLaptopView, setIsLaptopView] = useState(false);
   const [showHomeModal, setShowHomeModal] = useState(false);
   const [homes, setHomes] = useState([
@@ -63,39 +73,11 @@ const ProfilePage = () => {
   const [newHomeName, setNewHomeName] = useState("");
   const [showAddHomeInput, setShowAddHomeInput] = useState(false);
 
-  // Shared state for users that will be used across both mobile and laptop views
-  const [users, setUsers] = useState<UserType[]>([
-    {
-      id: 1,
-      name: "Alvin (You)",
-      profilePic: AlvinProfilePic,
-    },
-    {
-      id: 2,
-      name: "Alice",
-      profilePic: "",
-    },
-    {
-      id: 3,
-      name: "Anna",
-      profilePic: AnnaProfilePic,
-    },
-    {
-      id: 4,
-      name: "Adrian",
-      profilePic: AdrianProfilePic,
-    },
-    {
-      id: 5,
-      name: "Joshua",
-      profilePic: JoshuaProfilePic,
-    },
-    {
-      id: 6,
-      name: "Lily",
-      profilePic: LilyProfilePic,
-    },
-  ]);
+  // Update users state to empty array initially
+  const [users, setUsers] = useState<UserType[]>([]);
+
+  // Add state for current home
+  const [currentHome, setCurrentHome] = useState<number | null>(null);
 
   // Add these state variables near the top with your other state declarations
   const [formData, setFormData] = useState({
@@ -104,6 +86,84 @@ const ProfilePage = () => {
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+
+  // Add this state for feedback message
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+
+  // Add loading state
+  const [isHomeLoading, setIsHomeLoading] = useState(false);
+
+  // Add this near your other hooks/state declarations
+  const { switchHome } = useHome();
+
+  // Function to fetch users for a specific home
+  const fetchHomeUsers = async (homeId: number, token: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/dwellers/home/${homeId}/users`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Failed to fetch home users");
+        return;
+      }
+
+      const usersData = await response.json();
+      setUsers(usersData);
+    } catch (error) {
+      console.error("Error fetching home users:", error);
+    }
+  };
+
+  // Then update your selectHome function to use the context
+  const selectHome = async (id: number) => {
+    try {
+      setIsHomeLoading(true);
+      // Update UI state
+      setHomes(
+        homes.map((home) => ({
+          ...home,
+          selected: home.id === id,
+        }))
+      );
+
+      // Set current home ID in state
+      setCurrentHome(id);
+
+      // Use the context function to update globally
+      switchHome(id);
+
+      console.log(`Switched to home: ${id}, saved in localStorage`);
+
+      // Show feedback message
+      setFeedbackMessage(`Switched to ${homes.find((h) => h.id === id)?.name}`);
+
+      // Hide the message after 3 seconds
+      setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 3000);
+
+      // Fetch users for the selected home
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        await fetchHomeUsers(id, token);
+      }
+    } catch (error) {
+      console.error("Error switching home:", error);
+      setFeedbackMessage("Failed to switch home");
+      setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 3000);
+    } finally {
+      setIsHomeLoading(false);
+    }
+  };
 
   // Add this useEffect to initialize the form data when userData changes
   useEffect(() => {
@@ -116,6 +176,174 @@ const ProfilePage = () => {
       lastName,
     });
   }, [userData.name]);
+
+  // 1. Remove the duplicate useEffect hook
+  // 2. Ensure the home loading is properly handled
+
+  // Replace the duplicate useEffect with the correct single implementation
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Get the auth token from localStorage
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+          console.error("No authentication token found");
+          return;
+        }
+
+        // Fetch the current user's data
+        const response = await fetch(
+          "http://localhost:5000/api/users/current",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch user data: ${response.status}`);
+        }
+
+        const user = await response.json();
+        console.log("Current user ID:", user.id); // Log the user ID for debugging
+
+        setUserData({
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+          profileImage: user.profilePictureUrl || ProfileImage,
+        });
+
+        // After getting user data, fetch the user's homes
+        const homesResponse = await fetch(
+          "http://localhost:5000/api/homes/user",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!homesResponse.ok) {
+          console.error("Failed to fetch homes");
+          return;
+        }
+
+        const homesData = await homesResponse.json();
+        console.log("API response for homes:", homesData);
+        console.log("Number of homes returned:", homesData.length);
+
+        if (homesData.length > 0) {
+          // Get current home ID from localStorage
+          const currentHomeIdFromStorage =
+            localStorage.getItem("currentHomeId");
+
+          // Format homes for the state - THIS IS THE CODE YOU ASKED ABOUT
+          const formattedHomes = homesData.map((home: any) => ({
+            id: home.id,
+            name: home.name,
+            // Select the home that matches localStorage, or first home if no match
+            selected: currentHomeIdFromStorage
+              ? home.id === parseInt(currentHomeIdFromStorage)
+              : false,
+          }));
+
+          // If no home is selected yet, select the first one
+          if (!formattedHomes.some((home: HomeItem) => home.selected)) {
+            formattedHomes[0].selected = true;
+          }
+
+          setHomes(formattedHomes);
+
+          // Get the ID of the selected home
+          const selectedHome = formattedHomes.find(
+            (home: HomeItem) => home.selected
+          );
+          const selectedHomeId = selectedHome
+            ? selectedHome.id
+            : formattedHomes[0].id;
+
+          // Set current home ID and save to localStorage
+          setCurrentHome(selectedHomeId);
+          localStorage.setItem("currentHomeId", selectedHomeId.toString());
+
+          // Fetch users for this home
+          fetchHomeUsers(selectedHomeId, token);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const checkScreenSize = () => {
+      setIsLaptopView(window.innerWidth >= 1024);
+    };
+
+    // Close context menu when clicking anywhere
+    const handleClickOutside = () => {
+      setContextMenuPosition(null);
+    };
+
+    fetchUserData();
+    checkScreenSize();
+
+    window.addEventListener("resize", checkScreenSize);
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  // Update the modal close button to optionally refresh app data
+  // Update the modal close button to handle refresh more elegantly
+  const closeHomeModalAndRefresh = () => {
+    setShowHomeModal(false);
+
+    // Get the selected home
+    const selectedHome = homes.find((home) => home.selected);
+
+    if (!selectedHome) return;
+
+    // Get the current home ID from localStorage
+    const storedHomeId = localStorage.getItem("currentHomeId");
+    const currentHomeId = storedHomeId ? parseInt(storedHomeId) : null;
+
+    // If the selected home is different from what's in localStorage
+    if (selectedHome.id !== currentHomeId) {
+      // Ask if user wants to refresh the app
+      if (
+        window.confirm(
+          `Switched to ${selectedHome.name}. Refresh to see updated data?`
+        )
+      ) {
+        // Navigate to home page - this will trigger data reload with the new home ID
+        navigate("/home", { replace: true }); // Navigates to home page replacing current history
+      }
+    }
+  };
+
+  // Add this helper function in your ProfilePage component
+  const getProfilePicture = (profilePicPath: string) => {
+    switch (profilePicPath) {
+      case "/img1.jpeg":
+        return ProfileImage;
+      case "/anna-profile.avif":
+        return AnnaProfilePic;
+      case "/adrian-profile.avif":
+        return AdrianProfilePic;
+      case "/joshua-profile.avif":
+        return JoshuaProfilePic;
+      case "/lily-profile.avif":
+        return LilyProfilePic;
+      default:
+        return ProfileImage;
+    }
+  };
 
   // Add this function to handle form submission in laptop view
   const handleLaptopProfileUpdate = async () => {
@@ -183,67 +411,6 @@ const ProfilePage = () => {
   const [showUserDevices, setShowUserDevices] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
-  // Inside ProfilePage.tsx, update your useEffect:
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Get the auth token from localStorage
-        const token = localStorage.getItem("authToken");
-
-        if (!token) {
-          console.error("No authentication token found");
-          return;
-        }
-
-        // Fetch the current user's data
-        const response = await fetch(
-          "http://localhost:5000/api/users/current",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch user data: ${response.status}`);
-        }
-
-        const user = await response.json();
-
-        setUserData({
-          name: `${user.firstName} ${user.lastName}`,
-          email: user.email,
-          profileImage: user.profilePictureUrl || ProfileImage,
-        });
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    const checkScreenSize = () => {
-      setIsLaptopView(window.innerWidth >= 1024);
-    };
-
-    // Close context menu when clicking anywhere
-    const handleClickOutside = () => {
-      setContextMenuPosition(null);
-    };
-
-    fetchUserData();
-    checkScreenSize();
-
-    window.addEventListener("resize", checkScreenSize);
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      window.removeEventListener("resize", checkScreenSize);
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
   const handleLogout = () => {
     // Implement logout functionality
     alert("Logging out...");
@@ -255,28 +422,73 @@ const ProfilePage = () => {
     setShowHomeModal(true);
   };
 
-  const selectHome = (id: number) => {
-    setHomes(
-      homes.map((home) => ({
-        ...home,
-        selected: home.id === id,
-      }))
-    );
-  };
+  // const selectHome = (id: number) => {
+  //   setHomes(
+  //     homes.map((home) => ({
+  //       ...home,
+  //       selected: home.id === id,
+  //     }))
+  //   );
+  // };
 
-  // Function to add a new home
-  const addNewHome = () => {
+  // Function to add a new home - update to handle the response format correctly
+  const addNewHome = async () => {
     if (newHomeName.trim() === "") return;
 
-    const newHome = {
-      id: Math.max(...homes.map((home) => home.id)) + 1,
-      name: newHomeName.trim(),
-      selected: false,
-    };
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
 
-    setHomes([...homes, newHome]);
-    setNewHomeName("");
-    setShowAddHomeInput(false);
+      if (!token) {
+        console.error("No authentication token found");
+        return;
+      }
+
+      // Call the API to create a new home
+      const response = await fetch("http://localhost:5000/api/homes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: newHomeName.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create home: ${response.status}`);
+      }
+
+      const newHomeData = await response.json();
+      console.log("API response:", newHomeData); // Debugging log
+
+      // Handle both formats - the one wrapped in 'home' and the direct format
+      const homeData = newHomeData.home || newHomeData;
+
+      // Add the new home to the list
+      const newHome = {
+        id: homeData.id,
+        name: homeData.name,
+        selected: false,
+      };
+
+      // Update homes state with the new home (not selected by default)
+      setHomes([...homes, newHome]);
+
+      setNewHomeName("");
+      setShowAddHomeInput(false);
+
+      // Fetch users for the new home
+      if (token) {
+        fetchHomeUsers(newHome.id, token);
+      }
+
+      // Optional: Select the newly created home
+      // selectHome(newHome.id);
+    } catch (error) {
+      console.error("Error creating new home:", error);
+    }
   };
 
   // Handle adding a new user
@@ -321,6 +533,51 @@ const ProfilePage = () => {
       <div className="home-modal">
         <div className="home-modal-content">
           <div className="modal-header">Switch Home</div>
+
+          {feedbackMessage && (
+            <div
+              style={{
+                padding: "8px 12px",
+                marginBottom: "12px",
+                backgroundColor: "#4caf50",
+                color: "white",
+                borderRadius: "4px",
+                textAlign: "center",
+              }}
+            >
+              {feedbackMessage}
+            </div>
+          )}
+
+          {/* Add the loading spinner here */}
+          {isHomeLoading && (
+            <div
+              className="loading-spinner"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "15px 0",
+                color: "#4c7380",
+              }}
+            >
+              <div
+                style={{
+                  border: "3px solid #f3f3f3",
+                  borderTop: "3px solid #4c7380",
+                  borderRadius: "50%",
+                  width: "24px",
+                  height: "24px",
+                  animation: "spin 1s linear infinite",
+                }}
+              />
+              <style>{`
+                @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+              `}</style>
+            </div>
+          )}
 
           <ul className="home-list">
             {homes.map((home) => (
@@ -399,10 +656,7 @@ const ProfilePage = () => {
             >
               Cancel
             </button>
-            <button
-              className="done-button"
-              onClick={() => setShowHomeModal(false)}
-            >
+            <button className="done-button" onClick={closeHomeModalAndRefresh}>
               Done
             </button>
           </div>
@@ -474,7 +728,7 @@ const ProfilePage = () => {
             <div className="profile-image">
               {selectedUser.profilePic ? (
                 <img
-                  src={selectedUser.profilePic}
+                  src={getProfilePicture(selectedUser.profilePic)}
                   alt={selectedUser.name}
                   style={{
                     width: "60px",

@@ -2,6 +2,29 @@ import React, { useState, useRef } from "react";
 import { FaArrowLeft, FaPlus, FaTrash } from "react-icons/fa";
 import "./ManageUsers.css";
 import UserDevices from "./UserDevices";
+import ProfileImage from "./img1.jpeg";
+import AnnaProfilePic from "./anna-profile.avif";
+import AdrianProfilePic from "./adrian-profile.avif";
+import JoshuaProfilePic from "./joshua-profile.avif";
+import LilyProfilePic from "./lily-profile.avif";
+
+// Add this helper function
+const getProfilePicture = (profilePicPath: string) => {
+  switch (profilePicPath) {
+    case "/img1.jpeg":
+      return ProfileImage;
+    case "/anna-profile.avif":
+      return AnnaProfilePic;
+    case "/adrian-profile.avif":
+      return AdrianProfilePic;
+    case "/joshua-profile.avif":
+      return JoshuaProfilePic;
+    case "/lily-profile.avif":
+      return LilyProfilePic;
+    default:
+      return ProfileImage;
+  }
+};
 
 interface UserType {
   id: number;
@@ -15,7 +38,11 @@ interface ManageUsersProps {
   setUsers: React.Dispatch<React.SetStateAction<UserType[]>>;
 }
 
-const ManageUsers: React.FC<ManageUsersProps> = ({ onBack, users, setUsers }) => {
+const ManageUsers: React.FC<ManageUsersProps> = ({
+  onBack,
+  users,
+  setUsers,
+}) => {
   const [showInvite, setShowInvite] = useState(false);
   const [email, setEmail] = useState("");
   const [swipedUserId, setSwipedUserId] = useState<number | null>(null);
@@ -83,7 +110,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onBack, users, setUsers }) =>
   const addUser = () => {
     if (!email) return;
     const newUser: UserType = {
-      id: Math.max(...users.map(user => user.id)) + 1, // Generate new ID
+      id: Math.max(...users.map((user) => user.id)) + 1, // Generate new ID
       name: email.split("@")[0],
       profilePic: "",
     };
@@ -132,7 +159,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({ onBack, users, setUsers }) =>
               <div className="user-content">
                 {user.profilePic ? (
                   <img
-                    src={user.profilePic}
+                    src={getProfilePicture(user.profilePic)}
                     alt={user.name}
                     className="profile-pic"
                   />
