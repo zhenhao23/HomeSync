@@ -482,64 +482,6 @@
     color: #1d3a57;
   }
   
-  /* Energy Flow Diagram */
-  /* Energy Flow Diagram - Reduced Size */
-.energy-flow-diagram {
-  flex: 1;
-    background-color: white;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.flow-diagram-content {
-  height: 100%;
-  position: relative;
-}
-
-/* Node Styling */
-.flow-node {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.node-value {
-  font-weight: bold;
-  color: #1d3a57;
-  margin: 4px 0;
-}
-
-.node-label {
-  font-size: 14px;
-  color: #666;
-}
-
-/* Adjusted Node Positions */
-.pv-node {
-  top: 10%;
-  left: 20%;
-}
-
-.grid-node {
-  top: 10%;
-  right: 20%;
-}
-
-.battery-node {
-  bottom: 40%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.home-node {
-  bottom: 15%;
-  left: 50%;
-  transform: translateX(-50%);
-}
 
 .icon-container {
   width: 40px;
@@ -550,46 +492,6 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 5px;
-}
-
-/* Flow Arrows Styling */
-.flow-arrow {
-  position: absolute;
-  stroke: #ccc;
-  stroke-width: 2px;
-  fill: none;
-}
-
-.flow-arrow-pv-battery {
-  top: 25%;
-  left: 30%;
-}
-
-.flow-arrow-battery-home {
-  bottom: 30%;
-  left: 50%;
-}
-
-.flow-arrow-pv-home {
-  left: 35%;
-  top: 40%;
-}
-
-.flow-arrow-grid-home {
-  right: 35%;
-  top: 40%;
-}
-
-.arrow-head {
-  fill: #ccc;
-}
-
-.active-flow {
-  stroke: #f8b500;
-}
-
-.active-flow .arrow-head {
-  fill: #f8b500;
 }
 
 /* Energy Flow Table Styling */
@@ -1010,3 +912,69 @@ font-size: 20px;
 }
 
 
+/* Download confirmation dialog */
+.energy-flow-panel .download-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.download-confirm-dialog {
+  background-color: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 80%;
+  max-width: 320px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.download-confirm-dialog h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #1a3b5d;
+  font-size: 18px;
+}
+
+.download-confirm-dialog p {
+  color: #4a5568;
+  margin-bottom: 24px;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.energy-flow-container .dialog-buttons button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.dialog-buttons button:first-child {
+  background-color: #f1f5f9;
+  color: #4a5568;
+}
+
+.confirm-button {
+  background-color: #1a3b5d;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confirm-button:hover {
+  background-color: #153251;
+}

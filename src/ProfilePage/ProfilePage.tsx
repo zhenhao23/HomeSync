@@ -3,7 +3,6 @@ import {
   FaBell,
   FaUser,
   FaUsers,
-  FaLanguage,
   FaLock,
   FaCamera,
   FaHome,
@@ -17,10 +16,10 @@ import {
   FaArrowLeft,
   FaBed,
   FaCouch,
-  FaUtensils
+  FaUtensils,
+  FaQuestionCircle // Added for Help icon
 } from "react-icons/fa";
 import EditProfilePage from "./EditProfile";
-import LanguagesPage from "./Languages";
 import ChangePasswordPage from "./ChangePassword";
 import ManageUsers from "./ManageUsers";
 import ProfileImage from "./img1.jpeg";
@@ -52,9 +51,12 @@ const ProfilePage = () => {
     name: "Alvin",
     email: "alvin1112@gmail.com",
     profileImage: ProfileImage,
+    role: "homeowner", // Add role property (homeowner or homedweller)
   });
   const [isLaptopView, setIsLaptopView] = useState(false);
   const [showHomeModal, setShowHomeModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   const [homes, setHomes] = useState([
     { id: 1, name: "Smart Home 1", selected: false },
     { id: 2, name: "Smart Home 2", selected: true }
@@ -62,6 +64,9 @@ const ProfilePage = () => {
   // State for adding new home
   const [newHomeName, setNewHomeName] = useState("");
   const [showAddHomeInput, setShowAddHomeInput] = useState(false);
+  
+  // Added state for Help/Download modal
+  const [showHelpModal, setShowHelpModal] = useState(false);
   
   // Shared state for users that will be used across both mobile and laptop views
   const [users, setUsers] = useState<UserType[]>([
@@ -107,6 +112,9 @@ const ProfilePage = () => {
   const [showUserDevices, setShowUserDevices] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
+  // Function to check if user is homeowner
+  const isHomeowner = () => userData.role === "homeowner";
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -116,6 +124,7 @@ const ProfilePage = () => {
           name: data.name || "Alvin",
           email: data.email || "alvin1112@gmail.com",
           profileImage: data.profileImage || ProfileImage,
+          role: data.role || "homeowner", // Set role from API or default to homeowner
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -144,14 +153,47 @@ const ProfilePage = () => {
   }, []);
 
   const handleLogout = () => {
-    // Implement logout functionality
-    alert("Logging out...");
-    // In a real app, you would clear auth tokens, cookies, etc.
-    // and redirect to login page
+    setShowLogoutModal(true);
   };
+
+  // Function to handle downloading the user guide
+  const handleDownloadUserGuide = () => {
+    // First close the modal
+    setShowHelpModal(false);
+    
+    // Create a blob with the PDF content and proper MIME type
+    fetch('/HomeSyncUserGuide.pdf')
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a link element
+        const link = document.createElement('a');
+        const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+        link.href = url;
+        link.download = 'HomeSyncUserGuide.pdf';
+        
+        // Append to the document, click it, and remove it
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the URL object
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error('Error downloading PDF:', error);
+        alert('Failed to download the User Guide. Please try again later.');
+      });
+  };
+
+ 
 
   const handleAddHome = () => {
     setShowHomeModal(true);
+  };
+
+  // Function to handle Help button click
+  const handleHelpClick = () => {
+    setShowHelpModal(true);
   };
 
   const selectHome = (id: number) => {
@@ -300,6 +342,30 @@ const ProfilePage = () => {
     );
   };
   
+  // Help/Download modal
+  const HelpModal = () => {
+    return (
+      <div className="home-modal">
+        <div className="home-modal-content">
+          <div className="modal-header">Download User Guide</div>
+          
+          <div className="help-content" style={{ padding: "20px 10px" }}>
+            <p>Do you want to download the User Guide PDF?</p>
+          </div>
+          
+          <div className="modal-actions">
+            <button className="cancel-button" onClick={() => setShowHelpModal(false)}>
+              Cancel
+            </button>
+            <button className="done-button" onClick={handleDownloadUserGuide}>
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
   // Invite modal for adding new users
   const InviteModal = () => {
     return (
@@ -324,7 +390,7 @@ const ProfilePage = () => {
     );
   };
   
-  // User Devices Modal
+  /// User Devices Modal
   const UserDevicesModal = () => {
     if (!selectedUser) return null;
     
@@ -353,20 +419,25 @@ const ProfilePage = () => {
                 <img 
                   src={selectedUser.profilePic} 
                   alt={selectedUser.name} 
-                  style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }}
+                  style={{ 
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%', 
+                    objectFit: 'cover' 
+                  }}
                 />
               ) : (
                 <div 
                   className="default-avatar"
                   style={{ 
-                    width: '60px', 
-                    height: '60px', 
+                    width: '80px',
+                    height: '80px',
                     borderRadius: '50%', 
                     backgroundColor: '#e0e0e0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '24px'
+                    fontSize: '32px'
                   }}
                 >
                   {selectedUser.name.charAt(0)}
@@ -405,6 +476,30 @@ const ProfilePage = () => {
           
           <div className="modal-actions" style={{ marginTop: '20px' }}>
             <button onClick={() => setShowUserDevices(false)}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+    // Logout confirmation modal
+  const LogoutModal = () => {
+    return (
+      <div className="modal-overlay">
+        <div className="invite-modal">
+          <h3>Confirm Logout</h3>
+          <p>
+            Are you sure you want to log out?
+          </p>
+          <div className="modal-actions">
+            <button onClick={() => setShowLogoutModal(false)}>Cancel</button>
+            <button onClick={() => {
+              setShowLogoutModal(false);
+              // Implement logout functionality
+              alert("Logging out...");
+              // In a real app, you would clear auth tokens, cookies, etc.
+              // and redirect to login page
+            }}>Logout</button>
           </div>
         </div>
       </div>
@@ -459,8 +554,6 @@ const ProfilePage = () => {
             setUserData={setUserData}
           />
         );
-      case "languages":
-        return <LanguagesPage onBack={() => setCurrentPage("profile")} />;
       case "change-password":
         return <ChangePasswordPage onBack={() => setCurrentPage("profile")} />;
       case "manage-users":
@@ -510,20 +603,24 @@ const ProfilePage = () => {
                     <span>Edit Profile</span>
                   </button>
 
-                  <button
-                    className="menu-item"
-                    onClick={() => setCurrentPage("manage-users")}
-                  >
-                    <FaUsers className="menu-icon" />
-                    <span>Manage Users</span>
-                  </button>
+                  {/* Only show Manage Users option for homeowners */}
+                  {isHomeowner() && (
+                    <button
+                      className="menu-item"
+                      onClick={() => setCurrentPage("manage-users")}
+                    >
+                      <FaUsers className="menu-icon" />
+                      <span>Manage Users</span>
+                    </button>
+                  )}
 
+                  {/* Changed Languages to Help */}
                   <button
                     className="menu-item"
-                    onClick={() => setCurrentPage("languages")}
+                    onClick={handleHelpClick}
                   >
-                    <FaLanguage className="menu-icon" />
-                    <span>Languages</span>
+                    <FaQuestionCircle className="menu-icon" />
+                    <span>Help</span>
                   </button>
 
                   <button
@@ -554,10 +651,13 @@ const ProfilePage = () => {
 
                 {/* Add Home and Log Out buttons */}
                 <div className="mobile-action-buttons">
-                  <button className="add-home-button" onClick={handleAddHome}>
-                    <FaHome className="button-icon" />
-                    <span>Add Home</span>
-                  </button>
+                  {/* Only show Add Home button for homeowners */}
+                  {isHomeowner() && (
+                    <button className="add-home-button" onClick={handleAddHome}>
+                      <FaHome className="button-icon" />
+                      <span>Add Home</span>
+                    </button>
+                  )}
                   <button className="log-out-button" onClick={handleLogout}>
                     <FaSignOutAlt className="button-icon" />
                     <span>Log Out</span>
@@ -622,12 +722,13 @@ const ProfilePage = () => {
                   <div className="laptop-divider"></div>
                   
                   <div className="laptop-profile-options">
+                    {/* Changed Languages to Help */}
                     <div 
                       className="laptop-option-item"
-                      onClick={() => setCurrentPage("languages")}
+                      onClick={handleHelpClick}
                     >
-                      <FaLanguage className="laptop-option-icon" />
-                      <span>Languages</span>
+                      <FaQuestionCircle className="laptop-option-icon" />
+                      <span>Help</span>
                     </div>
                     
                     <div 
@@ -652,10 +753,13 @@ const ProfilePage = () => {
 
                   {/* Add Home and Log Out buttons for laptop view */}
                   <div className="laptop-action-buttons">
-                    <button className="laptop-add-home-button" onClick={handleAddHome}>
-                      <FaHome className="laptop-button-icon" />
-                      <span>Add Home</span>
-                    </button>
+                    {/* Only show Add Home button for homeowners */}
+                    {isHomeowner() && (
+                      <button className="laptop-add-home-button" onClick={handleAddHome}>
+                        <FaHome className="laptop-button-icon" />
+                        <span>Add Home</span>
+                      </button>
+                    )}
                     <button className="laptop-log-out-button" onClick={handleLogout}>
                       <FaSignOutAlt className="laptop-button-icon" />
                       <span>Log Out</span>
@@ -664,63 +768,63 @@ const ProfilePage = () => {
                 </>
               )}
 
-              {currentPage === "languages" && (
-                <LanguagesPage onBack={() => setCurrentPage("profile")} />
-              )}
-              
               {currentPage === "change-password" && (
                 <ChangePasswordPage onBack={() => setCurrentPage("profile")} />
               )}
             </div>
             
-            {/* Manage Users Section */}
-            <div className="laptop-manage-users">
-              <div className="laptop-manage-header">
-                <h2 className="laptop-manage-title">Manage Users</h2>
-              </div>
-              
-              <div className="laptop-user-header-row">
-                <div className="laptop-total-users">Total {users.length}</div>
-                <button className="laptop-add-user-btn" onClick={() => setShowInvite(true)}>
-                  <FaPlus />
-                </button>
-              </div>
-              
-              <ul className="laptop-user-list">
-                {users.map((user) => (
-                  <li 
-                    key={user.id} 
-                    className="laptop-user-item"
-                    onContextMenu={(e) => handleUserContextMenu(e, user.id)}
-                    onClick={() => handleUserClick(user)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <div className="laptop-user-profile">
-                      {user.profilePic ? (
-                        <div className="laptop-user-pic">
-                          <img src={user.profilePic} alt={user.name} />
-                        </div>
-                      ) : (
-                        <div className="laptop-default-avatar">{user.name.charAt(0)}</div>
-                      )}
-                      <div className="laptop-user-name">{user.name}</div>
-                    </div>
-                    {user.id !== 1 && (
-                      <div 
-                        className="laptop-delete-indicator"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent opening devices modal
-                          deleteUser(user.id);
-                        }}
+            {/* Manage Users Section - Only visible for homeowners */}
+            {isHomeowner() && (
+              <div className="laptop-manage-users">
+                <div className="laptop-manage-header">
+                  <h2 className="laptop-manage-title">Manage Users</h2>
+                </div>
+                
+                <div className="laptop-white-container">
+                  <div className="laptop-user-header-row">
+                    <div className="laptop-total-users">Total {users.length}</div>
+                    <button className="laptop-add-user-btn" onClick={() => setShowInvite(true)}>
+                      <FaPlus />
+                    </button>
+                  </div>
+                  
+                  <ul className="laptop-user-list">
+                    {users.map((user) => (
+                      <li 
+                        key={user.id} 
+                        className="laptop-user-item"
+                        onContextMenu={(e) => handleUserContextMenu(e, user.id)}
+                        onClick={() => handleUserClick(user)}
+                        style={{ cursor: 'pointer' }}
                       >
-                        <FaTrash />
-                        <span>Delete</span>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                        <div className="laptop-user-profile">
+                          {user.profilePic ? (
+                            <div className="laptop-user-pic">
+                              <img src={user.profilePic} alt={user.name} />
+                            </div>
+                          ) : (
+                            <div className="laptop-default-avatar">{user.name.charAt(0)}</div>
+                          )}
+                          <div className="laptop-user-name">{user.name}</div>
+                        </div>
+                        {user.id !== 1 && (
+                          <div 
+                            className="laptop-delete-indicator"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent opening devices modal
+                              deleteUser(user.id);
+                            }}
+                          >
+                            <FaTrash />
+                            <span>Delete</span>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -731,7 +835,9 @@ const ProfilePage = () => {
     <div className="profile-page">
       {isLaptopView ? renderLaptopView() : renderMobileView()}
       {showHomeModal && <HomeModal />}
+      {showHelpModal && <HelpModal />}
       {showInvite && <InviteModal />}
+      {showLogoutModal && <LogoutModal />}
       {showUserDevices && <UserDevicesModal />}
       {contextMenuPosition && <ContextMenu />}
     </div>

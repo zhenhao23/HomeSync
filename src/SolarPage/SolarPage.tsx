@@ -1,6 +1,6 @@
 import { BsSunrise, BsCloudRain } from "react-icons/bs";
 import { IoLeafOutline } from "react-icons/io5";
-import { Zap, Sliders, Upload } from "lucide-react"; 
+import { Zap, Sliders, Upload, Download } from "lucide-react"; 
 import { useState, useEffect } from "react";
 import { FaHome, FaBolt, FaSun, FaUser } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -41,6 +41,10 @@ const SolarPage: React.FC = () => {
   const location = useLocation();
   const activeTab = location.pathname;
   
+
+  // New state for download confirmation dialog
+  const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
+
   // Original states from SolarPage
   const [energyUsage, setEnergyUsage] = useState(80);
   const [currentPower, setCurrentPower] = useState(850);
@@ -124,6 +128,53 @@ const SolarPage: React.FC = () => {
       path: "/profile",
     },
   ];
+
+
+  // Function to handle share button click
+  const handleShareClick = () => {
+    setShowDownloadConfirm(true);
+  };
+
+  // Function to handle download confirmation
+  const handleDownloadConfirm = () => {
+    console.log("Downloading energy report...");
+    
+    // Get the currently active data based on the selected tab
+    const data = 
+      activeYieldTab === "today" 
+        ? energyFlowData.today 
+        : activeYieldTab === "monthly" 
+          ? energyFlowData.monthly 
+          : energyFlowData.total;
+
+    // Create a CSV content string
+    const csvContent = `
+     Type,${activeYieldTab === "today" ? "Daily (kWh)" : activeYieldTab === "monthly" ? "Monthly (kWh)" : "Annual (kWh)"}
+     PV,${data.pv}
+     Imported,${data.imported}
+     Exported,${data.exported}
+     Load,${data.load}
+     Yield,${data.yield}
+   `.trim();
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", `energy_report_${activeYieldTab}.csv`);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setShowDownloadConfirm(false);
+  };
+
+  // Function to handle download cancellation
+  const handleDownloadCancel = () => {
+    setShowDownloadConfirm(false);
+  };
 
   const handleNavClick = (path: string) => {
     navigate(path);
@@ -338,7 +389,7 @@ const SolarPage: React.FC = () => {
       <div className="energy-flow-panel">
         <div className="energy-flow-header">
           <h2 className="header-energy-flow">Energy Flow</h2>
-          <button className="upload-button">
+          <button className="upload-button" onClick={handleShareClick}>
             <Upload size={20} />
           </button>
         </div>
@@ -420,6 +471,26 @@ const SolarPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Download confirmation dialog */}
+          {showDownloadConfirm && (
+            <div className="download-confirm-overlay">
+              <div className="download-confirm-dialog">
+                <h3 >Download Energy Report</h3>
+                <p >Do you want to download the energy report?</p>
+                <div className="dialog-buttons">
+                  <button onClick={handleDownloadCancel}>Cancel</button>
+                  <button
+                    onClick={handleDownloadConfirm}
+                    className="confirm-button"
+                  >
+                    <Download size={16} />
+                    <span>Download</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
       </div>
     );
   };

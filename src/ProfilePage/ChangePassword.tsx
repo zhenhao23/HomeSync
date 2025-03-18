@@ -1,6 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import "./ChangePassword.css";
+
+// Window size hook
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+};
 
 interface ChangePasswordProps {
   onBack: () => void;
@@ -12,6 +32,10 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+
+  // Get window size for responsive layout
+  const { width } = useWindowSize();
+  const isLaptop = width >= 1280;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +62,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="cp-content-container">
+      <div className={`cp-content-container ${isLaptop ? 'cp-laptop-view' : ''}`}>
         <form onSubmit={handleSubmit} className="cp-password-form">
           {error && <div className="cp-alert cp-alert-danger">{error}</div>}
           
@@ -62,7 +86,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
             />
           </div>
 
-          <button type="submit" className="cp-btn cp-btn-primary w-100">
+          <button type="submit" className="cp-btn cp-btn-primary">
             Change Password
           </button>
         </form>
