@@ -17,18 +17,18 @@ import {
   FaArrowLeft,
   FaBed,
   FaCouch,
-  FaUtensils
+  FaUtensils,
 } from "react-icons/fa";
 import EditProfilePage from "./EditProfile";
-import LanguagesPage from "./Languages";
+// import LanguagesPage from "./Languages";
 import ChangePasswordPage from "./ChangePassword";
 import ManageUsers from "./ManageUsers";
 import ProfileImage from "./img1.jpeg";
-import AlvinProfilePic from './img1.jpeg';
-import AnnaProfilePic from './anna-profile.avif';
-import AdrianProfilePic from './adrian-profile.avif';
-import JoshuaProfilePic from './joshua-profile.avif';
-import LilyProfilePic from './lily-profile.avif';
+import AlvinProfilePic from "./img1.jpeg";
+import AnnaProfilePic from "./anna-profile.avif";
+import AdrianProfilePic from "./adrian-profile.avif";
+import JoshuaProfilePic from "./joshua-profile.avif";
+import LilyProfilePic from "./lily-profile.avif";
 import "./ProfilePage.css";
 import "./laptop333.css";
 
@@ -57,12 +57,12 @@ const ProfilePage = () => {
   const [showHomeModal, setShowHomeModal] = useState(false);
   const [homes, setHomes] = useState([
     { id: 1, name: "Smart Home 1", selected: false },
-    { id: 2, name: "Smart Home 2", selected: true }
+    { id: 2, name: "Smart Home 2", selected: true },
   ]);
   // State for adding new home
   const [newHomeName, setNewHomeName] = useState("");
   const [showAddHomeInput, setShowAddHomeInput] = useState(false);
-  
+
   // Shared state for users that will be used across both mobile and laptop views
   const [users, setUsers] = useState<UserType[]>([
     {
@@ -70,52 +70,153 @@ const ProfilePage = () => {
       name: "Alvin (You)",
       profilePic: AlvinProfilePic,
     },
-    { 
-      id: 2, 
-      name: "Alice", 
-      profilePic: "" 
+    {
+      id: 2,
+      name: "Alice",
+      profilePic: "",
     },
-    { 
-      id: 3, 
-      name: "Anna", 
-      profilePic: AnnaProfilePic
+    {
+      id: 3,
+      name: "Anna",
+      profilePic: AnnaProfilePic,
     },
-    { 
-      id: 4, 
-      name: "Adrian", 
-      profilePic: AdrianProfilePic
+    {
+      id: 4,
+      name: "Adrian",
+      profilePic: AdrianProfilePic,
     },
-    { 
-      id: 5, 
-      name: "Joshua", 
-      profilePic: JoshuaProfilePic
+    {
+      id: 5,
+      name: "Joshua",
+      profilePic: JoshuaProfilePic,
     },
-    { 
-      id: 6, 
-      name: "Lily", 
-      profilePic: LilyProfilePic
+    {
+      id: 6,
+      name: "Lily",
+      profilePic: LilyProfilePic,
     },
   ]);
-  
+
+  // Add these state variables near the top with your other state declarations
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
+
+  // Add this useEffect to initialize the form data when userData changes
+  useEffect(() => {
+    const nameParts = userData.name.trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+
+    setFormData({
+      firstName,
+      lastName,
+    });
+  }, [userData.name]);
+
+  // Add this function to handle form submission in laptop view
+  const handleLaptopProfileUpdate = async () => {
+    setIsUpdating(true);
+    setUpdateError(null);
+
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      // Validation
+      if (!formData.firstName || !formData.lastName) {
+        throw new Error("Both first name and last name are required");
+      }
+
+      // Make the API call to update user data
+      const response = await fetch("http://localhost:5000/api/users/current", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update profile");
+      }
+
+      const result = await response.json();
+
+      // Update the local state with the new data
+      setUserData({
+        ...userData,
+        name: `${result.user.firstName} ${result.user.lastName}`,
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setUpdateError(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   // State for the invite modal
   const [showInvite, setShowInvite] = useState(false);
   const [email, setEmail] = useState("");
-  const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number, y: number } | null>(null);
+  const [contextMenuPosition, setContextMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  
+
   // State for user devices modal
   const [showUserDevices, setShowUserDevices] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
+  // Inside ProfilePage.tsx, update your useEffect:
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("/api/user");
-        const data = await response.json();
+        // Get the auth token from localStorage
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+          console.error("No authentication token found");
+          return;
+        }
+
+        // Fetch the current user's data
+        const response = await fetch(
+          "http://localhost:5000/api/users/current",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch user data: ${response.status}`);
+        }
+
+        const user = await response.json();
+
         setUserData({
-          name: data.name || "Alvin",
-          email: data.email || "alvin1112@gmail.com",
-          profileImage: data.profileImage || ProfileImage,
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+          profileImage: user.profilePictureUrl || ProfileImage,
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -133,13 +234,13 @@ const ProfilePage = () => {
 
     fetchUserData();
     checkScreenSize();
-    
-    window.addEventListener('resize', checkScreenSize);
-    document.addEventListener('click', handleClickOutside);
-    
+
+    window.addEventListener("resize", checkScreenSize);
+    document.addEventListener("click", handleClickOutside);
+
     return () => {
-      window.removeEventListener('resize', checkScreenSize);
-      document.removeEventListener('click', handleClickOutside);
+      window.removeEventListener("resize", checkScreenSize);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
@@ -155,32 +256,34 @@ const ProfilePage = () => {
   };
 
   const selectHome = (id: number) => {
-    setHomes(homes.map(home => ({
-      ...home,
-      selected: home.id === id
-    })));
+    setHomes(
+      homes.map((home) => ({
+        ...home,
+        selected: home.id === id,
+      }))
+    );
   };
-  
+
   // Function to add a new home
   const addNewHome = () => {
     if (newHomeName.trim() === "") return;
-    
+
     const newHome = {
-      id: Math.max(...homes.map(home => home.id)) + 1,
+      id: Math.max(...homes.map((home) => home.id)) + 1,
       name: newHomeName.trim(),
-      selected: false
+      selected: false,
     };
-    
+
     setHomes([...homes, newHome]);
     setNewHomeName("");
     setShowAddHomeInput(false);
   };
-  
+
   // Handle adding a new user
   const addUser = () => {
     if (!email) return;
     const newUser: UserType = {
-      id: Math.max(...users.map(user => user.id)) + 1, // Generate new ID
+      id: Math.max(...users.map((user) => user.id)) + 1, // Generate new ID
       name: email.split("@")[0],
       profilePic: "",
     };
@@ -188,21 +291,21 @@ const ProfilePage = () => {
     setEmail("");
     setShowInvite(false);
   };
-  
+
   // Handle deleting a user
   const deleteUser = (userId: number) => {
     // Don't delete the owner (Alvin)
     if (userId === 1) return;
-    
-    setUsers(users.filter(user => user.id !== userId));
+
+    setUsers(users.filter((user) => user.id !== userId));
     setContextMenuPosition(null);
   };
-  
+
   // Handle right-click on user in laptop view
   const handleUserContextMenu = (e: React.MouseEvent, userId: number) => {
     e.preventDefault();
     if (userId === 1) return; // Can't delete the owner
-    
+
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     setSelectedUserId(userId);
   };
@@ -218,12 +321,12 @@ const ProfilePage = () => {
       <div className="home-modal">
         <div className="home-modal-content">
           <div className="modal-header">Switch Home</div>
-          
+
           <ul className="home-list">
-            {homes.map(home => (
-              <li 
-                key={home.id} 
-                className={`home-item ${home.selected ? 'selected' : ''}`}
+            {homes.map((home) => (
+              <li
+                key={home.id}
+                className={`home-item ${home.selected ? "selected" : ""}`}
                 onClick={() => selectHome(home.id)}
               >
                 {home.name}
@@ -231,13 +334,15 @@ const ProfilePage = () => {
               </li>
             ))}
           </ul>
-          
+
           {!showAddHomeInput ? (
-            <div 
+            <div
               className="add-new-home"
               onClick={() => setShowAddHomeInput(true)}
             >
-              <span className="plus-icon"><FaPlus size={14} /></span>
+              <span className="plus-icon">
+                <FaPlus size={14} />
+              </span>
               <span>Add New Home</span>
             </div>
           ) : (
@@ -253,11 +358,11 @@ const ProfilePage = () => {
                   borderRadius: "4px",
                   border: "1px solid #ccc",
                   width: "100%",
-                  marginBottom: "8px"
+                  marginBottom: "8px",
                 }}
               />
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <button 
+                <button
                   onClick={() => {
                     setShowAddHomeInput(false);
                     setNewHomeName("");
@@ -266,19 +371,19 @@ const ProfilePage = () => {
                     padding: "6px 12px",
                     borderRadius: "4px",
                     border: "1px solid #ccc",
-                    background: "#f5f5f5"
+                    background: "#f5f5f5",
                   }}
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={addNewHome}
                   style={{
                     padding: "6px 12px",
                     borderRadius: "4px",
                     border: "1px solid #0066cc",
                     background: "#0066cc",
-                    color: "white"
+                    color: "white",
                   }}
                 >
                   Add
@@ -286,12 +391,18 @@ const ProfilePage = () => {
               </div>
             </div>
           )}
-          
+
           <div className="modal-actions">
-            <button className="cancel-button" onClick={() => setShowHomeModal(false)}>
+            <button
+              className="cancel-button"
+              onClick={() => setShowHomeModal(false)}
+            >
               Cancel
             </button>
-            <button className="done-button" onClick={() => setShowHomeModal(false)}>
+            <button
+              className="done-button"
+              onClick={() => setShowHomeModal(false)}
+            >
               Done
             </button>
           </div>
@@ -299,7 +410,7 @@ const ProfilePage = () => {
       </div>
     );
   };
-  
+
   // Invite modal for adding new users
   const InviteModal = () => {
     return (
@@ -323,122 +434,147 @@ const ProfilePage = () => {
       </div>
     );
   };
-  
+
   // User Devices Modal
   const UserDevicesModal = () => {
     if (!selectedUser) return null;
-    
+
     // Generate some example devices for the user
     const devices: DeviceType[] = [
-      { name: "Living Room Light", location: "Living Room", icon: <FaCouch size={24} /> },
-      { name: "Bedroom AC", location: `${selectedUser.name}'s Bedroom`, icon: <FaBed size={24} /> },
-      { name: "Kitchen Light", location: "Kitchen", icon: <FaUtensils size={24} /> }
+      {
+        name: "Living Room Light",
+        location: "Living Room",
+        icon: <FaCouch size={24} />,
+      },
+      {
+        name: "Bedroom AC",
+        location: `${selectedUser.name}'s Bedroom`,
+        icon: <FaBed size={24} />,
+      },
+      {
+        name: "Kitchen Light",
+        location: "Kitchen",
+        icon: <FaUtensils size={24} />,
+      },
     ];
-    
+
     return (
       <div className="modal-overlay">
         <div className="invite-modal user-devices-modal">
           <div className="user-devices-header">
-            <FaArrowLeft 
-              className="back-icon" 
-              onClick={() => setShowUserDevices(false)} 
-              style={{ cursor: 'pointer' }}
+            <FaArrowLeft
+              className="back-icon"
+              onClick={() => setShowUserDevices(false)}
+              style={{ cursor: "pointer" }}
             />
             <h3>User Devices</h3>
           </div>
-          
+
           <div className="user-profile">
             <div className="profile-image">
               {selectedUser.profilePic ? (
-                <img 
-                  src={selectedUser.profilePic} 
-                  alt={selectedUser.name} 
-                  style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }}
+                <img
+                  src={selectedUser.profilePic}
+                  alt={selectedUser.name}
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
                 />
               ) : (
-                <div 
+                <div
                   className="default-avatar"
-                  style={{ 
-                    width: '60px', 
-                    height: '60px', 
-                    borderRadius: '50%', 
-                    backgroundColor: '#e0e0e0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '24px'
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "50%",
+                    backgroundColor: "#e0e0e0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "24px",
                   }}
                 >
                   {selectedUser.name.charAt(0)}
                 </div>
               )}
             </div>
-            <h3 className="user-name" style={{ marginTop: '10px' }}>{selectedUser.name}</h3>
+            <h3 className="user-name" style={{ marginTop: "10px" }}>
+              {selectedUser.name}
+            </h3>
           </div>
-          
-          <ul className="device-list" style={{ listStyle: 'none', padding: '0', marginTop: '20px' }}>
+
+          <ul
+            className="device-list"
+            style={{ listStyle: "none", padding: "0", marginTop: "20px" }}
+          >
             {devices.map((device, index) => (
-              <li 
-                key={index} 
+              <li
+                key={index}
                 className="device-item"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '12px',
-                  marginBottom: '8px',
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: '8px'
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "12px",
+                  marginBottom: "8px",
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: "8px",
                 }}
               >
-                <div className="device-icon" style={{ marginRight: '12px' }}>
+                <div className="device-icon" style={{ marginRight: "12px" }}>
                   {device.icon}
                 </div>
                 <div className="device-info">
-                  <div style={{ fontWeight: 'bold' }}>{device.name}</div>
-                  <span className="device-location" style={{ color: '#666', fontSize: '14px' }}>
+                  <div style={{ fontWeight: "bold" }}>{device.name}</div>
+                  <span
+                    className="device-location"
+                    style={{ color: "#666", fontSize: "14px" }}
+                  >
                     {device.location}
                   </span>
                 </div>
               </li>
             ))}
           </ul>
-          
-          <div className="modal-actions" style={{ marginTop: '20px' }}>
+
+          <div className="modal-actions" style={{ marginTop: "20px" }}>
             <button onClick={() => setShowUserDevices(false)}>Close</button>
           </div>
         </div>
       </div>
     );
   };
-  
+
   // Context menu for right-click delete functionality
   const ContextMenu = () => {
     if (!contextMenuPosition) return null;
-    
+
     return (
-      <div 
+      <div
         className="context-menu"
-        style={{ 
-          position: 'fixed', 
-          top: contextMenuPosition.y, 
+        style={{
+          position: "fixed",
+          top: contextMenuPosition.y,
           left: contextMenuPosition.x,
           zIndex: 1000,
-          background: 'white',
-          boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-          borderRadius: '4px',
-          padding: '8px 0'
+          background: "white",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+          borderRadius: "4px",
+          padding: "8px 0",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div 
+        <div
           className="context-menu-item"
           style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            color: '#e74c3c'
+            padding: "8px 16px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            color: "#e74c3c",
           }}
           onClick={() => deleteUser(selectedUserId!)}
         >
@@ -459,15 +595,15 @@ const ProfilePage = () => {
             setUserData={setUserData}
           />
         );
-      case "languages":
-        return <LanguagesPage onBack={() => setCurrentPage("profile")} />;
+      // case "languages":
+      //   return <LanguagesPage onBack={() => setCurrentPage("profile")} />;
       case "change-password":
         return <ChangePasswordPage onBack={() => setCurrentPage("profile")} />;
       case "manage-users":
         return (
-          <ManageUsers 
-            onBack={() => setCurrentPage("profile")} 
-            users={users} 
+          <ManageUsers
+            onBack={() => setCurrentPage("profile")}
+            users={users}
             setUsers={setUsers}
           />
         );
@@ -480,9 +616,10 @@ const ProfilePage = () => {
               <div className="profile-info">
                 <div className="profile-image-container">
                   <div className="profile-image">
-                    <img className="profile-image2"
-                      src={userData.profileImage} 
-                      alt="Profile" 
+                    <img
+                      className="profile-image2"
+                      src={userData.profileImage}
+                      alt="Profile"
                     />
                   </div>
                   <div className="camera-icon">
@@ -518,13 +655,13 @@ const ProfilePage = () => {
                     <span>Manage Users</span>
                   </button>
 
-                  <button
+                  {/* <button
                     className="menu-item"
                     onClick={() => setCurrentPage("languages")}
                   >
                     <FaLanguage className="menu-icon" />
                     <span>Languages</span>
-                  </button>
+                  </button> */}
 
                   <button
                     className="menu-item"
@@ -580,9 +717,9 @@ const ProfilePage = () => {
             <div className="laptop-profile-left">
               <div className="laptop-profile-info">
                 <div className="laptop-profile-image-container">
-                  <img 
-                    src={userData.profileImage} 
-                    alt="Profile" 
+                  <img
+                    src={userData.profileImage}
+                    alt="Profile"
                     className="laptop-profile-image"
                   />
                   <div className="laptop-camera-icon">
@@ -594,50 +731,63 @@ const ProfilePage = () => {
                   <p className="laptop-user-email">{userData.email}</p>
                 </div>
               </div>
-              
+
               {currentPage === "profile" && (
                 <>
                   <div className="laptop-profile-form">
                     <div className="laptop-form-group">
-                      <label className="laptop-form-label">Full Name:</label>
-                      <input 
-                        type="text" 
-                        className="laptop-form-input" 
-                        value={userData.name}
-                        onChange={(e) => setUserData({...userData, name: e.target.value})}
+                      <label className="laptop-form-label">First Name:</label>
+                      <input
+                        type="text"
+                        className="laptop-form-input"
+                        value={formData.firstName}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            firstName: e.target.value,
+                          })
+                        }
                       />
                     </div>
                     <div className="laptop-form-group">
-                      <label className="laptop-form-label">Email Address:</label>
-                      <input 
-                        type="email" 
-                        className="laptop-form-input" 
-                        value={userData.email}
-                        onChange={(e) => setUserData({...userData, email: e.target.value})}
+                      <label className="laptop-form-label">Last Name:</label>
+                      <input
+                        type="text"
+                        className="laptop-form-input"
+                        value={formData.lastName}
+                        onChange={(e) =>
+                          setFormData({ ...formData, lastName: e.target.value })
+                        }
                       />
                     </div>
-                    <button className="laptop-button">Edit</button>
+                    <button
+                      className="laptop-button"
+                      onClick={handleLaptopProfileUpdate}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? "Saving..." : "Save Changes"}
+                    </button>
                   </div>
-                  
+
                   <div className="laptop-divider"></div>
-                  
+
                   <div className="laptop-profile-options">
-                    <div 
+                    {/* <div
                       className="laptop-option-item"
                       onClick={() => setCurrentPage("languages")}
                     >
                       <FaLanguage className="laptop-option-icon" />
                       <span>Languages</span>
-                    </div>
-                    
-                    <div 
+                    </div> */}
+
+                    <div
                       className="laptop-option-item"
                       onClick={() => setCurrentPage("change-password")}
                     >
                       <FaLock className="laptop-option-icon" />
                       <span>Change Password</span>
                     </div>
-                    
+
                     <div className="laptop-notification-option">
                       <div className="laptop-notification-left">
                         <FaBell className="laptop-option-icon" />
@@ -652,11 +802,17 @@ const ProfilePage = () => {
 
                   {/* Add Home and Log Out buttons for laptop view */}
                   <div className="laptop-action-buttons">
-                    <button className="laptop-add-home-button" onClick={handleAddHome}>
+                    <button
+                      className="laptop-add-home-button"
+                      onClick={handleAddHome}
+                    >
                       <FaHome className="laptop-button-icon" />
                       <span>Add Home</span>
                     </button>
-                    <button className="laptop-log-out-button" onClick={handleLogout}>
+                    <button
+                      className="laptop-log-out-button"
+                      onClick={handleLogout}
+                    >
                       <FaSignOutAlt className="laptop-button-icon" />
                       <span>Log Out</span>
                     </button>
@@ -664,36 +820,39 @@ const ProfilePage = () => {
                 </>
               )}
 
-              {currentPage === "languages" && (
+              {/* {currentPage === "languages" && (
                 <LanguagesPage onBack={() => setCurrentPage("profile")} />
-              )}
-              
+              )} */}
+
               {currentPage === "change-password" && (
                 <ChangePasswordPage onBack={() => setCurrentPage("profile")} />
               )}
             </div>
-            
+
             {/* Manage Users Section */}
             <div className="laptop-manage-users">
               <div className="laptop-manage-header">
                 <h2 className="laptop-manage-title">Manage Users</h2>
               </div>
-              
+
               <div className="laptop-user-header-row">
                 <div className="laptop-total-users">Total {users.length}</div>
-                <button className="laptop-add-user-btn" onClick={() => setShowInvite(true)}>
+                <button
+                  className="laptop-add-user-btn"
+                  onClick={() => setShowInvite(true)}
+                >
                   <FaPlus />
                 </button>
               </div>
-              
+
               <ul className="laptop-user-list">
                 {users.map((user) => (
-                  <li 
-                    key={user.id} 
+                  <li
+                    key={user.id}
                     className="laptop-user-item"
                     onContextMenu={(e) => handleUserContextMenu(e, user.id)}
                     onClick={() => handleUserClick(user)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                   >
                     <div className="laptop-user-profile">
                       {user.profilePic ? (
@@ -701,12 +860,14 @@ const ProfilePage = () => {
                           <img src={user.profilePic} alt={user.name} />
                         </div>
                       ) : (
-                        <div className="laptop-default-avatar">{user.name.charAt(0)}</div>
+                        <div className="laptop-default-avatar">
+                          {user.name.charAt(0)}
+                        </div>
                       )}
                       <div className="laptop-user-name">{user.name}</div>
                     </div>
                     {user.id !== 1 && (
-                      <div 
+                      <div
                         className="laptop-delete-indicator"
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent opening devices modal
@@ -726,7 +887,7 @@ const ProfilePage = () => {
       </div>
     );
   };
-  
+
   return (
     <div className="profile-page">
       {isLaptopView ? renderLaptopView() : renderMobileView()}

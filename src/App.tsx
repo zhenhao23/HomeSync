@@ -20,6 +20,7 @@ import OTPVerification from "./LoginRegisterPage/OTPVerification.tsx";
 import JoinHome from "./LoginRegisterPage/JoinHome.tsx";
 import ForgotPW from "./LoginRegisterPage/ForgotPW.tsx";
 import CreateNewPW from "./LoginRegisterPage/CreateNewPW.tsx";
+import { AuthProvider } from "./contexts/AuthContext"; // Import AuthProvider
 
 const AppLayout = () => {
   const location = useLocation();
@@ -61,9 +62,11 @@ const AppLayout = () => {
 
 const App = () => {
   return (
-    <Router>
-      <AppLayout />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppLayout />
+      </Router>
+    </AuthProvider>
   );
 };
 
