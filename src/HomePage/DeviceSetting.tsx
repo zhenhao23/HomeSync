@@ -63,20 +63,23 @@ const addDeviceToAPI = async (
       throw new Error("Authentication token not found. Please log in again.");
     }
 
-    const response = await fetch("http://localhost:5000/api/devices", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Add the authorization header
-      },
-      body: JSON.stringify({
-        roomId,
-        displayName,
-        type,
-        iconType,
-        isFavorite: false,
-      }),
-    });
+    const response = await fetch(
+      "https://homesync-production.up.railway.app/api/devices",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add the authorization header
+        },
+        body: JSON.stringify({
+          roomId,
+          displayName,
+          type,
+          iconType,
+          isFavorite: false,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();

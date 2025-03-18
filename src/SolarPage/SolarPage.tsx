@@ -194,7 +194,7 @@ const SolarPage: React.FC = () => {
       let response;
       try {
         response = await fetch(
-          `http://localhost:5000/api/solar/metrics/${homeId}`,
+          `https://homesync-production.up.railway.app/api/solar/metrics/${homeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -206,7 +206,7 @@ const SolarPage: React.FC = () => {
         // If that fails, try the debug endpoint
         console.log("Falling back to debug endpoint");
         response = await fetch(
-          `http://localhost:5000/api/solar/debug/metrics/${homeId}`
+          `https://homesync-production.up.railway.app/api/solar/debug/metrics/${homeId}`
         );
       }
 
@@ -258,7 +258,7 @@ const SolarPage: React.FC = () => {
       let response;
       try {
         response = await fetch(
-          `http://localhost:5000/api/solar/energy-flow/${homeId}`,
+          `https://homesync-production.up.railway.app/api/solar/energy-flow/${homeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -270,7 +270,7 @@ const SolarPage: React.FC = () => {
         // If that fails, try the debug endpoint
         console.log("Falling back to debug endpoint");
         response = await fetch(
-          `http://localhost:5000/api/solar/debug/energy-flow/${homeId}`
+          `https://homesync-production.up.railway.app/api/solar/debug/energy-flow/${homeId}`
         );
       }
 

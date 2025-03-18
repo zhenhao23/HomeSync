@@ -34,13 +34,16 @@ const SignIn: React.FC = () => {
       const idToken = await userCredential.user.getIdToken();
 
       // Send token to backend for verification and user details
-      const response = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken }),
-      });
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idToken }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Login verification failed");
@@ -78,13 +81,16 @@ const SignIn: React.FC = () => {
       const idToken = await result.user.getIdToken();
 
       // Send token to backend for verification and user details
-      const response = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken }),
-      });
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idToken }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Login verification failed");

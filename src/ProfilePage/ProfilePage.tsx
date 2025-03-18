@@ -100,7 +100,7 @@ const ProfilePage = () => {
   const fetchHomeUsers = async (homeId: number, token: string) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/dwellers/home/${homeId}/users`,
+        `https://homesync-production.up.railway.app/api/dwellers/home/${homeId}/users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -194,7 +194,7 @@ const ProfilePage = () => {
 
         // Fetch the current user's data
         const response = await fetch(
-          "http://localhost:5000/api/users/current",
+          "https://homesync-production.up.railway.app/api/users/current",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -218,7 +218,7 @@ const ProfilePage = () => {
 
         // After getting user data, fetch the user's homes
         const homesResponse = await fetch(
-          "http://localhost:5000/api/homes/user",
+          "https://homesync-production.up.railway.app/api/homes/user",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -364,17 +364,20 @@ const ProfilePage = () => {
       }
 
       // Make the API call to update user data
-      const response = await fetch("http://localhost:5000/api/users/current", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-        }),
-      });
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/api/users/current",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -438,16 +441,19 @@ const ProfilePage = () => {
       }
 
       // Call the API to create a new home
-      const response = await fetch("http://localhost:5000/api/homes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: newHomeName.trim(),
-        }),
-      });
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/api/homes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: newHomeName.trim(),
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to create home: ${response.status}`);

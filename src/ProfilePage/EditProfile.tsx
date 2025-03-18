@@ -55,17 +55,20 @@ const EditProfile: React.FC<EditProfileProps> = ({
       }
 
       // Make the API call to update user data
-      const response = await fetch("http://localhost:5000/api/users/current", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-        }),
-      });
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/api/users/current",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();

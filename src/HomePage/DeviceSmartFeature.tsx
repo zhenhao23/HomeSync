@@ -134,7 +134,7 @@ const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
 
       // Send request to update the feature status
       const response = await fetch(
-        `http://localhost:5000/api/devices/${deviceId}/triggers/${triggerId}`,
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}/triggers/${triggerId}`,
         {
           method: "PUT", // Changed from PATCH to PUT
           headers: {

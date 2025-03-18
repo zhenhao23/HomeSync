@@ -80,7 +80,7 @@ const EnergyPage: React.FC = () => {
         }
 
         const response = await fetch(
-          `http://localhost:5000/api/devices/energy/aggregated?timeRange=${timeRange}`,
+          `https://homesync-production.up.railway.app/api/devices/energy/aggregated?timeRange=${timeRange}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

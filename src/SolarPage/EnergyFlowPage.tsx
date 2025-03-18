@@ -126,7 +126,7 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
       let response;
       try {
         response = await fetch(
-          `http://localhost:5000/api/solar/energy-flow/${homeId}`,
+          `https://homesync-production.up.railway.app/api/solar/energy-flow/${homeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -138,7 +138,7 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
         // If that fails, try the debug endpoint
         console.log("Falling back to debug endpoint");
         response = await fetch(
-          `http://localhost:5000/api/solar/debug/energy-flow/${homeId}`
+          `https://homesync-production.up.railway.app/api/solar/debug/energy-flow/${homeId}`
         );
       }
 

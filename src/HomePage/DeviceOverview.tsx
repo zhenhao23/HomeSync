@@ -48,7 +48,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
 
       // First fetch the device to get its controls
       const getDeviceResponse = await fetch(
-        `http://localhost:5000/api/devices/${deviceId}`,
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}`,
         {
           method: "GET",
           headers: {
@@ -89,7 +89,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
 
       // Now update with the correct control ID
       const response = await fetch(
-        `http://localhost:5000/api/devices/${deviceId}`,
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}`,
         {
           method: "PUT",
           headers: {
@@ -130,7 +130,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/devices/${deviceId}`,
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}`,
         {
           method: "PUT",
           headers: {

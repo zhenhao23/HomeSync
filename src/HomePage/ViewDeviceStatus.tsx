@@ -45,7 +45,7 @@ interface ViewDeviceStatusProps {
 //     }
 
 //     const response = await fetch(
-//       `http://localhost:5000/api/devices/${deviceId}`,
+//       `https://homesync-production.up.railway.app/api/devices/${deviceId}`,
 //       {
 //         method: "DELETE",
 //         headers: {
@@ -75,14 +75,17 @@ const updateRoomTitleAPI = async (roomId: number, newTitle: string) => {
       throw new Error("Authentication token not found. Please log in again.");
     }
 
-    const response = await fetch(`http://localhost:5000/api/rooms/${roomId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Add the authorization header
-      },
-      body: JSON.stringify({ name: newTitle }),
-    });
+    const response = await fetch(
+      `https://homesync-production.up.railway.app/api/rooms/${roomId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add the authorization header
+        },
+        body: JSON.stringify({ name: newTitle }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();

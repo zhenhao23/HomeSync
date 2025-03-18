@@ -140,18 +140,21 @@ const AddRoom: React.FC<AddRoomProps> = ({
       });
 
       // Call the API to add the room with authentication token
-      const response = await fetch("http://localhost:5000/api/rooms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Add authentication token
-        },
-        body: JSON.stringify({
-          name: roomName,
-          iconType: iconType,
-          homeId: homeId,
-        }),
-      });
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/api/rooms",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Add authentication token
+          },
+          body: JSON.stringify({
+            name: roomName,
+            iconType: iconType,
+            homeId: homeId,
+          }),
+        }
+      );
 
       // Handle authentication errors
       if (response.status === 401) {
