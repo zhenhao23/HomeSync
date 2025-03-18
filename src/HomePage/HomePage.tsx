@@ -532,7 +532,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  // New helper function to fetch home data in the right format
+  // In your fetchHomeData function, right after receiving the data:
   const fetchHomeData = async (homeId: number, token: string) => {
     try {
       const response = await fetch(
@@ -546,25 +546,36 @@ const HomePage: React.FC = () => {
       );
 
       if (!response.ok) {
-        if (response.status === 401) {
-          navigate("/signin");
-          return;
-        }
-
-        if (response.status === 403) {
-          setError("You don't have permission to access this home");
-          return;
-        }
-
-        throw new Error(`Failed to fetch home data: ${response.status}`);
+        // Error handling code...
       }
 
       // Get the data in the format your frontend expects
       const data = await response.json();
 
-      // Update your state with the fetched data
-      setRoomsState(data.roomsState);
-      setDevicesState(data.devicesState);
+      // Process image paths before updating state - add type annotations
+      const processedRooms = data.roomsState.map((room: any) => ({
+        ...room,
+        image: getRoomImage(room.image),
+        collaborators: room.collaborators.map((collab: any) => ({
+          ...collab,
+          image: collab.image.includes("collab-profile.svg")
+            ? collaboratorIcon
+            : collab.image,
+        })),
+      }));
+
+      const processedDevices = data.devicesState.map((device: any) => ({
+        ...device,
+        image: getDeviceImage(device.deviceType),
+        devData: {
+          ...device.devData,
+          iconImage: getDeviceIcon(device.deviceType),
+        },
+      }));
+
+      // Update state with already-processed data
+      setRoomsState(processedRooms);
+      setDevicesState(processedDevices);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching home data:", error);
@@ -610,47 +621,6 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  // Replace your existing image-mapping effect with this one
-  useEffect(() => {
-    // Only run this when data is first loaded from API
-    if (roomsState.length > 0 && devicesState.length > 0) {
-      // Create a flag to check if we need to update images
-      const needsImageUpdate = roomsState.some(
-        (room) => typeof room.image === "string" && room.image.includes("-")
-      );
-
-      if (needsImageUpdate) {
-        console.log("Updating image references...");
-
-        // Update rooms first with both room image and collaborator images
-        setRoomsState((prevRooms) =>
-          prevRooms.map((room) => ({
-            ...room,
-            image: getRoomImage(room.image),
-            collaborators: room.collaborators.map((collab) => ({
-              ...collab,
-              image: collab.image.includes("collab-profile.svg")
-                ? collaboratorIcon
-                : collab.image,
-            })),
-          }))
-        );
-
-        // Then update devices
-        setDevicesState((prevDevices) =>
-          prevDevices.map((device) => ({
-            ...device,
-            image: getDeviceImage(device.deviceType),
-            devData: {
-              ...device.devData,
-              iconImage: getDeviceIcon(device.deviceType),
-            },
-          }))
-        );
-      }
-    }
-  }, [roomsState, devicesState]);
 
   // Memoized devices map for efficient lookups
   const devicesMap = useMemo(() => {
