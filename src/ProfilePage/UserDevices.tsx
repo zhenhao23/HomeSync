@@ -4,7 +4,7 @@ import {
   FaBed,
   FaCouch,
   FaUtensils,
-  FaUser,
+  // FaUser,
 } from "react-icons/fa";
 import "./UserDevices.css";
 // Add these imports

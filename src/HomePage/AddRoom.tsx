@@ -20,7 +20,7 @@ interface AddRoomProps {
 }
 
 const AddRoom: React.FC<AddRoomProps> = ({
-  roomsState,
+  // roomsState,
   setRoomsState,
   setActiveContent,
   homeId, // Add this prop
@@ -74,35 +74,35 @@ const AddRoom: React.FC<AddRoomProps> = ({
   const [roomName, setRoomName] = useState<string | null>(null);
 
   // First, let's create a function to make the API call
-  const addRoomToAPI = async (
-    roomName: string,
-    iconType: string,
-    homeId: number
-  ) => {
-    try {
-      const response = await fetch("/api/rooms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: roomName,
-          iconType: iconType,
-          homeId: homeId,
-        }),
-      });
+  // const addRoomToAPI = async (
+  //   roomName: string,
+  //   iconType: string,
+  //   homeId: number
+  // ) => {
+  //   try {
+  //     const response = await fetch("/api/rooms", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         name: roomName,
+  //         iconType: iconType,
+  //         homeId: homeId,
+  //       }),
+  //     });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to add room");
-      }
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.error || "Failed to add room");
+  //     }
 
-      return await response.json();
-    } catch (error) {
-      console.error("Error adding room:", error);
-      throw error;
-    }
-  };
+  //     return await response.json();
+  //   } catch (error) {
+  //     console.error("Error adding room:", error);
+  //     throw error;
+  //   }
+  // };
 
   const handleAddRoom = async () => {
     // Validation logic (unchanged)

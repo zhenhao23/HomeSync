@@ -162,7 +162,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
 
     const newValue = currentDevice.devData.waterFlow - 1;
     const deviceId = currentDevice.device_id;
-    const controlID = currentDevice.devData.id; // Get the id from devData
+    // const controlID = currentDevice.devData.id; // Get the id from devData
 
     try {
       await updateDeviceControl(deviceId, newValue, "waterFlow"); // Pass the controlID
@@ -191,7 +191,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
 
     const newValue = currentDevice.devData.waterFlow + 1;
     const deviceId = currentDevice.device_id;
-    const controlID = currentDevice.devData.id; // Get the id from devData
+    // const controlID = currentDevice.devData.id; // Get the id from devData
 
     try {
       await updateDeviceControl(deviceId, newValue, "waterFlow"); // Pass the controlID
@@ -220,7 +220,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
 
     const newValue = currentDevice.devData.celsius + 1;
     const deviceId = currentDevice.device_id;
-    const controlID = currentDevice.devData.id; // Get the id from devData
+    // const controlID = currentDevice.devData.id; // Get the id from devData
 
     try {
       await updateDeviceControl(deviceId, newValue, "temperature"); // Pass the controlID
@@ -249,7 +249,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
 
     const newValue = currentDevice.devData.celsius - 1;
     const deviceId = currentDevice.device_id;
-    const controlID = currentDevice.devData.id; // Get the id from devData
+    // const controlID = currentDevice.devData.id; // Get the id from devData
 
     try {
       await updateDeviceControl(deviceId, newValue, "temperature"); // Pass the controlID
@@ -301,7 +301,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
     const newPercentage = mapToPercentage(smallCircles[index]);
     const currentDevice = getDevice(); // Get current device to access its data
     const deviceId = currentDevice.device_id;
-    const controlID = currentDevice.devData.id; // Get the id from devData
+    // const controlID = currentDevice.devData.id; // Get the id from devData
 
     try {
       await updateDeviceControl(deviceId, newPercentage, "percentage"); // Pass the controlID
@@ -352,7 +352,7 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
       const newPercentage = mapToPercentage(circlepos);
       const currentDevice = getDevice(); // Get current device to access its data
       const deviceId = currentDevice.device_id;
-      const controlID = currentDevice.devData.id; // Get the id from devData
+      // const controlID = currentDevice.devData.id; // Get the id from devData
 
       try {
         await updateDeviceControl(deviceId, newPercentage, "percentage"); // Pass the controlID

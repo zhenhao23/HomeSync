@@ -35,35 +35,35 @@ interface ViewDeviceStatusProps {
 }
 
 // Add the API helper function
-const removeDeviceFromAPI = async (deviceId: number) => {
-  try {
-    // Get auth token from localStorage
-    const token = localStorage.getItem("authToken");
+// const removeDeviceFromAPI = async (deviceId: number) => {
+//   try {
+//     // Get auth token from localStorage
+//     const token = localStorage.getItem("authToken");
 
-    if (!token) {
-      throw new Error("Authentication token not found. Please log in again.");
-    }
+//     if (!token) {
+//       throw new Error("Authentication token not found. Please log in again.");
+//     }
 
-    const response = await fetch(
-      `http://localhost:5000/api/devices/${deviceId}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Add the authorization header
-        },
-      }
-    );
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to remove device");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error removing device:", error);
-    throw error;
-  }
-};
+//     const response = await fetch(
+//       `http://localhost:5000/api/devices/${deviceId}`,
+//       {
+//         method: "DELETE",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`, // Add the authorization header
+//         },
+//       }
+//     );
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       throw new Error(errorData.error || "Failed to remove device");
+//     }
+//     return await response.json();
+//   } catch (error) {
+//     console.error("Error removing device:", error);
+//     throw error;
+//   }
+// };
 
 // Add this function at the top of your file, alongside the removeDeviceFromAPI function
 const updateRoomTitleAPI = async (roomId: number, newTitle: string) => {

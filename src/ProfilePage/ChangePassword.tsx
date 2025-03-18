@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import "./ChangePassword.css";
 import axios from "axios";

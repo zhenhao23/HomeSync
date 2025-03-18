@@ -132,7 +132,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
   // state to check the device name is inputed by user (error handling)
   const [devNameAlert, setDevNameAlert] = useState(false);
   // State to track API errors
-  const [apiError, setApiError] = useState<string | null>(null);
+  // const [apiError, setApiError] = useState<string | null>(null);
 
   // State to track the selected icon in add device page
   const [selectedDeviceIcon, setSelectedDeviceIcon] = useState<{
@@ -155,7 +155,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
   // function to handle if user wants to add device
   const handleAddDevice = async () => {
     // Reset any previous errors
-    setApiError(null);
+    // setApiError(null);
 
     // Case when no device is selected
     if (!addSelectDevice) {
@@ -242,9 +242,9 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
       setActiveContent("viewDeviceStatus");
     } catch (error) {
       console.error("Failed to add device:", error);
-      setApiError(
-        error instanceof Error ? error.message : "Failed to add device"
-      );
+      // setApiError(
+      //   error instanceof Error ? error.message : "Failed to add device"
+      // );
     }
   };
 

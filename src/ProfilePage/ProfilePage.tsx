@@ -3,17 +3,17 @@ import {
   FaBell,
   FaUser,
   FaUsers,
-  FaLanguage,
+  // FaLanguage,
   FaLock,
   FaCamera,
   FaHome,
-  FaChartPie,
-  FaSun,
+  // FaChartPie,
+  // FaSun,
   FaPlus,
   FaTrash,
   FaSignOutAlt,
   FaCheck,
-  FaEllipsisV,
+  // FaEllipsisV,
   FaArrowLeft,
   FaBed,
   FaCouch,
@@ -24,7 +24,7 @@ import EditProfilePage from "./EditProfile";
 import ChangePasswordPage from "./ChangePassword";
 import ManageUsers from "./ManageUsers";
 import ProfileImage from "./img1.jpeg";
-import AlvinProfilePic from "./img1.jpeg";
+// import AlvinProfilePic from "./img1.jpeg";
 import AnnaProfilePic from "./anna-profile.avif";
 import AdrianProfilePic from "./adrian-profile.avif";
 import JoshuaProfilePic from "./joshua-profile.avif";
@@ -77,7 +77,7 @@ const ProfilePage = () => {
   const [users, setUsers] = useState<UserType[]>([]);
 
   // Add state for current home
-  const [currentHome, setCurrentHome] = useState<number | null>(null);
+  const [, setCurrentHome] = useState<number | null>(null);
 
   // Add these state variables near the top with your other state declarations
   const [formData, setFormData] = useState({
@@ -85,7 +85,7 @@ const ProfilePage = () => {
     lastName: "",
   });
   const [isUpdating, setIsUpdating] = useState(false);
-  const [updateError, setUpdateError] = useState<string | null>(null);
+  const [, setUpdateError] = useState<string | null>(null);
 
   // Add this state for feedback message
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);

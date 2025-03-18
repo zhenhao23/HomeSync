@@ -381,8 +381,8 @@ const HomePage: React.FC = () => {
   // State management
   const [roomsState, setRoomsState] = useState(initialRooms);
   const [devicesState, setDevicesState] = useState(initialDevices);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setIsLoading] = useState(false);
+  const [, setError] = useState<string | null>(null);
 
   const [room, setRoom] = useState<Room>(defaultRoom);
   const [device, setDevice] = useState<Device>(defaultDevice);

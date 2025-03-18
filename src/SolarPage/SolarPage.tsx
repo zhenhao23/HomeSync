@@ -36,13 +36,13 @@ interface NavItem {
 }
 
 // New interfaces for solar data
-interface SolarMetrics {
-  batteryLevel: number;
-  equivalentTrees: number;
-  co2EmissionsSaved: number;
-  standardCoalSaved: number;
-  recordedDate: string;
-}
+// interface SolarMetrics {
+//   batteryLevel: number;
+//   equivalentTrees: number;
+//   co2EmissionsSaved: number;
+//   standardCoalSaved: number;
+//   recordedDate: string;
+// }
 
 interface EnergyFlowDetail {
   pvGeneration: number;
@@ -516,12 +516,12 @@ const SolarPage: React.FC = () => {
 
   // Update your EnergyFlowPanel component to use the new field names
   const EnergyFlowPanel = () => {
-    const currentData =
-      activeYieldTab === "today"
-        ? energyFlowData.today
-        : activeYieldTab === "monthly"
-        ? energyFlowData.monthly
-        : energyFlowData.total;
+    // const currentData =
+    //   activeYieldTab === "today"
+    //     ? energyFlowData.today
+    //     : activeYieldTab === "monthly"
+    //     ? energyFlowData.monthly
+    //     : energyFlowData.total;
 
     return (
       <div className="energy-flow-panel">
