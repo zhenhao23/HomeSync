@@ -34,8 +34,10 @@ const Register: React.FC = () => {
       // Get Firebase ID token for backend authentication
       const idToken = await userCredential.user.getIdToken();
 
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
       // Send user data to backend
-      const response = await fetch("http://localhost:5000/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,8 +103,10 @@ const Register: React.FC = () => {
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || ""; // Better handling of multi-word last names
 
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
       // Send Google user details to your backend with all required fields
-      const response = await fetch("http://localhost:5000/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
