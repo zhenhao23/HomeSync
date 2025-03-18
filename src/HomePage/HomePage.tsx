@@ -429,7 +429,7 @@ const HomePage: React.FC = () => {
 
       // Send both the status update and homeId for validation
       const response = await fetch(
-        `https://homesync-production.up.railway.app/devices/${deviceId}`,
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}`,
         {
           method: "PUT",
           headers: {
@@ -487,7 +487,7 @@ const HomePage: React.FC = () => {
       if (!homeId) {
         // Fetch the user's homes
         const homesResponse = await fetch(
-          "https://homesync-production.up.railway.app/homes/user",
+          "https://homesync-production.up.railway.app/api/homes/user",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -536,7 +536,7 @@ const HomePage: React.FC = () => {
   const fetchHomeData = async (homeId: number, token: string) => {
     try {
       const response = await fetch(
-        `https://homesync-production.up.railway.app/homedata/${homeId}`,
+        `https://homesync-production.up.railway.app/api/homedata/${homeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -734,7 +734,7 @@ const HomePage: React.FC = () => {
 
         // Call the API to delete the room with proper authentication
         const response = await fetch(
-          `https://homesync-production.up.railway.app/rooms/${removeRoom.id}`,
+          `https://homesync-production.up.railway.app/api/rooms/${removeRoom.id}`,
           {
             method: "DELETE",
             headers: {
@@ -842,7 +842,7 @@ const HomePage: React.FC = () => {
 
       // Send request to add the new feature as a device trigger
       const response = await fetch(
-        `https://homesync-production.up.railway.app/devices/${deviceId}/triggers`,
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}/triggers`,
         {
           method: "POST",
           headers: {
@@ -1068,7 +1068,7 @@ const HomePage: React.FC = () => {
 
       // Send the delete request with authentication
       const response = await fetch(
-        `https://homesync-production.up.railway.app/devices/${deviceId}`,
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}`,
         {
           method: "DELETE",
           headers: {
