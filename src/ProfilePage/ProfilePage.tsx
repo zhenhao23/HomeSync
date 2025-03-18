@@ -411,13 +411,6 @@ const ProfilePage = () => {
   const [showUserDevices, setShowUserDevices] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
-  const handleLogout = () => {
-    // Implement logout functionality
-    alert("Logging out...");
-    // In a real app, you would clear auth tokens, cookies, etc.
-    // and redirect to login page
-  };
-
   const handleAddHome = () => {
     setShowHomeModal(true);
   };
@@ -526,6 +519,15 @@ const ProfilePage = () => {
   const handleUserClick = (user: UserType) => {
     setSelectedUser(user);
     setShowUserDevices(true);
+  };
+
+  const handleLogout = () => {
+    // Clear authentication tokens and user-specific data
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentHomeId");
+
+    // Redirect to the login page
+    navigate("/signin");
   };
 
   const HomeModal = () => {
