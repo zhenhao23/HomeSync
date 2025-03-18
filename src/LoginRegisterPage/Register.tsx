@@ -36,7 +36,7 @@ const Register: React.FC = () => {
 
       // Send user data to backend
       const response = await fetch(
-        "https://your-railway-app-url.up.railway.app/auth/register",
+        "https://homesync-production.up.railway.app/auth/register",
         {
           method: "POST",
           headers: {
@@ -106,7 +106,7 @@ const Register: React.FC = () => {
 
       // Send Google user details to your backend with all required fields
       const response = await fetch(
-        "https://your-railway-app-url.up.railway.app/auth/register",
+        "https://homesync-production.up.railway.app/auth/register",
         {
           method: "POST",
           headers: {
