@@ -34,23 +34,24 @@ const Register: React.FC = () => {
       // Get Firebase ID token for backend authentication
       const idToken = await userCredential.user.getIdToken();
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
       // Send user data to backend
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          firstName,
-          lastName,
-          role: "user",
-          password,
-          firebaseUid: userCredential.user.uid,
-        }),
-      });
+      const response = await fetch(
+        "https://your-railway-app-url.up.railway.app/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            firstName,
+            lastName,
+            role: "user",
+            password,
+            firebaseUid: userCredential.user.uid,
+          }),
+        }
+      );
 
       const responseData = await response.json();
       console.log("Full server response:", responseData);
@@ -103,23 +104,24 @@ const Register: React.FC = () => {
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || ""; // Better handling of multi-word last names
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
       // Send Google user details to your backend with all required fields
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.email,
-          firstName: firstName,
-          lastName: lastName,
-          role: "user", // Add default role
-          firebaseUid: user.uid,
-          // No password needed - backend will use "google-auth-user"
-        }),
-      });
+      const response = await fetch(
+        "https://your-railway-app-url.up.railway.app/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user.email,
+            firstName: firstName,
+            lastName: lastName,
+            role: "user", // Add default role
+            firebaseUid: user.uid,
+            // No password needed - backend will use "google-auth-user"
+          }),
+        }
+      );
 
       const responseData = await response.json();
       console.log("Google registration response:", responseData);

@@ -428,18 +428,20 @@ const HomePage: React.FC = () => {
       }
 
       // Send both the status update and homeId for validation
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${API_URL}/api/devices/${deviceId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-          homeId: parseInt(homeId), // Send homeId for server-side validation
-        }),
-      });
+      const response = await fetch(
+        `https://your-railway-app-url.up.railway.app/devices/${deviceId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: newStatus,
+            homeId: parseInt(homeId), // Send homeId for server-side validation
+          }),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -484,13 +486,15 @@ const HomePage: React.FC = () => {
       // If no homeId is available, try to fetch homes
       if (!homeId) {
         // Fetch the user's homes
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-        const homesResponse = await fetch(`${API_URL}/api/homes/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const homesResponse = await fetch(
+          "https://your-railway-app-url.up.railway.app/homes/user",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!homesResponse.ok) {
           if (homesResponse.status === 401) {
@@ -531,13 +535,15 @@ const HomePage: React.FC = () => {
   // New helper function to fetch home data in the right format
   const fetchHomeData = async (homeId: number, token: string) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${API_URL}/api/homedata/${homeId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `https://your-railway-app-url.up.railway.app/homedata/${homeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -755,15 +761,18 @@ const HomePage: React.FC = () => {
           setError("Home ID not found");
           return;
         }
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
         // Call the API to delete the room with proper authentication
-        const response = await fetch(`${API_URL}/api/rooms/${removeRoom.id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `https://your-railway-app-url.up.railway.app/rooms/${removeRoom.id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         // Handle different error responses
         if (!response.ok) {
@@ -860,10 +869,10 @@ const HomePage: React.FC = () => {
       if (!homeId) {
         throw new Error("Home ID not found");
       }
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
       // Send request to add the new feature as a device trigger
       const response = await fetch(
-        `${API_URL}/api/devices/${deviceId}/triggers`,
+        `https://your-railway-app-url.up.railway.app/devices/${deviceId}/triggers`,
         {
           method: "POST",
           headers: {
@@ -1086,14 +1095,17 @@ const HomePage: React.FC = () => {
       if (!homeId) {
         throw new Error("Home ID not found");
       }
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
       // Send the delete request with authentication
-      const response = await fetch(`${API_URL}/api/devices/${deviceId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://your-railway-app-url.up.railway.app/devices/${deviceId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
