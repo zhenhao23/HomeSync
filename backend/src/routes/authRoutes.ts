@@ -22,6 +22,134 @@ const otpStore: Record<
   }
 > = {};
 
+// Function to send invitation code email to home owner
+async function sendInvitationCodeEmail(
+  email: string,
+  firstName: string,
+  invitationCode: string,
+  homeName: string
+): Promise<boolean> {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "HomeSync - Your Home Invitation Code",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #3498db;">HomeSync</h1>
+          </div>
+          <div style="padding: 20px; background-color: #f9f9f9; border-radius: 4px;">
+            <p>Hello ${firstName},</p>
+            <p>Your HomeSync smart home "${homeName}" has been successfully created!</p>
+            <p>Here's your home's invitation code that you can share with family members or roommates:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <div style="display: inline-block; padding: 15px 30px; background-color: #3498db; color: white; font-size: 24px; font-weight: bold; letter-spacing: 5px; border-radius: 4px;">
+                ${invitationCode}
+              </div>
+            </div>
+            <p>To invite others to join your home:</p>
+            <ol>
+              <li>Ask them to create a HomeSync account</li>
+              <li>They should select "Home Dweller" as their role</li>
+              <li>They'll need to enter this 4-digit invitation code</li>
+            </ol>
+            <p>You'll be able to manage all members of your home from your HomeSync dashboard.</p>
+          </div>
+          <div style="margin-top: 20px; text-align: center; color: #7f8c8d; font-size: 12px;">
+            <p>© ${new Date().getFullYear()} HomeSync. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Invitation code email sent:", info.response);
+    return true;
+  } catch (error) {
+    console.error("Error sending invitation code email:", error);
+    return false;
+  }
+}
+
+// New endpoint for completing registration and joining a home
+router.post("/join-home-with-registration", (req: Request, res: Response) => {
+  const joinWithRegistration = async () => {
+    try {
+      const {
+        email,
+        password,
+        firstName,
+        lastName,
+        role,
+        firebaseUid,
+        invitationCode,
+        registrationMethod,
+      } = req.body;
+
+      // Check if the invitation code is valid
+      const home = await prisma.smartHome.findUnique({
+        where: { invitationCode },
+      });
+
+      if (!home) {
+        return res.status(404).json({
+          error:
+            "Invalid invitation code. The home you're trying to join doesn't exist.",
+        });
+      }
+
+      // Create user in Prisma database
+      const user = await prisma.user.create({
+        data: {
+          firebaseUid,
+          email,
+          passwordHash:
+            registrationMethod === "google"
+              ? "google-auth-user"
+              : await bcrypt.hash(password, 10),
+          firstName,
+          lastName,
+          role,
+        },
+      });
+
+      // Add the user as a dweller with MEMBER permissions
+      await prisma.homeDweller.create({
+        data: {
+          userId: user.id,
+          homeId: home.id,
+          permissionLevel: "MEMBER",
+          status: "pending", // Owner needs to approve
+        },
+      });
+
+      return res.status(201).json({
+        message:
+          "Registration completed successfully. Your request to join has been sent to the home owner.",
+        userId: user.id,
+        homeId: home.id,
+        homeName: home.name,
+        status: "pending",
+      });
+    } catch (error) {
+      console.error("Join home with registration error:", error);
+      return res.status(500).json({
+        error: "Failed to complete registration and join home",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
+
+  joinWithRegistration().catch((error) => {
+    console.error("Join home with registration error:", error);
+    res.status(500).json({
+      error: "Failed to complete registration and join home",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  });
+});
+
 // Function to generate a random 4-digit OTP
 function generateOTP(): string {
   return Math.floor(1000 + Math.random() * 9000).toString();
@@ -79,7 +207,7 @@ async function sendOTPEmail(
   }
 }
 
-// New endpoint for completing registration with role
+// Update the complete-registration endpoint
 router.post("/complete-registration", (req: Request, res: Response) => {
   const completeRegistration = async () => {
     try {
@@ -111,9 +239,9 @@ router.post("/complete-registration", (req: Request, res: Response) => {
       // If role is owner, create a home
       if (role === "owner") {
         // Generate a unique invitation code for the home
-        const invitationCode = `HOME${Date.now()
-          .toString()
-          .slice(-6)}${Math.floor(Math.random() * 1000)}`;
+        const invitationCode = Math.floor(
+          1000 + Math.random() * 9000
+        ).toString();
 
         // Create the home
         const home = await prisma.smartHome.create({
@@ -138,11 +266,21 @@ router.post("/complete-registration", (req: Request, res: Response) => {
         await addRandomUsersToHome(home.id);
         await populateHomeWithSampleData(home.id);
 
+        // Send invitation code email to the home owner
+        await sendInvitationCodeEmail(
+          email,
+          firstName,
+          invitationCode,
+          homeName || "My Home"
+        );
+
         return res.status(201).json({
-          message: "Registration completed successfully",
+          message:
+            "Registration completed successfully. Invitation code has been sent to your email.",
           userId: user.id,
           homeId: home.id,
           role: "owner",
+          invitationCode: invitationCode, // Optionally include the code in the response
         });
       } else {
         // For dwellers, just return the user info
@@ -374,9 +512,7 @@ router.post("/register", (req: Request, res: Response) => {
       });
 
       // Generate a unique invitation code for the home
-      const invitationCode = `HOME${Date.now()
-        .toString()
-        .slice(-6)}${Math.floor(Math.random() * 1000)}`;
+      const invitationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
       // Create a default home for the new user
       const home = await prisma.smartHome.create({

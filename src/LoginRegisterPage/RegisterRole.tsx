@@ -36,73 +36,83 @@ const RegisterRole: React.FC = () => {
       // Add the selected role to the registration data
       pendingRegistration.role = selectedRole;
 
-      let userCredential;
-      let idToken;
-
-      // Handle email registration
-      if (pendingRegistration.registrationMethod === "email") {
-        // Create Firebase user
-        userCredential = await createUserWithEmailAndPassword(
-          auth,
-          pendingRegistration.email,
-          pendingRegistration.password
-        );
-
-        // Get Firebase ID token
-        idToken = await userCredential.user.getIdToken();
-
-        // Add Firebase UID to the registration data
-        pendingRegistration.firebaseUid = userCredential.user.uid;
-      }
-      // Handle Google registration
-      else if (pendingRegistration.registrationMethod === "google") {
-        // For Google users, we need to use the existing UID
-        const currentUser = auth.currentUser;
-
-        if (!currentUser) {
-          throw new Error("Google authentication lost. Please try again.");
-        }
-
-        // Get Firebase ID token
-        idToken = await currentUser.getIdToken();
-        pendingRegistration.firebaseUid = pendingRegistration.googleUid;
-      }
-
-      // Now, complete the registration with the backend
-      const response = await fetch(
-        "https://homesync-production.up.railway.app/auth/complete-registration",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify(pendingRegistration),
-        }
+      // Update pendingRegistration in localStorage with the selected role
+      localStorage.setItem(
+        "pendingRegistration",
+        JSON.stringify(pendingRegistration)
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to complete registration");
-      }
-
-      // Store authentication token
-      if (idToken) {
-        localStorage.setItem("authToken", idToken);
-      } else {
-        throw new Error("Failed to retrieve authentication token");
-      }
-
-      // Store any other necessary user data
-      if (data.homeId) {
-        localStorage.setItem("currentHomeId", data.homeId.toString());
-      }
-
-      // Navigate based on selected role
+      // For owner role, create accounts now
       if (selectedRole === "owner") {
+        let userCredential;
+        let idToken;
+
+        // Handle email registration
+        if (pendingRegistration.registrationMethod === "email") {
+          // Create Firebase user
+          userCredential = await createUserWithEmailAndPassword(
+            auth,
+            pendingRegistration.email,
+            pendingRegistration.password
+          );
+
+          // Get Firebase ID token
+          idToken = await userCredential.user.getIdToken();
+
+          // Add Firebase UID to the registration data
+          pendingRegistration.firebaseUid = userCredential.user.uid;
+        }
+        // Handle Google registration
+        else if (pendingRegistration.registrationMethod === "google") {
+          // For Google users, we need to use the existing UID
+          const currentUser = auth.currentUser;
+
+          if (!currentUser) {
+            throw new Error("Google authentication lost. Please try again.");
+          }
+
+          // Get Firebase ID token
+          idToken = await currentUser.getIdToken();
+          pendingRegistration.firebaseUid = pendingRegistration.googleUid;
+        }
+
+        // Ensure we have a valid token
+        if (!idToken) {
+          throw new Error("Failed to retrieve authentication token");
+        }
+
+        // Now, complete the registration with the backend
+        const response = await fetch(
+          "https://homesync-production.up.railway.app/auth/complete-registration",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify(pendingRegistration),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to complete registration");
+        }
+
+        // Store authentication token (now we're sure idToken is not undefined)
+        localStorage.setItem("authToken", idToken);
+
+        // Store any other necessary user data
+        if (data.homeId) {
+          localStorage.setItem("currentHomeId", data.homeId.toString());
+        }
+
+        // Navigate to home page
         navigate("/home");
-      } else if (selectedRole === "dweller") {
+      }
+      // For dweller role, just navigate to Join Home page
+      else if (selectedRole === "dweller") {
         navigate("/join-home");
       }
     } catch (error: any) {

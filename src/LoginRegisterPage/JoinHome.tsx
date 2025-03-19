@@ -1,14 +1,22 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Add this import
+import { useNavigate } from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { auth } from "../firebase/config";
 import WelcomeBackground from "./WelcomeBackground";
 import Logo from "../assets/logo.svg";
 import OTPImage from "../assets/otp.svg";
 import "./OTP.css";
 
 const JoinHome: React.FC = () => {
-  const navigate = useNavigate(); // Initialize useNavigate hook
-  const [code, setCode] = useState<string[]>(["", "", "", ""]); // Store code as an array
-  const [isVerified, setIsVerified] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const [code, setCode] = useState<string[]>(["", "", "", ""]);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
 
   // Function to handle code input change
   const handleCodeChange = (
@@ -46,19 +54,121 @@ const JoinHome: React.FC = () => {
     }
   };
 
-  // Function to handle code verification
-  const handleVerifyClick = () => {
-    if (code.join("").length === 4) {
-      setIsVerified(true);
-      alert("Code Verified!");
-    } else {
-      alert("Please enter a valid 4-digit Code.");
-    }
-  };
+  // Function to handle code verification and account creation
+  const handleVerifyClick = async () => {
+    const invitationCode = code.join("");
 
-  // Function to handle resend code action
-  const handleResendClick = () => {
-    alert("Code resent to your email.");
+    if (invitationCode.length !== 4) {
+      setError("Please enter a valid 4-digit invitation code.");
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setIsProcessing(true);
+
+    try {
+      // Get the pending registration data
+      const pendingRegistrationStr = localStorage.getItem(
+        "pendingRegistration"
+      );
+
+      if (!pendingRegistrationStr) {
+        throw new Error(
+          "Registration information missing. Please register again."
+        );
+      }
+
+      const pendingRegistration = JSON.parse(pendingRegistrationStr);
+
+      // Create Firebase user based on registration method
+      let userCredential;
+      let idToken;
+
+      // Handle email registration
+      if (pendingRegistration.registrationMethod === "email") {
+        // Create Firebase user
+        userCredential = await createUserWithEmailAndPassword(
+          auth,
+          pendingRegistration.email,
+          pendingRegistration.password
+        );
+
+        // Get Firebase ID token
+        idToken = await userCredential.user.getIdToken();
+
+        // Add Firebase UID to the registration data
+        pendingRegistration.firebaseUid = userCredential.user.uid;
+      }
+      // Handle Google registration
+      else if (pendingRegistration.registrationMethod === "google") {
+        // For Google users, we need to use the existing UID
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+          // Try to sign in with Google again
+          const provider = new GoogleAuthProvider();
+          const result = await signInWithPopup(auth, provider);
+          idToken = await result.user.getIdToken();
+          pendingRegistration.firebaseUid = result.user.uid;
+        } else {
+          // Get Firebase ID token
+          idToken = await currentUser.getIdToken();
+          pendingRegistration.firebaseUid = pendingRegistration.googleUid;
+        }
+      }
+
+      // Ensure we have a valid token
+      if (!idToken) {
+        throw new Error("Failed to retrieve authentication token");
+      }
+
+      // Now, complete the registration and join the home
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/auth/join-home-with-registration",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({
+            ...pendingRegistration,
+            invitationCode,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to join home");
+      }
+
+      // Store authentication token
+      localStorage.setItem("authToken", idToken);
+
+      // Store home ID
+      if (data.homeId) {
+        localStorage.setItem("currentHomeId", data.homeId.toString());
+      }
+
+      // Show success message
+      setSuccess("Successfully joined the home!");
+
+      // Clear pending registration
+      localStorage.removeItem("pendingRegistration");
+
+      // Navigate to home page after a short delay
+      setTimeout(() => {
+        navigate("/home");
+      }, 1500);
+    } catch (error: any) {
+      console.error("Join home error:", error);
+      setError(error.message || "Failed to join home");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -79,8 +189,19 @@ const JoinHome: React.FC = () => {
         </div>
 
         <p className="otp-text">
-          Please enter the code sent by the Home Owner.
+          Please enter the invitation code provided by the Home Owner.
         </p>
+
+        {error && (
+          <p className="error-message" style={{ color: "red" }}>
+            {error}
+          </p>
+        )}
+        {success && (
+          <p className="success-message" style={{ color: "green" }}>
+            {success}
+          </p>
+        )}
 
         <div className="otp-inputs">
           {code.map((value, index) => (
@@ -93,25 +214,26 @@ const JoinHome: React.FC = () => {
               value={value}
               onChange={(e) => handleCodeChange(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
+              disabled={isProcessing}
             />
           ))}
         </div>
 
         <button
           className="verify-button"
-          onClick={() => {
-            handleVerifyClick();
-            navigate("/home");
-          }}
+          onClick={handleVerifyClick}
+          disabled={isProcessing}
         >
-          Join
+          {isProcessing ? "Processing..." : "Join Home"}
         </button>
 
-        <button className="resend-button" onClick={handleResendClick}>
-          Resend Code
+        <button
+          className="resend-button"
+          onClick={() => navigate("/register-role")}
+          disabled={isProcessing}
+        >
+          Go Back
         </button>
-
-        {isVerified && <p className="verification-message">Code Verified!</p>}
       </div>
     </WelcomeBackground>
   );
