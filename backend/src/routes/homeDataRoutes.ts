@@ -29,7 +29,8 @@ router.get("/:homeId", (req: Request, res: Response) => {
         where: {
           homeId: homeId,
           userId: userId,
-          status: "active",
+          // Include both active and pending statuses for now
+          status: { in: ["active", "pending"] },
         },
       });
 
@@ -56,7 +57,7 @@ router.get("/:homeId", (req: Request, res: Response) => {
       const collaborators = await prisma.homeDweller.findMany({
         where: {
           homeId: homeId,
-          status: "active",
+          status: "active", // Keep this as "active" only
         },
         include: {
           user: {
@@ -70,6 +71,15 @@ router.get("/:homeId", (req: Request, res: Response) => {
         },
       });
 
+      // Guard against empty data
+      if (!rooms || !rooms.length) {
+        // Return empty arrays instead of null/undefined to prevent .map() errors
+        return res.json({
+          roomsState: [],
+          devicesState: [],
+        });
+      }
+
       // Transform data to match frontend format
       const roomsState = rooms.map((room) => ({
         id: room.id,
@@ -80,7 +90,7 @@ router.get("/:homeId", (req: Request, res: Response) => {
       }));
 
       const devicesState = rooms.flatMap((room) =>
-        room.devices.map((device) => ({
+        (room.devices || []).map((device) => ({
           device_id: device.id,
           room_id: room.id,
           image: mapDeviceIconToImage(device.iconType),
@@ -91,9 +101,9 @@ router.get("/:homeId", (req: Request, res: Response) => {
           devData: {
             id: device.id,
             iconImage: mapDeviceIconToManageIcon(device.iconType),
-            ...mapDeviceControlsToDevData(device.controls),
+            ...mapDeviceControlsToDevData(device.controls || []),
           },
-          content: mapDeviceTriggersToContent(device.triggers),
+          content: mapDeviceTriggersToContent(device.triggers || []),
         }))
       );
 

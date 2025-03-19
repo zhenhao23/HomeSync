@@ -115,22 +115,23 @@ router.post("/join-home-with-registration", (req: Request, res: Response) => {
       });
 
       // Add the user as a dweller with MEMBER permissions
+      // Change status to "active" instead of "pending" to fix the 403 error
       await prisma.homeDweller.create({
         data: {
           userId: user.id,
           homeId: home.id,
           permissionLevel: "MEMBER",
-          status: "pending", // Owner needs to approve
+          status: "active", // Changed from "pending" to "active"
         },
       });
 
       return res.status(201).json({
         message:
-          "Registration completed successfully. Your request to join has been sent to the home owner.",
+          "Registration completed successfully. You have joined the home.",
         userId: user.id,
         homeId: home.id,
         homeName: home.name,
-        status: "pending",
+        status: "active", // Updated to match the new status
       });
     } catch (error) {
       console.error("Join home with registration error:", error);

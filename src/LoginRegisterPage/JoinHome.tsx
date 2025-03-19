@@ -148,7 +148,7 @@ const JoinHome: React.FC = () => {
       // Store authentication token
       localStorage.setItem("authToken", idToken);
 
-      // Store home ID
+      // Store home ID if available
       if (data.homeId) {
         localStorage.setItem("currentHomeId", data.homeId.toString());
       }
@@ -159,9 +159,22 @@ const JoinHome: React.FC = () => {
       // Clear pending registration
       localStorage.removeItem("pendingRegistration");
 
+      // Force a reset of the Firebase auth token in storage
+      // This sometimes helps with stale token issues
+      try {
+        if (userCredential?.user) {
+          const freshToken = await userCredential.user.getIdToken(true);
+          localStorage.setItem("authToken", freshToken);
+        }
+      } catch (tokenError) {
+        console.error("Error refreshing token:", tokenError);
+        // Continue anyway
+      }
+
       // Navigate to home page after a short delay
       setTimeout(() => {
-        navigate("/home");
+        // Redirect to login to ensure proper token handling
+        navigate("/login");
       }, 1500);
     } catch (error: any) {
       console.error("Join home error:", error);
