@@ -57,7 +57,7 @@ async function main() {
   // Create initial user
   const john = await prisma.user.create({
     data: {
-      email: "weezhenhao1@gmail.com",
+      email: "seed@gmail.com",
       firebaseUid: "4anUhkIrb2MWxbdRreeCiQHW3vi1",
       passwordHash: await bcrypt.hash("12345678", 10),
       role: "USER",

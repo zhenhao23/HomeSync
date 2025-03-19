@@ -1,7 +1,7 @@
 import { FaMinus, FaPen, FaPlus } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { Device, Room } from "./HomePage";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import bulbOn from "../assets/manageDevice/bulbOn.svg";
 import bulbOff from "../assets/manageDevice/bulbOff.svg";
 import foodOff from "../assets/manageDevice/petFoodOff.svg";
@@ -33,6 +33,21 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
   setDevice,
   devicesState,
 }) => {
+  // Debounce function to limit API calls
+  const useDebounce = (callback: Function, delay: number) => {
+    const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    return (...args: any[]) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    };
+  };
+
   // Add a new function to update device controls via API
   const updateDeviceControl = async (
     deviceId: number,
@@ -155,121 +170,132 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
     }
   };
 
-  // Modify the handler functions to use API
-  const handleDecreaseWaterFlow = async () => {
+  // Create debounced versions of the API calls
+  const debouncedUpdateControl = useDebounce(
+    (deviceId: number, value: number, property: string) => {
+      updateDeviceControl(deviceId, value, property).catch((error) => {
+        console.error(`Failed to update ${property}:`, error);
+        // Optionally revert to previous state on API failure
+      });
+    },
+    500 // Wait 500ms after last interaction before sending API request
+  );
+
+  // For circle position updates
+  const debouncedUpdateCircle = useDebounce(
+    (deviceId: number, percentage: number) => {
+      updateDeviceControl(deviceId, percentage, "percentage").catch((error) => {
+        console.error("Failed to update percentage:", error);
+      });
+    },
+    500
+  );
+
+  // For temperature/water flow controls
+  const handleDecreaseWaterFlow = () => {
     const currentDevice = getDevice();
     if (currentDevice.devData.waterFlow <= 2) return;
 
     const newValue = currentDevice.devData.waterFlow - 1;
     const deviceId = currentDevice.device_id;
-    // const controlID = currentDevice.devData.id; // Get the id from devData
 
-    try {
-      await updateDeviceControl(deviceId, newValue, "waterFlow"); // Pass the controlID
-      // Update local state after successful API call
-      setDevicesState((prevDevices) =>
-        prevDevices.map((device) =>
-          device.device_id === deviceId
-            ? {
-                ...device,
-                devData: {
-                  ...device.devData,
-                  waterFlow: newValue,
-                },
-              }
-            : device
-        )
-      );
-    } catch (error) {
-      console.error("Failed to decrease water flow:", error);
-    }
-  };
+    // Update local state immediately for responsive UI
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === deviceId
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                waterFlow: newValue,
+              },
+            }
+          : device
+      )
+    );
 
-  const handleIncreaseWaterFlow = async () => {
-    const currentDevice = getDevice();
-    if (currentDevice.devData.waterFlow >= 60) return;
-
-    const newValue = currentDevice.devData.waterFlow + 1;
-    const deviceId = currentDevice.device_id;
-    // const controlID = currentDevice.devData.id; // Get the id from devData
-
-    try {
-      await updateDeviceControl(deviceId, newValue, "waterFlow"); // Pass the controlID
-      // Update local state after successful API call
-      setDevicesState((prevDevices) =>
-        prevDevices.map((device) =>
-          device.device_id === deviceId
-            ? {
-                ...device,
-                devData: {
-                  ...device.devData,
-                  waterFlow: newValue,
-                },
-              }
-            : device
-        )
-      );
-    } catch (error) {
-      console.error("Failed to increase water flow:", error);
-    }
+    // Debounce the API call
+    debouncedUpdateControl(deviceId, newValue, "waterFlow");
   };
   // Update the celsius handlers
-  const handleIncreaseCelsius = async () => {
+  // Optimize the handleIncreaseCelsius function
+  const handleIncreaseCelsius = () => {
     const currentDevice = getDevice();
     if (currentDevice.devData.celsius >= 30) return;
 
     const newValue = currentDevice.devData.celsius + 1;
     const deviceId = currentDevice.device_id;
-    // const controlID = currentDevice.devData.id; // Get the id from devData
 
-    try {
-      await updateDeviceControl(deviceId, newValue, "temperature"); // Pass the controlID
-      // Update local state after successful API call
-      setDevicesState((prevDevices) =>
-        prevDevices.map((device) =>
-          device.device_id === deviceId
-            ? {
-                ...device,
-                devData: {
-                  ...device.devData,
-                  celsius: newValue,
-                },
-              }
-            : device
-        )
-      );
-    } catch (error) {
-      console.error("Failed to increase celsius:", error);
-    }
+    // Update local state immediately for responsive UI
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === deviceId
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                celsius: newValue,
+              },
+            }
+          : device
+      )
+    );
+
+    // Debounce the API call
+    debouncedUpdateControl(deviceId, newValue, "celsius");
   };
 
-  const handleDecreaseCelsius = async () => {
+  // Optimize the handleIncreaseWaterFlow function
+  const handleIncreaseWaterFlow = () => {
+    const currentDevice = getDevice();
+    if (currentDevice.devData.waterFlow >= 60) return;
+
+    const newValue = currentDevice.devData.waterFlow + 1;
+    const deviceId = currentDevice.device_id;
+
+    // Update local state immediately for responsive UI
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === deviceId
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                waterFlow: newValue,
+              },
+            }
+          : device
+      )
+    );
+
+    // Debounce the API call
+    debouncedUpdateControl(deviceId, newValue, "waterFlow");
+  };
+
+  const handleDecreaseCelsius = () => {
     const currentDevice = getDevice();
     if (currentDevice.devData.celsius <= 14) return;
 
     const newValue = currentDevice.devData.celsius - 1;
     const deviceId = currentDevice.device_id;
-    // const controlID = currentDevice.devData.id; // Get the id from devData
 
-    try {
-      await updateDeviceControl(deviceId, newValue, "temperature"); // Pass the controlID
-      // Update local state after successful API call
-      setDevicesState((prevDevices) =>
-        prevDevices.map((device) =>
-          device.device_id === deviceId
-            ? {
-                ...device,
-                devData: {
-                  ...device.devData,
-                  celsius: newValue,
-                },
-              }
-            : device
-        )
-      );
-    } catch (error) {
-      console.error("Failed to decrease celsius:", error);
-    }
+    // Update local state immediately for responsive UI
+    setDevicesState((prevDevices) =>
+      prevDevices.map((device) =>
+        device.device_id === deviceId
+          ? {
+              ...device,
+              devData: {
+                ...device.devData,
+                celsius: newValue,
+              },
+            }
+          : device
+      )
+    );
+
+    // Debounce the API call
+    debouncedUpdateControl(deviceId, newValue, "celsius");
   };
 
   // Update the handleDecrease and handleIncrease functions
@@ -295,30 +321,27 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
     }
   };
 
-  // Update the handleSmallCircleClick function to use the API
-  const handleSmallCircleClick = async (index: number) => {
+  const handleSmallCircleClick = (index: number) => {
+    // Update UI immediately
     setCirclePosition(smallCircles[index]);
     const newPercentage = mapToPercentage(smallCircles[index]);
-    const currentDevice = getDevice(); // Get current device to access its data
+    const currentDevice = getDevice();
     const deviceId = currentDevice.device_id;
-    // const controlID = currentDevice.devData.id; // Get the id from devData
 
-    try {
-      await updateDeviceControl(deviceId, newPercentage, "percentage"); // Pass the controlID
-      // Update local state after successful API call
-      setDevicesState((prevDevices) => {
-        return prevDevices.map((device) =>
-          device.device_id === deviceId
-            ? {
-                ...device,
-                devData: { ...device.devData, percentage: newPercentage },
-              }
-            : device
-        );
-      });
-    } catch (error) {
-      console.error("Failed to update percentage via circle click:", error);
-    }
+    // Update local state
+    setDevicesState((prevDevices) => {
+      return prevDevices.map((device) =>
+        device.device_id === deviceId
+          ? {
+              ...device,
+              devData: { ...device.devData, percentage: newPercentage },
+            }
+          : device
+      );
+    });
+
+    // Send API update with debounce
+    debouncedUpdateCircle(deviceId, newPercentage);
   };
 
   // Update the touchMove handler for the circle
@@ -345,31 +368,24 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
         Math.abs(curr - circlepos) < Math.abs(prev - circlepos) ? curr : prev
       );
 
-      // Update the circle position based on the constrained position
+      // Update UI immediately
       setCirclePosition(circlepos);
 
-      // Update mapped percentage when dragged
+      // Update local state for percentage value
       const newPercentage = mapToPercentage(circlepos);
-      const currentDevice = getDevice(); // Get current device to access its data
+      const currentDevice = getDevice();
       const deviceId = currentDevice.device_id;
-      // const controlID = currentDevice.devData.id; // Get the id from devData
 
-      try {
-        await updateDeviceControl(deviceId, newPercentage, "percentage"); // Pass the controlID
-        // Update local state after successful API call
-        setDevicesState((prevDevices) => {
-          return prevDevices.map((device) =>
-            device.device_id === deviceId
-              ? {
-                  ...device,
-                  devData: { ...device.devData, percentage: newPercentage },
-                }
-              : device
-          );
-        });
-      } catch (error) {
-        console.error("Failed to update percentage via touch move:", error);
-      }
+      setDevicesState((prevDevices) => {
+        return prevDevices.map((device) =>
+          device.device_id === deviceId
+            ? {
+                ...device,
+                devData: { ...device.devData, percentage: newPercentage },
+              }
+            : device
+        );
+      });
     }
   };
   // state to track if user is editing title
@@ -561,9 +577,17 @@ const DeviceOverview: React.FC<DevOverviewProps> = ({
     setStartXCircle(circlePosition);
   };
 
-  // Event handler for touch end (touchend)
+  // Add API call when touch ends
   const handleTouchEndCircle = () => {
-    setDragging(false); // End the dragging when touch ends
+    setDragging(false);
+
+    // Get final values and send to API
+    const currentDevice = getDevice();
+    const deviceId = currentDevice.device_id;
+    const finalPercentage = mapToPercentage(circlePosition);
+
+    // Call debounced API update
+    debouncedUpdateCircle(deviceId, finalPercentage);
   };
 
   const isLaptop = useWindowSize();
