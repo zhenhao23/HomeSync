@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  createUserWithEmailAndPassword,
+  // createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
@@ -18,25 +18,19 @@ const Register: React.FC = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
-      // Create Firebase user
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      // Don't create Firebase user yet - just collect the information
 
-      // Get Firebase ID token for backend authentication
-      const idToken = await userCredential.user.getIdToken();
-
-      // Send user data to backend
+      // Send only email to backend to generate OTP
       const response = await fetch(
-        "https://homesync-production.up.railway.app/auth/register",
+        "https://homesync-production.up.railway.app/auth/send-otp",
         {
           method: "POST",
           headers: {
@@ -45,68 +39,99 @@ const Register: React.FC = () => {
           body: JSON.stringify({
             email,
             firstName,
-            lastName,
-            role: "user",
-            password,
-            firebaseUid: userCredential.user.uid,
           }),
         }
       );
 
       const responseData = await response.json();
-      console.log("Full server response:", responseData);
+      console.log("Send OTP response:", responseData);
 
       if (!response.ok) {
-        // More descriptive error handling
         const errorMessage =
           responseData.details ||
           responseData.error ||
-          "Failed to register user in database";
+          "Failed to send verification code";
         throw new Error(errorMessage);
       }
 
-      // Store the token in localStorage for immediate authentication
-      localStorage.setItem("authToken", idToken);
+      // Store user registration data in localStorage for later account creation
+      localStorage.setItem(
+        "pendingRegistration",
+        JSON.stringify({
+          email,
+          firstName,
+          lastName,
+          password,
+          role: "user",
+          registrationMethod: "email",
+        })
+      );
 
-      // Store the homeId that was just created
-      if (responseData.homeId) {
-        localStorage.setItem("currentHomeId", responseData.homeId.toString());
-      }
+      // Store email for OTP verification page
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userFirstName", firstName);
 
-      console.log("User registered:", userCredential.user);
+      console.log("OTP sent, proceeding to verification");
       navigate("/otp-ver");
     } catch (error: any) {
       console.error("Full error details:", error);
 
-      // Check if it's a Firebase email in use error
-      if (error.code === "auth/email-already-in-use") {
+      // Error handling
+      if (error.message.includes("already registered")) {
         setError(
           "This email is already registered. Please use a different email."
         );
       } else {
         setError(error.message || "Registration failed");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Similar update for handleGoogleRegister
   const handleGoogleRegister = async () => {
+    setIsLoading(true);
     const provider = new GoogleAuthProvider();
 
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Get Firebase ID token for backend authentication
-      const idToken = await user.getIdToken();
+      // Check if email is already registered
+      const checkResponse = await fetch(
+        "https://homesync-production.up.railway.app/auth/check-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user.email,
+          }),
+        }
+      );
+
+      const checkData = await checkResponse.json();
+
+      if (!checkResponse.ok) {
+        if (checkData.error === "Email already registered") {
+          throw new Error(
+            "This email is already registered. Please sign in instead."
+          );
+        } else {
+          throw new Error(checkData.error || "Failed to check email");
+        }
+      }
 
       // Extract name parts from displayName
       const nameParts = user.displayName?.split(" ") || ["", ""];
       const firstName = nameParts[0] || "";
-      const lastName = nameParts.slice(1).join(" ") || ""; // Better handling of multi-word last names
+      const lastName = nameParts.slice(1).join(" ") || "";
 
-      // Send Google user details to your backend with all required fields
+      // Send OTP for Google users too
       const response = await fetch(
-        "https://homesync-production.up.railway.app/auth/register",
+        "https://homesync-production.up.railway.app/auth/send-otp",
         {
           method: "POST",
           headers: {
@@ -115,45 +140,57 @@ const Register: React.FC = () => {
           body: JSON.stringify({
             email: user.email,
             firstName: firstName,
-            lastName: lastName,
-            role: "user", // Add default role
-            firebaseUid: user.uid,
-            // No password needed - backend will use "google-auth-user"
           }),
         }
       );
 
       const responseData = await response.json();
-      console.log("Google registration response:", responseData);
+      console.log("Google OTP response:", responseData);
 
       if (!response.ok) {
         const errorMessage =
           responseData.details ||
           responseData.error ||
-          "Failed to register user in database";
+          "Failed to send verification code";
         throw new Error(errorMessage);
       }
 
-      // Store the token in localStorage for immediate authentication
-      localStorage.setItem("authToken", idToken);
+      // Store Google user data for later use
+      localStorage.setItem(
+        "pendingRegistration",
+        JSON.stringify({
+          email: user.email,
+          firstName,
+          lastName,
+          googleUser: true,
+          googleUid: user.uid,
+          role: "user",
+          registrationMethod: "google",
+        })
+      );
 
-      // Store the homeId that was just created
-      if (responseData.homeId) {
-        localStorage.setItem("currentHomeId", responseData.homeId.toString());
-      }
+      // Store info for OTP verification page
+      localStorage.setItem("userEmail", user.email || "");
+      localStorage.setItem("userFirstName", firstName);
 
-      console.log("Google registration successful:", user);
+      console.log("Google OTP sent, proceeding to verification");
       navigate("/otp-ver");
     } catch (error: any) {
       console.error("Google Registration Error:", error);
       setError(error.message || "Google registration failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="register-container">
       {/* Back Button */}
-      <button className="back-btn" onClick={() => navigate(-1)}>
+      <button
+        className="back-btn"
+        onClick={() => navigate(-1)}
+        disabled={isLoading}
+      >
         <FaArrowLeft size={20} />
       </button>
 
@@ -193,6 +230,7 @@ const Register: React.FC = () => {
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           required
+          disabled={isLoading}
         />
 
         <label>Last Name</label>
@@ -203,6 +241,7 @@ const Register: React.FC = () => {
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           required
+          disabled={isLoading}
         />
 
         <label>Email</label>
@@ -213,6 +252,7 @@ const Register: React.FC = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={isLoading}
         />
 
         <label>Password</label>
@@ -224,11 +264,16 @@ const Register: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
+          disabled={isLoading}
         />
 
         {/* Create Account Button */}
-        <button type="submit" className="create-account-btn">
-          Create Account
+        <button
+          type="submit"
+          className="create-account-btn"
+          disabled={isLoading}
+        >
+          {isLoading ? "Creating Account..." : "Create Account"}
         </button>
       </form>
 
@@ -236,15 +281,24 @@ const Register: React.FC = () => {
       <div className="divider2">or Register with</div>
 
       {/* Google Register Button */}
-      <button onClick={handleGoogleRegister} className="google-btn">
+      <button
+        onClick={handleGoogleRegister}
+        className="google-btn"
+        disabled={isLoading}
+      >
         <img src={GoogleLogo} alt="Google Logo" className="google-icon" />
-        Continue with Google
+        {isLoading ? "Processing..." : "Continue with Google"}
       </button>
 
       {/* Sign In Link */}
       <p className="signup-link">
         Already Have an Account?{" "}
-        <a onClick={() => navigate("/signin")}>Sign In</a>
+        <a
+          onClick={() => navigate("/signin")}
+          style={{ pointerEvents: isLoading ? "none" : "auto" }}
+        >
+          Sign In
+        </a>
       </p>
     </div>
   );

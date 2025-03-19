@@ -2,9 +2,336 @@ import express, { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { auth } from "firebase-admin";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+// In-memory OTP storage (in production, use a database or Redis)
+const otpStore: Record<
+  string,
+  {
+    otp: string;
+    expires: Date;
+    email?: string; // Add email property
+    firstName?: string; // Add firstName property
+  }
+> = {};
+
+// Function to generate a random 4-digit OTP
+function generateOTP(): string {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+// Create a transporter using SMTP
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+// Function to send OTP email
+async function sendOTPEmail(
+  email: string,
+  otp: string,
+  firstName: string
+): Promise<boolean> {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "HomeSync - Account Verification Code",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #3498db;">HomeSync</h1>
+          </div>
+          <div style="padding: 20px; background-color: #f9f9f9; border-radius: 4px;">
+            <p>Hello ${firstName},</p>
+            <p>Welcome to HomeSync! To complete your registration, please use the verification code below:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <div style="display: inline-block; padding: 15px 30px; background-color: #3498db; color: white; font-size: 24px; font-weight: bold; letter-spacing: 5px; border-radius: 4px;">
+                ${otp}
+              </div>
+            </div>
+            <p>This code will expire in 10 minutes.</p>
+            <p>If you didn't request this code, please ignore this email.</p>
+          </div>
+          <div style="margin-top: 20px; text-align: center; color: #7f8c8d; font-size: 12px;">
+            <p>© ${new Date().getFullYear()} HomeSync. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.response);
+    return true;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return false;
+  }
+}
+
+// New endpoint for completing registration with role
+router.post("/complete-registration", (req: Request, res: Response) => {
+  const completeRegistration = async () => {
+    try {
+      const {
+        email,
+        password,
+        firstName,
+        lastName,
+        role,
+        firebaseUid,
+        homeName = "My Home",
+        googleUser = false,
+      } = req.body;
+
+      // Create user in Prisma database
+      const user = await prisma.user.create({
+        data: {
+          firebaseUid,
+          email,
+          passwordHash: googleUser
+            ? "google-auth-user"
+            : await hashPassword(password),
+          firstName,
+          lastName,
+          role,
+        },
+      });
+
+      // If role is owner, create a home
+      if (role === "owner") {
+        // Generate a unique invitation code for the home
+        const invitationCode = `HOME${Date.now()
+          .toString()
+          .slice(-6)}${Math.floor(Math.random() * 1000)}`;
+
+        // Create the home
+        const home = await prisma.smartHome.create({
+          data: {
+            name: homeName || "My Home",
+            invitationCode: invitationCode,
+            homeownerId: user.id,
+          },
+        });
+
+        // Add the user as a dweller with owner permissions
+        await prisma.homeDweller.create({
+          data: {
+            userId: user.id,
+            homeId: home.id,
+            permissionLevel: "OWNER",
+            status: "active",
+          },
+        });
+
+        // Add random users and populate with sample data
+        await addRandomUsersToHome(home.id);
+        await populateHomeWithSampleData(home.id);
+
+        return res.status(201).json({
+          message: "Registration completed successfully",
+          userId: user.id,
+          homeId: home.id,
+          role: "owner",
+        });
+      } else {
+        // For dwellers, just return the user info
+        return res.status(201).json({
+          message: "Registration completed successfully",
+          userId: user.id,
+          role: "dweller",
+        });
+      }
+    } catch (error) {
+      console.error("Complete registration error:", error);
+      return res.status(500).json({
+        error: "Registration completion failed",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
+
+  completeRegistration().catch((error) => {
+    console.error("Complete registration error:", error);
+    res.status(500).json({
+      error: "Registration completion failed",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  });
+});
+
+// New endpoint to verify OTP without account creation
+router.post("/verify-otp-only", (req: Request, res: Response) => {
+  const verifyOtp = async () => {
+    try {
+      const { email, otp } = req.body;
+
+      // Find the OTP entry by email
+      let tempId = null;
+      let otpData = null;
+
+      // Search through otpStore for matching email
+      for (const [id, data] of Object.entries(otpStore)) {
+        if (data.email === email) {
+          tempId = id;
+          otpData = data;
+          break;
+        }
+      }
+
+      if (!tempId || !otpData) {
+        return res.status(400).json({
+          error: "No OTP found for this email. Please request a new code.",
+        });
+      }
+
+      // Check if OTP is expired
+      if (new Date() > otpData.expires) {
+        delete otpStore[tempId];
+        return res.status(400).json({
+          error: "OTP expired. Please request a new code.",
+        });
+      }
+
+      // Verify OTP
+      if (otpData.otp !== otp) {
+        return res.status(400).json({
+          error: "Invalid OTP. Please try again.",
+        });
+      }
+
+      // Remove OTP from store
+      delete otpStore[tempId];
+
+      return res.status(200).json({
+        message: "Email verified successfully",
+        verified: true,
+      });
+    } catch (error) {
+      console.error("OTP-only verification error:", error);
+      return res.status(500).json({
+        error: "Verification failed",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
+
+  verifyOtp().catch((error) => {
+    console.error("OTP verification error:", error);
+    res.status(500).json({
+      error: "Verification failed",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  });
+});
+
+// New endpoint to send OTP without creating accounts yet
+router.post("/send-otp", (req: Request, res: Response) => {
+  const sendOtp = async () => {
+    try {
+      const { email, firstName } = req.body;
+
+      // Check if email already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          error: "Email already registered",
+          details:
+            "This email is already registered. Please use a different email.",
+        });
+      }
+
+      // Generate a temporary ID to associate with this OTP
+      const tempId = `temp_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 15)}`;
+
+      // Generate OTP and store it
+      const otp = generateOTP();
+
+      // Set expiration (10 minutes)
+      const expiryTime = new Date();
+      expiryTime.setMinutes(expiryTime.getMinutes() + 10);
+
+      // Store OTP with temporary ID as key
+      otpStore[tempId] = {
+        otp,
+        expires: expiryTime,
+        email, // Store email to associate with this OTP
+        firstName, // Store firstName for email sending
+      };
+
+      // Send OTP email
+      await sendOTPEmail(email, otp, firstName);
+
+      return res.status(200).json({
+        message: "Verification code sent successfully",
+        tempId: tempId, // Return tempId for verification
+      });
+    } catch (error) {
+      console.error("Send OTP error:", error);
+      return res.status(500).json({
+        error: "Failed to send verification code",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
+
+  sendOtp().catch((error) => {
+    console.error("Send OTP error:", error);
+    res.status(500).json({
+      error: "Failed to send verification code",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  });
+});
+
+// New endpoint to verify email exists
+router.post("/check-email", (req: Request, res: Response) => {
+  const checkEmail = async () => {
+    try {
+      const { email } = req.body;
+
+      // Check if email already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already registered" });
+      }
+
+      return res.status(200).json({ message: "Email available" });
+    } catch (error) {
+      console.error("Check email error:", error);
+      return res.status(500).json({
+        error: "Failed to check email",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
+
+  checkEmail().catch((error) => {
+    console.error("Check email error:", error);
+    res.status(500).json({
+      error: "Failed to check email",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  });
+});
 
 // POST route for user registration
 router.post("/register", (req: Request, res: Response) => {
