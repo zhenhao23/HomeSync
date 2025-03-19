@@ -174,7 +174,7 @@ const JoinHome: React.FC = () => {
       // Navigate to home page after a short delay
       setTimeout(() => {
         // Redirect to login to ensure proper token handling
-        navigate("/login");
+        navigate("/home");
       }, 1500);
     } catch (error: any) {
       console.error("Join home error:", error);
