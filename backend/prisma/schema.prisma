@@ -28,7 +28,7 @@ model SmartHome {
   homeownerId    Int
   invitationCode String             @unique
   name           String
-  energyLimit    Decimal            @default(120000) // Default energy limit in kWh
+  energyLimit    Decimal            @default(11000) // Default energy limit in kWh
   createdAt      DateTime           @default(now())
   // Relations
   owner          User               @relation("HomeOwner", fields: [homeownerId], references: [id])
