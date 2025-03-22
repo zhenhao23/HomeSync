@@ -348,7 +348,7 @@ const LineChartComponent: React.FC<{
   setTimeRange: (range: TimeRange) => void;
 }> = ({ data, timeRange, setTimeRange }) => {
   const navigate = useNavigate();
-  const [energyLimit, setEnergyLimit] = useState<number>(120000); // Default value
+  const [energyLimit, setEnergyLimit] = useState<number>(11000); // Default value
 
   // Fetch the energy limit
   useEffect(() => {
@@ -374,7 +374,7 @@ const LineChartComponent: React.FC<{
 
         if (response.ok) {
           const data = await response.json();
-          let limitValue = Number(data.energyLimit);
+          let limitValue = Number(data.energyLimit) * 1000;
 
           // Store the base weekly limit
           setEnergyLimit(limitValue);
@@ -518,7 +518,7 @@ const LineChartComponent: React.FC<{
                   color: "white",
                 }}
                 formatter={(value: number) => [
-                  `${value.toFixed(2)} kWh`,
+                  `${(value / 1000).toFixed(1)} kWh`,
                   "Total Usage",
                 ]}
               />
