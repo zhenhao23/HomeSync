@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FaPlus, FaCaretUp, FaCaretDown, FaDownload, FaUpload } from "react-icons/fa";
+import { useState, useEffect } from 'react';
+import { FaPlus, FaCaretUp, FaCaretDown, FaDownload } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
 import { Sliders, Download } from "lucide-react";
 import {
@@ -33,9 +33,7 @@ const EnergyPage = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const isLaptop = windowSize.width >= 1440;
-  const [energyUsage, setEnergyUsage] = useState(80);
-  const [activeYieldTab, setActiveYieldTab] = useState("today");
+  const isLaptop = windowSize.width >= 1024;
   const [energyLimitType, setEnergyLimitType] = useState("Select Type");
   const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
 
@@ -347,7 +345,7 @@ const EnergyPage = () => {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {pieData.map((entry, index) => (
+                    {pieData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

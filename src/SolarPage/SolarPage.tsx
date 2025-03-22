@@ -202,9 +202,9 @@ const SolarPage: React.FC = () => {
   };
 
   // Added function to manually update energy usage
-  const updateEnergyUsage = (value: any) => {
-    setEnergyUsage(value);
-  };
+  // const updateEnergyUsage = (value: any) => {
+  //   setEnergyUsage(value);
+  // };
 
   const fetchWeatherData = async () => {
     try {
@@ -378,12 +378,12 @@ const SolarPage: React.FC = () => {
 
   // Energy Flow Panel Component
   const EnergyFlowPanel = () => {
-    const currentData = 
-      activeYieldTab === "today" 
-        ? energyFlowData.today 
-        : activeYieldTab === "monthly" 
-          ? energyFlowData.monthly 
-          : energyFlowData.total;
+    // const currentData = 
+    //   activeYieldTab === "today" 
+    //     ? energyFlowData.today 
+    //     : activeYieldTab === "monthly" 
+    //       ? energyFlowData.monthly 
+    //       : energyFlowData.total;
     
     return (
       <div className="energy-flow-panel">

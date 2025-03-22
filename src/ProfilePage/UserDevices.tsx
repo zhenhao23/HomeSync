@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaArrowLeft, FaBed, FaCouch, FaUtensils, FaUser } from 'react-icons/fa';
+import { FaArrowLeft, FaBed, FaCouch, FaUtensils } from 'react-icons/fa';
 import './UserDevices.css';
 
 interface UserType {
