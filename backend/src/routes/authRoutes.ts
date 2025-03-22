@@ -663,11 +663,11 @@ function generateEnergyUsage(
     string,
     { baseWatts: number; avgHours: number }
   > = {
-    light: { baseWatts: 3000, avgHours: 8 },
-    aircond: { baseWatts: 15000, avgHours: 6 },
-    petfeeder: { baseWatts: 2000, avgHours: 1 },
-    irrigation: { baseWatts: 5000, avgHours: 1 },
-    security: { baseWatts: 800, avgHours: 24 },
+    light: { baseWatts: 60, avgHours: 8 },
+    aircond: { baseWatts: 1800, avgHours: 6 },
+    petfeeder: { baseWatts: 15, avgHours: 1 },
+    irrigation: { baseWatts: 500, avgHours: 1 },
+    security: { baseWatts: 120, avgHours: 24 },
   };
 
   const pattern = devicePatterns[deviceType.toLowerCase()] || {
