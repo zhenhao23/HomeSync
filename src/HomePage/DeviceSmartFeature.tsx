@@ -132,21 +132,32 @@ const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
         throw new Error("Home ID not found");
       }
 
+      // Debug log to check the values being sent
+      console.log("Sending request with:", {
+        deviceId,
+        triggerId,
+        isActive: newStatus,
+        homeId: parseInt(homeId),
+      });
+
       // Send request to update the feature status
       const response = await fetch(
         `https://homesync-production.up.railway.app/api/devices/${deviceId}/triggers/${triggerId}`,
         {
-          method: "PUT", // Changed from PATCH to PUT
+          method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             isActive: newStatus,
-            homeId: parseInt(homeId), // Send homeId for server-side validation
+            homeId: parseInt(homeId),
           }),
         }
       );
+
+      // Log the raw response for debugging
+      console.log("Response status:", response.status);
 
       if (!response.ok) {
         if (response.status === 401) {

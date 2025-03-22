@@ -955,7 +955,7 @@ const ProfilePage = () => {
                 <div className="mobile-action-buttons">
                   <button className="add-home-button" onClick={handleAddHome}>
                     <FaHome className="button-icon" />
-                    <span>Add Home</span>
+                    <span>Switch Home</span>
                   </button>
                   <button className="log-out-button" onClick={handleLogout}>
                     <FaSignOutAlt className="button-icon" />
@@ -1069,7 +1069,7 @@ const ProfilePage = () => {
                       onClick={handleAddHome}
                     >
                       <FaHome className="laptop-button-icon" />
-                      <span>Add Home</span>
+                      <span>Switch Home</span>
                     </button>
                     <button
                       className="laptop-log-out-button"

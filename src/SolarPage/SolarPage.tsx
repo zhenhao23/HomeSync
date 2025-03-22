@@ -80,7 +80,7 @@ const SolarPage: React.FC = () => {
   }, []);
 
   // Original states from SolarPage
-  const [energyUsage, setEnergyUsage] = useState(80);
+  const [energyUsage, setEnergyUsage] = useState(0);
   const [currentPower, setCurrentPower] = useState(850);
   const [weather, setWeather] = useState({
     condition: "Light Rain to Few Clouds",

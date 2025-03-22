@@ -104,19 +104,32 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
 }) => {
   // List of available device icons
   const icons: Icon[] = [
-    { image: lampIcon, title: "Lamp" },
-    { image: airConditionerIcon, title: "Air Conditioner" },
-    { image: sprinklerIcon, title: "Sprinkler" },
-    { image: petfeederIcon, title: "Pet Feeder" },
-    { image: smartLockIcon, title: "Smart Lock" },
-    { image: fanIcon, title: "Fan" },
-    { image: TVIcon, title: "TV" },
-    { image: speakerIcon, title: "Speaker" },
-    { image: fridgeIcon, title: "Fridge" },
-    { image: doorBellIcon, title: "Door Bell" },
-    { image: smokeDetectorIcon, title: "Smoke Detector" },
-    { image: robotVacuumIcon, title: "Robot Vacuum" },
+    { image: lampIcon, title: "Lamp", enabled: true },
+    { image: airConditionerIcon, title: "Air Conditioner", enabled: true },
+    { image: sprinklerIcon, title: "Sprinkler", enabled: true },
+    { image: petfeederIcon, title: "Pet Feeder", enabled: true },
+    { image: smartLockIcon, title: "Smart Lock", enabled: false },
+    { image: fanIcon, title: "Fan", enabled: false },
+    { image: TVIcon, title: "TV", enabled: false },
+    { image: speakerIcon, title: "Speaker", enabled: false },
+    { image: fridgeIcon, title: "Fridge", enabled: false },
+    { image: doorBellIcon, title: "Door Bell", enabled: false },
+    { image: smokeDetectorIcon, title: "Smoke Detector", enabled: false },
+    { image: robotVacuumIcon, title: "Robot Vacuum", enabled: false },
   ];
+
+  // Handle click on an icon
+  const handleDeviceIconClick = (icon: Icon) => {
+    // Only allow clicking on enabled icons
+    if (icon.enabled !== false) {
+      // This will treat undefined as true
+      setSelectedDeviceIcon(icon);
+      setIconTextVisible(false); // Reset the visibility before the new swipe-in animation
+      setTimeout(() => {
+        setIconTextVisible(true); // Trigger the swipe-in animation
+      }, 150); // Adjust this timeout based on your animation duration
+    }
+  };
 
   // function to handle back to add device page
   const handleBackToAddDevice = () => {
@@ -145,15 +158,6 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
 
   // State to track if to display icon text label when user clicked on a device
   const [isIconTextVisible, setIconTextVisible] = useState(false);
-
-  // Handle click on an icon
-  const handleDeviceIconClick = (icon: { image: string; title: string }) => {
-    setSelectedDeviceIcon(icon);
-    setIconTextVisible(false); // Reset the visibility before the new swipe-in animation
-    setTimeout(() => {
-      setIconTextVisible(true); // Trigger the swipe-in animation
-    }, 150); // Adjust this timeout based on your animation duration
-  };
 
   // function to handle if user wants to add device
   const handleAddDevice = async () => {
@@ -384,10 +388,14 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
                           backgroundColor:
                             selectedDeviceIcon?.title === icon.title
                               ? "#d9d9d9"
-                              : "#f5f5f5",
+                              : icon.enabled
+                              ? "#f5f5f5"
+                              : "#e0e0e0", // Lighter shade for disabled icons
                           borderRadius: "50%",
                           maxWidth: "calc(100% - 20%)",
                           maxHeight: "calc(100% - 20%)",
+                          cursor: icon.enabled ? "pointer" : "not-allowed", // Change cursor for disabled icons
+                          opacity: icon.enabled ? 1 : 0.75, // Less transparency for disabled icons
                         }}
                         onClick={() => handleDeviceIconClick(icon)}
                       >
@@ -395,6 +403,11 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
                           src={icon.image}
                           alt={icon.title}
                           className="img-fluid device-setting-img"
+                          style={{
+                            filter: icon.enabled
+                              ? "none"
+                              : "grayscale(40%) brightness(1.05)", // Less grayscale and slightly brighter
+                          }}
                         />
                       </div>
                     </div>

@@ -8,6 +8,10 @@ import BedRoomImage from "../assets/rooms/bedroom.svg";
 import KitchenImage from "../assets/rooms/kitchen.svg";
 import GardenImage from "../assets/rooms/garden.svg";
 import BathroomImage from "../assets/rooms/bathroom.svg";
+// Import additional room icons
+import carIcon from "../assets/addRoomIcon/car.svg";
+import bookShelfIcon from "../assets/addRoomIcon/bookshelf.svg";
+import coatHangerIcon from "../assets/addRoomIcon/coat-hanger.svg";
 import lampIcon from "../assets/devicesSettingIcon/lamp.svg";
 import sprinklerIcon from "../assets/devicesSettingIcon/sprinkler.svg";
 import petfeederIcon from "../assets/devicesSettingIcon/cooker.svg";
@@ -76,6 +80,7 @@ export interface Device {
 export interface Icon {
   image: string;
   title: string;
+  enabled?: boolean; // Add this property
 }
 
 export interface Day {
@@ -100,54 +105,54 @@ type DeviceTrigger = {
 
 // Predefined room array
 const rooms: Room[] = [
-  {
-    id: 0,
-    image: LivingRoomImage,
-    title: "Living Room",
-    devices: 1,
-    collaborators: [
-      { id: 0, name: "Adrian", image: collabIcon, type: "Owner" },
-      { id: 1, name: "Joshua", image: collabIcon, type: "Dweller" },
-    ],
-  },
-  {
-    id: 1,
-    image: BedRoomImage,
-    title: "Bedroom",
-    devices: 3,
-    collaborators: [],
-  },
-  {
-    id: 2,
-    image: KitchenImage,
-    title: "Kitchen",
-    devices: 0,
-    collaborators: [
-      { id: 4, name: "Mike", image: collabIcon, type: "Owner" },
-      { id: 5, name: "Emma", image: collabIcon, type: "Dweller" },
-      { id: 5, name: "Lily", image: collabIcon, type: "Dweller" },
-    ],
-  },
-  {
-    id: 3,
-    image: GardenImage,
-    title: "Garden",
-    devices: 1,
-    collaborators: [
-      { id: 4, name: "Rose", image: collabIcon, type: "Dweller" },
-      { id: 5, name: "Lisa", image: collabIcon, type: "Dweller" },
-    ],
-  },
-  {
-    id: 4,
-    image: BathroomImage,
-    title: "Bathroom",
-    devices: 5,
-    collaborators: [
-      { id: 4, name: "Fuko", image: collabIcon, type: "Dweller" },
-      { id: 5, name: "Elly", image: collabIcon, type: "Dweller" },
-    ],
-  },
+  // {
+  //   id: 0,
+  //   image: LivingRoomImage,
+  //   title: "Living Room",
+  //   devices: 1,
+  //   collaborators: [
+  //     { id: 0, name: "Adrian", image: collabIcon, type: "Owner" },
+  //     { id: 1, name: "Joshua", image: collabIcon, type: "Dweller" },
+  //   ],
+  // },
+  // {
+  //   id: 1,
+  //   image: BedRoomImage,
+  //   title: "Bedroom",
+  //   devices: 3,
+  //   collaborators: [],
+  // },
+  // {
+  //   id: 2,
+  //   image: KitchenImage,
+  //   title: "Kitchen",
+  //   devices: 0,
+  //   collaborators: [
+  //     { id: 4, name: "Mike", image: collabIcon, type: "Owner" },
+  //     { id: 5, name: "Emma", image: collabIcon, type: "Dweller" },
+  //     { id: 5, name: "Lily", image: collabIcon, type: "Dweller" },
+  //   ],
+  // },
+  // {
+  //   id: 3,
+  //   image: GardenImage,
+  //   title: "Garden",
+  //   devices: 1,
+  //   collaborators: [
+  //     { id: 4, name: "Rose", image: collabIcon, type: "Dweller" },
+  //     { id: 5, name: "Lisa", image: collabIcon, type: "Dweller" },
+  //   ],
+  // },
+  // {
+  //   id: 4,
+  //   image: BathroomImage,
+  //   title: "Bathroom",
+  //   devices: 5,
+  //   collaborators: [
+  //     { id: 4, name: "Fuko", image: collabIcon, type: "Dweller" },
+  //     { id: 5, name: "Elly", image: collabIcon, type: "Dweller" },
+  //   ],
+  // },
 ];
 
 // Predefined exisitng device array
@@ -394,6 +399,29 @@ const HomePage: React.FC = () => {
   const [isRequestAccess, setRequestAccess] = useState(false);
   const navigate = useNavigate();
 
+  // Get today's day name
+  const todayName = new Date().toLocaleString("en-US", { weekday: "long" });
+
+  // Predefined days
+  const days = [
+    { name: "Monday", letter: "M" },
+    { name: "Tuesday", letter: "T" },
+    { name: "Wednesday", letter: "W" },
+    { name: "Thursday", letter: "T" },
+    { name: "Friday", letter: "F" },
+    { name: "Saturday", letter: "S" },
+    { name: "Sunday", letter: "S" },
+  ];
+
+  // state to keep track the selected slot duration for petfeeder and irrigation
+  const [selectedDuration, setSelectedDuration] = useState("5 mins");
+
+  // Find the corresponding day object
+  const todayDay = days.find((day) => day.name === todayName) || null;
+
+  // state to track the selected day by user
+  const [activeDay, setActiveDay] = useState<Day | null>(todayDay);
+
   // function to handle room clicked by user
   const handleRoomClick = (selectedRoom: {
     id: number;
@@ -461,6 +489,68 @@ const HomePage: React.FC = () => {
       return await response.json();
     } catch (error) {
       console.error("Error updating device status:", error);
+      throw error;
+    }
+  };
+
+  // API function to create a new device trigger
+  const createDeviceTriggerAPI = async (
+    deviceId: number,
+    triggerType: string,
+    conditionOperator: string,
+    featurePeriod: string,
+    featureDetail: string
+  ) => {
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Authentication required");
+      }
+
+      // Get the current homeId from localStorage
+      const homeId = localStorage.getItem("currentHomeId");
+      if (!homeId) {
+        throw new Error("Home ID not found");
+      }
+
+      // Send request to create new trigger
+      const response = await fetch(
+        `https://homesync-production.up.railway.app/api/devices/${deviceId}/triggers`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            triggerType,
+            conditionOperator,
+            isActive: true,
+            featurePeriod,
+            featureDetail,
+            homeId: parseInt(homeId),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication token expired");
+        }
+
+        if (response.status === 403) {
+          throw new Error("You don't have permission to modify this device");
+        }
+
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create trigger");
+      }
+
+      // Return the created trigger with its real ID from the backend
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating trigger:", error);
       throw error;
     }
   };
@@ -584,15 +674,26 @@ const HomePage: React.FC = () => {
   };
 
   const getRoomImage = (roomIconType: string): string => {
-    // Use the same mapping as on the server
+    // Map iconType from database to SVG images
+    // Use kebab-case keys to match backend storage format
     const roomImages: Record<string, string> = {
       "living-room": LivingRoomImage,
       bedroom: BedRoomImage,
       kitchen: KitchenImage,
       garden: GardenImage,
       bathroom: BathroomImage,
+      garage: carIcon, // Add garage/car
+      "study-room": bookShelfIcon, // Add study room
+      closet: coatHangerIcon, // Add closet
     };
-    return roomImages[roomIconType] || LivingRoomImage;
+
+    // Convert "Living Room" format to "living-room" if needed
+    const normalizedType = roomIconType.toLowerCase().replace(/\s+/g, "-");
+
+    // First try with the normalized type, then with the original type
+    return (
+      roomImages[normalizedType] || roomImages[roomIconType] || LivingRoomImage
+    );
   };
 
   const getDeviceImage = (type: string): string => {
@@ -897,50 +998,57 @@ const HomePage: React.FC = () => {
       // Ensure selected device exists
       if (!selectedDevice) return;
 
-      // Format the label based on time settings
-      const timeLabel = `${turnOn}${turnOnPeriod.toLowerCase()} to ${turnOff}${turnOffPeriod.toLowerCase()}`;
+      // Format feature details based on device type
+      const isTimeBasedDevice = ["aircond", "light"].includes(
+        selectedDevice.deviceType
+      );
+      const triggerType = isTimeBasedDevice
+        ? "Auto Schedule"
+        : "Auto Feeding/Irrigation";
+      const conditionOperator = isTimeBasedDevice
+        ? "Time-based"
+        : "Time-based Slot";
 
-      // Prepare feature data in the format expected by the API
-      const featureData = {
-        triggerType: repeatOption, // Feature name (e.g. "Daily")
-        conditionOperator: timeLabel, // Time details as a descriptive string
-        isActive: false, // Start as inactive
-        featurePeriod: repeatOption, // The repeat option (Daily, Weekly, etc)
-        featureDetail: timeLabel, // Time details for display
-      };
+      // Format time label based on device type
+      const timeLabel = isTimeBasedDevice
+        ? `${turnOn}${turnOnPeriod.toLowerCase()} to ${turnOff}${turnOffPeriod.toLowerCase()}`
+        : `${turnOn}${turnOnPeriod.toLowerCase()}, ${turnOff}${turnOffPeriod.toLowerCase()} (${selectedDuration})`;
 
-      // Update UI optimistically for responsive feel
-      const newFeature = {
-        feature_id: selectedDevice.content.length + 2,
-        feature: repeatOption,
-        label: timeLabel,
-        status: false,
-        isUserAdded: true,
-      };
+      // Create the feature in the backend first to get its real ID
+      const newFeature = await createDeviceTriggerAPI(
+        deviceId,
+        triggerType,
+        conditionOperator,
+        activeDay ? activeDay.name : "Daily", // Use selected day or default to "Daily"
+        timeLabel
+      );
 
-      // Update local state optimistically
+      // Update UI with the REAL backend ID from the response
       setDevicesState((prevDevices) =>
         prevDevices.map((device) =>
           device.device_id === deviceId
             ? {
                 ...device,
-                content: [...device.content, newFeature],
+                content: [
+                  ...device.content,
+                  {
+                    feature_id: newFeature.id, // Use the real ID returned by the backend
+                    feature: triggerType,
+                    label: timeLabel,
+                    status: true,
+                    isUserAdded: true,
+                  },
+                ],
               }
             : device
         )
       );
 
-      // Call the API to persist the change
-      await addDeviceFeatureAPI(deviceId, featureData);
-
-      // Close the add feature UI
-      handleAddFeatureToggle();
+      // Reset state for next use
+      setAddFeature(false);
+      setHasSelect(false);
     } catch (error) {
       console.error("Failed to add smart feature:", error);
-      // Revert optimistic update if API call failed
-      // This would require keeping a copy of the original state
-      // and restoring it in case of failure
-
       // Show error to user
       alert(
         error instanceof Error
@@ -1462,9 +1570,7 @@ const HomePage: React.FC = () => {
                               height: "40%",
                             }}
                           >
-                            <p className="mb-0 text-center">
-                              <h5>{r.title}</h5>
-                            </p>
+                            <h5 className="mb-2 text-center">{r.title}</h5>
                             <p className="mb-0 text-center">
                               <span
                                 className="px-1"

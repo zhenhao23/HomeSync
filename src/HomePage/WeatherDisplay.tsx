@@ -30,7 +30,7 @@ const WeatherDisplay: React.FC = () => {
       {/* Weather Content */}
       <div className="d-flex flex-column text-white p-2 weather-content">
         <div className="weather-date">
-          <p className="m-0">Nov 6, 2024 9:41 am</p>
+          <p className="m-0">Mar 25, 2025 11:31 am</p>
         </div>
         <div className="weather-condition">
           <p className="m-0">
@@ -44,7 +44,7 @@ const WeatherDisplay: React.FC = () => {
       <div className="d-flex flex-column text-white p-2 weather-temp">
         <div>
           <p className="m-0">
-            <b>24°C</b>
+            <b>29°C</b>
           </p>
         </div>
       </div>
