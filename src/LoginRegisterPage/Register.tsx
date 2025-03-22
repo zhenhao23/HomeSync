@@ -276,12 +276,16 @@ const Register: React.FC = () => {
             {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
           </span>
         </div>
-      </form>
 
-      {/* Create Account Button */}
-      <button type="submit" className="create-account-btn" disabled={isLoading}>
-        {isLoading ? "Creating Account..." : "Create Account"}
-      </button>
+        {/* Create Account Button */}
+        <button
+          type="submit"
+          className="create-account-btn"
+          disabled={isLoading}
+        >
+          {isLoading ? "Creating Account..." : "Create Account"}
+        </button>
+      </form>
 
       {/* Divider */}
       <div className="divider2">or Register with</div>
