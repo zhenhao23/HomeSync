@@ -25,9 +25,9 @@ const OwnerGuard: React.FC<OwnerGuardProps> = ({ children }) => {
           return;
         }
 
-        // Fetch the user's permission level for the current home
+        // Updated URL to match the correct endpoint in userRoutes.ts
         const response = await fetch(
-          `https://homesync-production.up.railway.app/api/dwellers/permission/${currentHomeId}`,
+          `https://homesync-production.up.railway.app/api/users/dwellers/permission/${currentHomeId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

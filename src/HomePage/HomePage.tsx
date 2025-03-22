@@ -41,6 +41,7 @@ import LogoSmartHome from "./LogoSmartHome.tsx";
 import "./HomePage.css";
 import DeviceSmartFeature from "./DeviceSmartFeature.tsx";
 // import collabIcon from "../assets/addCollab/collab-profile.svg";
+import OwnerGuard from "../OwnerGuard.tsx";
 
 // Import styles
 import "./Switch.css";
@@ -1241,13 +1242,15 @@ const HomePage: React.FC = () => {
                 <div className="container-fluid p-3 pb-2">
                   <div className="row align-items-center mb-2">
                     <div className="col-4 text-start">
-                      <h5
-                        className="mb-0 ms-3 edit"
-                        style={{ color: "#ffffff" }}
-                        onClick={handleRoomEdit}
-                      >
-                        {isRoomEditing ? "Done" : "Edit"}
-                      </h5>
+                      <OwnerGuard>
+                        <h5
+                          className="mb-0 ms-3 edit"
+                          style={{ color: "#ffffff" }}
+                          onClick={handleRoomEdit}
+                        >
+                          {isRoomEditing ? "Done" : "Edit"}
+                        </h5>
+                      </OwnerGuard>
                     </div>
                     <div className="col-4 text-center">
                       <h3
@@ -1258,13 +1261,15 @@ const HomePage: React.FC = () => {
                       </h3>
                     </div>
                     <div className="col-4 text-end d-flex justify-content-end">
-                      <button
-                        className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center add-room-button"
-                        onClick={() => setActiveContent("addRoom")}
-                        disabled={isRoomEditing}
-                      >
-                        <FaPlus color="#204160" />
-                      </button>
+                      <OwnerGuard>
+                        <button
+                          className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center add-room-button"
+                          onClick={() => setActiveContent("addRoom")}
+                          disabled={isRoomEditing}
+                        >
+                          <FaPlus color="#204160" />
+                        </button>
+                      </OwnerGuard>
                     </div>
                   </div>
                 </div>
@@ -1402,13 +1407,15 @@ const HomePage: React.FC = () => {
                 <div className="container-fluid p-3 pb-2">
                   <div className="row align-items-center mb-2">
                     <div className="col-4 text-start">
-                      <h5
-                        className="mb-0 ms-3 fw-semibold"
-                        style={{ color: "#204160" }}
-                        onClick={handleRoomEdit}
-                      >
-                        {isRoomEditing ? "Done" : "Edit"}
-                      </h5>
+                      <OwnerGuard>
+                        <h5
+                          className="mb-0 ms-3 fw-semibold"
+                          style={{ color: "#204160" }}
+                          onClick={handleRoomEdit}
+                        >
+                          {isRoomEditing ? "Done" : "Edit"}
+                        </h5>
+                      </OwnerGuard>
                     </div>
                     <div className="col-4 text-center">
                       <h3 className="mb-0 fw-bold" style={{ color: "#404040" }}>
@@ -1416,19 +1423,21 @@ const HomePage: React.FC = () => {
                       </h3>
                     </div>
                     <div className="col-4 text-end d-flex justify-content-end">
-                      <button
-                        className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
-                        style={{
-                          backgroundColor: "#204160",
-                          width: "30px",
-                          height: "30px",
-                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-                        }}
-                        onClick={() => setActiveContent("addRoom")}
-                        disabled={isRoomEditing}
-                      >
-                        <FaPlus color="white" />
-                      </button>
+                      <OwnerGuard>
+                        <button
+                          className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
+                          style={{
+                            backgroundColor: "#204160",
+                            width: "30px",
+                            height: "30px",
+                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                          }}
+                          onClick={() => setActiveContent("addRoom")}
+                          disabled={isRoomEditing}
+                        >
+                          <FaPlus color="white" />
+                        </button>
+                      </OwnerGuard>
                     </div>
                   </div>
                 </div>
