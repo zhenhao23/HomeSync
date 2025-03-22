@@ -4,6 +4,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import EnergyLimitImage from "../assets/energy/energylimit.svg";
 
 const EnergyLimit: React.FC = () => {
+  // Note: The UI works with kWh but the API/database expects Wh
+  // We convert between units when sending/receiving data
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
   const [energyLimit, setEnergyLimit] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -33,9 +35,11 @@ const EnergyLimit: React.FC = () => {
           }
         );
 
+        // Line 43 in useEffect when fetching
         if (response.ok) {
           const data = await response.json();
-          let limitValue = parseFloat(data.energyLimit);
+          // Convert from Wh to kWh for display
+          let limitValue = parseFloat(data.energyLimit) / 1000;
           const timeframe = data.timeframe;
 
           // Set the default period based on timeframe
@@ -93,6 +97,8 @@ const EnergyLimit: React.FC = () => {
       }
 
       // Process energy limit based on selected period
+      // Line 103 in handleSubmit when sending
+      // Process energy limit based on selected period
       let processedLimit = parseFloat(energyLimit);
       let timeframe = "weekly";
 
@@ -106,8 +112,11 @@ const EnergyLimit: React.FC = () => {
         timeframe = "yearly";
       }
 
-      // Round to 2 decimal places for nice values
-      processedLimit = parseFloat(processedLimit.toFixed(2));
+      // Convert from kWh to Wh for storage
+      processedLimit = processedLimit * 1000;
+
+      // Round to whole number since we're using Wh
+      processedLimit = Math.round(processedLimit);
 
       const response = await fetch(
         `https://homesync-production.up.railway.app/api/energy-limit/${homeId}`,
@@ -268,7 +277,7 @@ const EnergyLimit: React.FC = () => {
           className="text-center text-muted mb-5"
           style={{ width: "300px", fontSize: "0.8rem" }}
         >
-          Example: 5000 kWh
+          Example: 500 kWh
         </p>
 
         <button

@@ -400,6 +400,11 @@ const HomePage: React.FC = () => {
   const [isRequestAccess, setRequestAccess] = useState(false);
   const navigate = useNavigate();
 
+  // Add this with your other state variables
+  const [roomEnergyData, setRoomEnergyData] = useState<Record<number, number>>(
+    {}
+  );
+
   // Get today's day name
   const todayName = new Date().toLocaleString("en-US", { weekday: "long" });
 
@@ -433,6 +438,50 @@ const HomePage: React.FC = () => {
   }) => {
     setRoom(selectedRoom); // Set the selected room data
     setActiveContent("viewDeviceStatus"); // Navigate to the viewDeviceStatus page
+  };
+
+  // Add this alongside your other API functions
+  const fetchRoomEnergyData = async () => {
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        console.error("No authentication token found");
+        navigate("/signin");
+        return;
+      }
+
+      const response = await fetch(
+        "https://homesync-production.up.railway.app/api/devices/energy/rooms",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate("/signin");
+          return;
+        }
+        throw new Error("Failed to fetch room energy data");
+      }
+
+      const data = await response.json();
+
+      // Convert array to a map of roomId -> energyUsed
+      const energyMap: Record<number, number> = {};
+      data.forEach((room: { id: number; energyUsed: number }) => {
+        energyMap[room.id] = room.energyUsed;
+      });
+
+      setRoomEnergyData(energyMap);
+    } catch (error) {
+      console.error("Error fetching room energy data:", error);
+    }
   };
 
   // Add this function at the top of your file alongside other API functions
@@ -722,6 +771,7 @@ const HomePage: React.FC = () => {
   // Initial data fetch
   useEffect(() => {
     fetchData();
+    fetchRoomEnergyData(); // Add this line
   }, []);
 
   // Memoized devices map for efficient lookups
@@ -1297,6 +1347,26 @@ const HomePage: React.FC = () => {
                             outline: "none",
                           }}
                         >
+                          {/* Add energy consumption text at top right */}
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "8px",
+                              right: "8px",
+                              backgroundColor: "#eeeeee",
+                              color: "#204160",
+                              padding: "2px 6px",
+                              borderRadius: "4px",
+                              fontSize: "0.75rem",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {roomEnergyData[r.id]
+                              ? `${(roomEnergyData[r.id] / 1000).toFixed(
+                                  1
+                                )} kWh`
+                              : "0 kWh"}
+                          </div>
                           {isRoomEditing ? (
                             <div
                               style={{
@@ -1458,6 +1528,7 @@ const HomePage: React.FC = () => {
                           pointerEvents: isRoomEditing ? "none" : "auto",
                         }}
                       >
+                        {/* Mobile view version */}
                         <div
                           className="p-2 py-5"
                           style={{
@@ -1468,6 +1539,27 @@ const HomePage: React.FC = () => {
                             position: "relative",
                           }}
                         >
+                          {/* Add energy consumption text at top right */}
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "8px",
+                              right: "8px",
+                              backgroundColor: "#eeeeee",
+                              color: "#204160",
+                              padding: "2px 6px",
+                              borderRadius: "4px",
+                              fontSize: "0.75rem",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {roomEnergyData[r.id]
+                              ? `${(roomEnergyData[r.id] / 1000).toFixed(
+                                  1
+                                )} kWh`
+                              : "0 kWh"}
+                          </div>
+
                           {isRoomEditing ? (
                             <div
                               style={{

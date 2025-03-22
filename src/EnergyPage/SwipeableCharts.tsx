@@ -219,7 +219,7 @@ const PieChartComponent: React.FC<{
                     fontWeight: "100",
                   }}
                 >
-                  {item.value.toFixed(0)} kWh
+                  {(item.value / 1000).toFixed(1)} kWh
                 </span>
               </div>
             ))}
@@ -433,8 +433,8 @@ const LineChartComponent: React.FC<{
 
   // Format display values - FIXED to always return string
   const formatYAxisTick = (value: number): string => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}K`;
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}`;
     return value.toString(); // Always return string
   };
 
@@ -518,7 +518,7 @@ const LineChartComponent: React.FC<{
                   color: "white",
                 }}
                 formatter={(value: number) => [
-                  `${value.toFixed(2)} kWh`,
+                  `${(value / 1000).toFixed(1)} kWh`,
                   "Total Usage",
                 ]}
               />

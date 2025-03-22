@@ -12,6 +12,106 @@ interface DeviceParams extends ParamsDictionary {
 // Apply authentication to all routes
 router.use(verifyToken);
 
+// Add this route after your other energy-related routes
+
+// GET energy usage per room for the past 30 days
+router.get("/energy/rooms", verifyToken, (req: Request, res: Response) => {
+  try {
+    const getRoomEnergyUsage = async () => {
+      // Authentication check
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const userId = req.user.id;
+
+      // Get all homes the user has access to
+      const accessibleHomes = await prisma.homeDweller.findMany({
+        where: {
+          userId: userId,
+          status: "active",
+        },
+        select: {
+          homeId: true,
+        },
+      });
+
+      const homeIds = accessibleHomes.map((home) => home.homeId);
+
+      if (homeIds.length === 0) {
+        return res.json([]);
+      }
+
+      // Calculate the date 30 days ago
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      // Get all rooms in the accessible homes
+      const rooms = await prisma.room.findMany({
+        where: {
+          homeId: {
+            in: homeIds,
+          },
+        },
+        include: {
+          devices: {
+            select: {
+              id: true,
+              displayName: true,
+              energyBreakdowns: {
+                where: {
+                  timestamp: {
+                    gte: thirtyDaysAgo,
+                  },
+                },
+                select: {
+                  energyUsed: true,
+                  timestamp: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Calculate energy usage per room
+      const roomEnergyUsage = rooms.map((room) => {
+        let totalEnergyUsed = 0;
+
+        // Sum energy usage for all devices in this room
+        room.devices.forEach((device) => {
+          device.energyBreakdowns.forEach((breakdown) => {
+            totalEnergyUsed += Number(breakdown.energyUsed);
+          });
+        });
+
+        return {
+          id: room.id,
+          name: room.name,
+          iconType: room.iconType,
+          energyUsed: Math.round(totalEnergyUsed), // Round to whole number
+        };
+      });
+
+      return res.json(roomEnergyUsage);
+    };
+
+    getRoomEnergyUsage().catch((error) => {
+      console.error("Error fetching room energy usage:", error);
+      res.status(500).json({
+        error: "Failed to fetch room energy usage",
+        details: error instanceof Error ? error.message : "Unknown error",
+      });
+    });
+  } catch (error) {
+    console.error("Error fetching room energy usage:", error);
+    res.status(500).json({
+      error: "Failed to fetch room energy usage",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 // GET all devices - secured with authentication and filtered by accessible homes
 router.get("/", (req: Request, res: Response) => {
   try {
