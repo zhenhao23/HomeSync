@@ -292,4 +292,52 @@ router.put(
   }
 );
 
+// Add this route to get the user's permission level for a specific home
+router.get(
+  "/dwellers/permission/:homeId",
+  verifyToken,
+  (req: AuthRequest, res: ExpressResponse) => {
+    try {
+      const getPermissionLevel = async () => {
+        if (!req.user) {
+          return res.status(401).json({ error: "Authentication required" });
+        }
+
+        const userId = req.user.id;
+        const homeId = parseInt(req.params.homeId);
+
+        if (isNaN(homeId)) {
+          return res.status(400).json({ error: "Invalid home ID" });
+        }
+
+        const homeDweller = await prisma.homeDweller.findFirst({
+          where: {
+            userId: userId,
+            homeId: homeId,
+          },
+          select: {
+            permissionLevel: true,
+          },
+        });
+
+        if (!homeDweller) {
+          return res
+            .status(404)
+            .json({ error: "User is not a member of this home" });
+        }
+
+        return res.json({ permissionLevel: homeDweller.permissionLevel });
+      };
+
+      getPermissionLevel().catch((error) => {
+        console.error("Error getting permission level:", error);
+        res.status(500).json({ error: "Failed to get permission level" });
+      });
+    } catch (error) {
+      console.error("Error getting permission level:", error);
+      res.status(500).json({ error: "Failed to get permission level" });
+    }
+  }
+);
+
 export default router;

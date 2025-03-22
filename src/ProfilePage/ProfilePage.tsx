@@ -33,6 +33,7 @@ import "./ProfilePage.css";
 import "./laptop333.css";
 import { useHome } from "../App.tsx";
 import { useNavigate } from "react-router-dom";
+import OwnerGuard from "../OwnerGuard.tsx";
 
 interface HomeItem {
   id: number;
@@ -413,6 +414,7 @@ const ProfilePage = () => {
   // State for user devices modal
   const [showUserDevices, setShowUserDevices] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const [isAddingHome, setIsAddingHome] = useState(false);
 
   const handleAddHome = () => {
     setShowHomeModal(true);
@@ -427,9 +429,11 @@ const ProfilePage = () => {
   //   );
   // };
 
-  // Function to add a new home - update to handle the response format correctly
+  // Then update the addNewHome function to handle loading state
   const addNewHome = async () => {
     if (newHomeName.trim() === "") return;
+
+    setIsAddingHome(true);
 
     try {
       // Get the auth token from localStorage
@@ -487,6 +491,8 @@ const ProfilePage = () => {
       // selectHome(newHome.id);
     } catch (error) {
       console.error("Error creating new home:", error);
+    } finally {
+      setIsAddingHome(false);
     }
   };
 
@@ -643,15 +649,33 @@ const ProfilePage = () => {
                 </button>
                 <button
                   onClick={addNewHome}
+                  disabled={isAddingHome}
                   style={{
                     padding: "6px 12px",
                     borderRadius: "4px",
                     border: "1px solid #0066cc",
                     background: "#0066cc",
                     color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minWidth: "64px",
                   }}
                 >
-                  Add
+                  {isAddingHome ? (
+                    <div
+                      style={{
+                        border: "2px solid white",
+                        borderTopColor: "transparent",
+                        borderRadius: "50%",
+                        width: "16px",
+                        height: "16px",
+                        animation: "spin 1s linear infinite",
+                      }}
+                    />
+                  ) : (
+                    "Add"
+                  )}
                 </button>
               </div>
             </div>
@@ -909,13 +933,16 @@ const ProfilePage = () => {
                     <span>Edit Profile</span>
                   </button>
 
-                  <button
-                    className="menu-item"
-                    onClick={() => setCurrentPage("manage-users")}
-                  >
-                    <FaUsers className="menu-icon" />
-                    <span>Manage Users</span>
-                  </button>
+                  {/* Wrap the Manage Users button with OwnerGuard */}
+                  <OwnerGuard>
+                    <button
+                      className="menu-item"
+                      onClick={() => setCurrentPage("manage-users")}
+                    >
+                      <FaUsers className="menu-icon" />
+                      <span>Manage Users</span>
+                    </button>
+                  </OwnerGuard>
 
                   {/* <button
                     className="menu-item"
@@ -1090,60 +1117,61 @@ const ProfilePage = () => {
                 <ChangePasswordPage onBack={() => setCurrentPage("profile")} />
               )}
             </div>
+            <OwnerGuard>
+              {/* Manage Users Section */}
+              <div className="laptop-manage-users">
+                <div className="laptop-manage-header">
+                  <h2 className="laptop-manage-title">Manage Users</h2>
+                </div>
 
-            {/* Manage Users Section */}
-            <div className="laptop-manage-users">
-              <div className="laptop-manage-header">
-                <h2 className="laptop-manage-title">Manage Users</h2>
-              </div>
-
-              <div className="laptop-user-header-row">
-                <div className="laptop-total-users">Total {users.length}</div>
-                <button
-                  className="laptop-add-user-btn"
-                  onClick={() => setShowInvite(true)}
-                >
-                  <FaPlus />
-                </button>
-              </div>
-
-              <ul className="laptop-user-list">
-                {users.map((user) => (
-                  <li
-                    key={user.id}
-                    className="laptop-user-item"
-                    onContextMenu={(e) => handleUserContextMenu(e, user.id)}
-                    onClick={() => handleUserClick(user)}
-                    style={{ cursor: "pointer" }}
+                <div className="laptop-user-header-row">
+                  <div className="laptop-total-users">Total {users.length}</div>
+                  <button
+                    className="laptop-add-user-btn"
+                    onClick={() => setShowInvite(true)}
                   >
-                    <div className="laptop-user-profile">
-                      {user.profilePic ? (
-                        <div className="laptop-user-pic">
-                          <img src={user.profilePic} alt={user.name} />
-                        </div>
-                      ) : (
-                        <div className="laptop-default-avatar">
-                          {user.name.charAt(0)}
+                    <FaPlus />
+                  </button>
+                </div>
+
+                <ul className="laptop-user-list">
+                  {users.map((user) => (
+                    <li
+                      key={user.id}
+                      className="laptop-user-item"
+                      onContextMenu={(e) => handleUserContextMenu(e, user.id)}
+                      onClick={() => handleUserClick(user)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div className="laptop-user-profile">
+                        {user.profilePic ? (
+                          <div className="laptop-user-pic">
+                            <img src={user.profilePic} alt={user.name} />
+                          </div>
+                        ) : (
+                          <div className="laptop-default-avatar">
+                            {user.name.charAt(0)}
+                          </div>
+                        )}
+                        <div className="laptop-user-name">{user.name}</div>
+                      </div>
+                      {user.id !== 1 && (
+                        <div
+                          className="laptop-delete-indicator"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent opening devices modal
+                            deleteUser(user.id);
+                          }}
+                        >
+                          <FaTrash />
+                          <span>Delete</span>
                         </div>
                       )}
-                      <div className="laptop-user-name">{user.name}</div>
-                    </div>
-                    {user.id !== 1 && (
-                      <div
-                        className="laptop-delete-indicator"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent opening devices modal
-                          deleteUser(user.id);
-                        }}
-                      >
-                        <FaTrash />
-                        <span>Delete</span>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </OwnerGuard>
           </div>
         </div>
       </div>
