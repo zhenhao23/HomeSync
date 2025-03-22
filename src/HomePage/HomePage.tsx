@@ -1240,7 +1240,7 @@ const HomePage: React.FC = () => {
                 <WeatherDisplay />
               </div>
               <div className="position-absolute flex-column room-container overflow-hidden">
-                <div className="container-fluid room-header"> 
+                <div className="container-fluid room-header">
                   <div className="row align-items-center mb-2">
                     <div className="col-4 text-start">
                       <OwnerGuard>
@@ -1280,11 +1280,11 @@ const HomePage: React.FC = () => {
                       <div
                         key={index}
                         className="col-6 mt-3 room-item"
-                        tabIndex={0} // Makes div focusable for :focus-within effect
                         onClick={() => handleRoomClick(r)}
                         style={{
                           pointerEvents: isRoomEditing ? "none" : "auto",
                         }}
+                        tabIndex={0} // Makes div focusable for :focus-within effect
                       >
                         <div
                           className="room-item-border"

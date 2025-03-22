@@ -117,24 +117,27 @@
   
   /* Responsive Design: Apply a different border color on desktop */
   @media (min-width: 1024px) {
-    .room-item:focus {
-    background: linear-gradient(90deg, #789EDC 50%, transparent 50%), 
-                linear-gradient(90deg, #789EDC 50%, transparent 50%), 
-                linear-gradient(0deg, #789EDC 50%, transparent 50%), 
-                linear-gradient(0deg, #789EDC 50%, transparent 50%);
-    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-    background-size: 95px 6px, 95px 6px, 6px 80px, 6px 80px;
-    background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%;
-    animation: dash 2s linear infinite;
-    padding: 8px;
-    transition: padding 0.1s ease-in-out;
-    }
+      .room-item:focus {
+        background: linear-gradient(90deg, #789EDC 50%, transparent 50%), 
+                    linear-gradient(90deg, #789EDC 50%, transparent 50%), 
+                    linear-gradient(0deg, #789EDC 50%, transparent 50%), 
+                    linear-gradient(0deg, #789EDC 50%, transparent 50%);
+        background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        background-size: 85px 6px, 85px 6px, 6px 70px, 6px 70px;
+        background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0%;
+        animation: border-dance 2s linear infinite;
+        padding: 8px;
+        transition: padding 0.1s ease-in-out;
+      }
+
+    @keyframes border-dance {
+      to {
+          background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
+      } 
+    } 
+
   }
 
 
-@keyframes dash {
-    to {
-        background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
-    } 
-} 
+
   
