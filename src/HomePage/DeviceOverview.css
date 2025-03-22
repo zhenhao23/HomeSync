@@ -15,11 +15,11 @@
 
 .device-title {
   color: #FFFFFF;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .device-data {
-  font-size: 55px;
+  font-size: 48px;
   color: white;
   margin-right: 4px;
 }
@@ -30,7 +30,7 @@
 }
 
 .device-label {
-    font-size: 20px;
+    font-size: 18px;
     color: white;
     word-wrap: break-word;
     max-width: 150px;
@@ -62,10 +62,10 @@
 }
 
 
-@media (min-width: 1280px) and (min-height: 720px) {
+@media (min-width: 1024px) and (min-height: 650px) {
 
     .device-overview {
-      top: -10px;
+      top: -25px;
       width: 100vw;
       height: 40vh; 
     }
@@ -77,87 +77,9 @@
     .device-info {
       height: 22vh;
     }
+
+    .device-title {
+      padding: 5px;
+    }
     
   }
-
-  @media (min-width: 1440px) and (min-height: 900px) {
-
-    .device-info {
-      height: 22vh;
-    }
-
-    .device-title {
-      font-size: 1.7rem;
-    }
-
-    .device-data {
-      font-size: 60px;
-    }
-
-    .device-data-unit {
-      font-size: 35px; 
-    }
-
-    .device-label {
-      font-size: 22px;
-    }
-
-    .unit-label {
-      font-size: 20px;
-    }
-
-  }
-
-  @media (min-width: 1920px) and (min-height: 1080px) {
-
-    .device-overview {
-      top: 0px;
-      width: 50vw;
-      height: 40vh; 
-    }
-
-    .device-info {
-      height: 20vh;
-    }
-
-    .device-title {
-      font-size: 1.9rem;
-    }
-
-    .device-data {
-      font-size: 70px;
-    }
-
-    .device-data-unit {
-      font-size: 45px; 
-    }
-
-    .device-label {
-      font-size: 25px;
-    }
-
-    .device-button {
-      width: 80px;
-      height: 60px;
-  }
-
-    .unit-label {
-      font-size: 22px;
-    }
-
-    .drag-content {
-      width: 100%;
-    }
-
-    .drag-line {
-      width: 63%;
-      margin-right: 20px;
-    }
-
-  }
-
-
-  
-
-
-  

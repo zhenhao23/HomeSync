@@ -27,60 +27,24 @@
     justify-content: center;
   }
 
-  /* Small laptop size */
-@media (min-width: 1280px) { 
+
+@media (min-width: 1024px) { 
     .logo-border {
-      width: 70px;
-      height: 70px;
+      width: 65px;
+      height: 65px;
     }
 
     .logo-border .logo-inner {
-      width: 58px;
-      height: 58px;
+      width: 55px;
+      height: 55px;
     }
 
     .logo-core {
-        width: 48px;
-        height: 48px;
-      }
-}
-
- /* Medium laptop size */
- @media (min-width: 1440px) { 
-  .logo-border { 
-    width: 80px;
-    height: 80px;
-  }
-
-  .logo-border .logo-inner {
-      width: 68px;
-      height: 68px;
+        width: 45px;
+        height: 45px;
     }
 
-  .logo-core {
-      width: 58px;
-      height: 58px;
-  }
- }
-
- /* Large laptop size */
-@media (min-width: 1920px) {
-  .logo-border { 
-    width: 90px;
-    height: 90px;
-  }
-
-  .logo-border .logo-inner {
-      width: 75px;
-      height: 75px;
+    .logo-div {
+      margin-top: -25%;
     }
-
-  .logo-core {
-      width: 62px;
-      height: 62px;
-  }
 }
-
-
-
- 

@@ -26,7 +26,7 @@ const viewNotification: React.FC<viewNotifProps> = ({ setActiveContent,accessReq
                   setActiveContent("home");
                 }}
               >
-                <IoIosArrowBack size={22} className="view-notif-arrow" />
+                <IoIosArrowBack size={20} className="view-notif-arrow" />
                 <span className="view-notif-word">Back</span>
               </div>
 

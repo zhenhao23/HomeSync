@@ -1,15 +1,14 @@
 /* 🔹 Container for the entire page */
 .welcome-container {
-  min-height: 100vh;
-  overflow: hidden;
-  padding: 0;
+  height: 100vh;
+  overflow: auto; 
   background-color: #204160;
 }
 
 /* 🔹 Top Section with Logo */
-.top-section {
+.welcome-container .top-section {
   background-color: #6d7a84;
-  height: 210px;
+  height: 25%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,7 +19,7 @@
 }
 
 /* 🔹 Logo Styling */
-.logo-container {
+.welcome-container .logo-container {
   border: 1px dotted white;
   background-color: transparent;
   width: 75px;
@@ -31,7 +30,7 @@
   border-radius: 50%;
 }
 
-.logo-bg {
+.welcome-container .logo-bg {
   background-color: #d3c1a3;
   width: 65px;
   height: 65px;
@@ -41,7 +40,7 @@
   border-radius: 50%;
 }
 
-.logo-inner {
+.welcome-container .logo-inner {
   background-color: white;
   width: 55px;
   height: 55px;
@@ -51,59 +50,57 @@
   border-radius: 50%;
 }
 
-.logo-img {
+.welcome-container .logo-img {
   max-width: 75%;
   max-height: 75%;
   object-fit: contain;
   border-radius: 50%;
 }
 
-/* 🔹 Logo Text */
-.logo-text {
+/* Logo Text */
+.welcome-container .logo-text {
   margin-top: 10px;
   font-size: 16px;
   font-weight: bold;
   color: white;
 }
 
-/* 🔹 Main Content Section */
+/* Main Content Section */
 .main-content {
-  background-color: #204160;
-  padding: 40px 20px;
+  min-height: calc(100% - 35%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
+  padding: 0px 20px;
 }
 
-/* 🔹 Title */
-.main-title {
+/* Title */
+.main-content .main-title {
   font-size: 25px;
   font-weight: bold;
   margin-bottom: 10px;
   color: white;
   text-align: center;
+  margin-top: 10px;
 }
 
-/* 🔹 Description Text */
-.main-description {
+/* Description Text */
+.main-content .main-description {
   font-size: 20px;
   line-height: 1.5;
   margin: 0 20px;
-  color: white;
+  color: #D3C1A3;
   text-align: center;
 }
 
-/* 🔹 Illustration */
-.illustration {
-  width: 70%;
-  margin: 20px auto;
+/* Illustration */
+.main-content .illustration {
+  margin: 20px 0;
 }
 
-/* 🔹 Get Started Button */
-.get-started-btn {
+/* Get Started Button */
+.main-content .get-started-btn {
   background-color: white;
   color: #002244;
   font-weight: bold;
@@ -114,13 +111,15 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 80%;
+  max-width: 180px;
 }
 
-.get-started-btn:hover {
+.main-content .get-started-btn:hover {
   background-color: #f0f0f0;
 }
 
-/* 🔹 Bottom Scroll Indicator */
+/* Bottom Scroll Indicator */
 .scroll-indicator {
   width: 150px;
   height: 5px;
@@ -129,96 +128,37 @@
   margin: 200px auto 0 auto;
 }
 
-/* 🔹 Style for the Sign In & Register Buttons */
-.action-btn {
+
+/* Style for the Sign In & Register Buttons */
+.main-content .action-btn {
   background-color: white;
   color: #002244;
   font-weight: bold;
   border-radius: 30px;
-  padding: 12px 40px;
+  padding: 12px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   margin-top: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 80%;
-  max-width: 250px;
+  max-width: 180px;
 }
 
-.action-btn:hover {
+.main-content .action-btn:hover {
   background-color: #f0f0f0;
 }
 
-/* Media Queries for Larger Screens */
-@media (min-width: 768px) {
-  /* Adjust top section */
-  .top-section {
-    height: 250px;
+
+@media (min-width: 1024px) {
+  .welcome-container .top-section {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
   }
-  
-  /* Larger logo for desktop */
-  .logo-container {
-    width: 90px;
-    height: 90px;
-  }
-  
-  .logo-bg {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .logo-inner {
-    width: 70px;
-    height: 70px;
-  }
-  
-  .logo-text {
-    font-size: 20px;
-    margin-top: 15px;
-  }
-  
-  /* Larger text for desktop */
-  .main-title {
-    font-size: 36px;
-    max-width: 800px;
-  }
-  
-  .main-description {
-    font-size: 24px;
-    max-width: 800px;
-    margin: 20px auto;
-  }
-  
-  /* Optimized illustration size */
-  .illustration {
-    width: 45%;
-    max-width: 500px;
-  }
-  
-  /* Larger button */
-  .get-started-btn {
-    font-size: 18px;
-    padding: 15px 60px;
+
+  .main-content .main-title {
+    margin: 20px;
   }
 }
 
-/* Extra large screens */
-@media (min-width: 1280px) {
-  .main-content {
-    padding: 145px 110px;
-  }
-  
-  .main-title {
-    font-size: 42px;
-  }
-  
-  .main-description {
-    font-size: 26px;
-  }
-  
-  .illustration {
-    width: 35%;
-    max-width: 600px;
-  }
-}

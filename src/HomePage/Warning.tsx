@@ -19,7 +19,7 @@ const Warning: React.FC<WarningProps> = ({ title, message }) => {
         }}
       >
         <h6 className="text-danger fw-bold">{title}</h6>
-        <span>{message}</span>
+        <span className="warning-word">{message}</span>
       </div>
     </div>
   );

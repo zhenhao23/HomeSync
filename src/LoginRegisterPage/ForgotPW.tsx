@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate for naviga
 import "./Password.css"; // Import Password CSS
 import Logo from "../assets/logo.svg"; // HomeSync Logo
 import Password from "../assets/password.svg";
-import { FaArrowLeft } from "react-icons/fa"; // Back Arrow Icon
 import WelcomeBackground from "./WelcomeBackground";
+import { IoIosArrowBack } from "react-icons/io";
 
 const ForgotPW: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const ForgotPW: React.FC = () => {
       <div className="forgot-container">
         {/* Back Button */}
         <button className="back-btn" onClick={() => navigate(-1)}>
-          <FaArrowLeft size={20} />
+          <IoIosArrowBack size={20} />
         </button>
 
         {/* HomeSync Logo */}

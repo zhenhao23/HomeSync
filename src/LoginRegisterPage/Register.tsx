@@ -9,7 +9,8 @@ import { auth } from "../../backend/firebase/config/firebaseConfig";
 import "./Register.css";
 import Logo from "../assets/logo.svg";
 import GoogleLogo from "../assets/Google.svg";
-import { FaArrowLeft } from "react-icons/fa";
+import { IoIosArrowBack } from "react-icons/io";
+import { Eye, EyeOff } from "lucide-react";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Register: React.FC = () => {
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,18 +193,18 @@ const Register: React.FC = () => {
         onClick={() => navigate(-1)}
         disabled={isLoading}
       >
-        <FaArrowLeft size={20} />
+        <IoIosArrowBack size={20} />
       </button>
 
       {/* HomeSync Logo */}
-      <div className="logo-container">
-        <div className="logo-bg">
-          <div className="logo-inner">
-            <img src={Logo} alt="Logo" className="logo-img" />
+      <div className="register-logo-container">
+        <div className="register-logo-bg">
+          <div className="register-logo-inner">
+            <img src={Logo} alt="Logo" className="register-logo-img" />
           </div>
         </div>
       </div>
-      <h4 className="logo-text">HomeSync</h4>
+      <h4 className="register-logo-text">HomeSync</h4>
 
       {/* Title & Subtitle */}
       <div className="register-content">
@@ -256,26 +258,30 @@ const Register: React.FC = () => {
         />
 
         <label>Password</label>
-        <input
-          type="password"
-          placeholder="Enter your password"
-          className="input-box"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-          disabled={isLoading}
-        />
-
-        {/* Create Account Button */}
-        <button
-          type="submit"
-          className="create-account-btn"
-          disabled={isLoading}
-        >
-          {isLoading ? "Creating Account..." : "Create Account"}
-        </button>
+        <div className="password-wrapper">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            className="input-box"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            disabled={isLoading}
+          />
+          <span
+            className="eye-icon"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+          </span>
+        </div>
       </form>
+
+      {/* Create Account Button */}
+      <button type="submit" className="create-account-btn" disabled={isLoading}>
+        {isLoading ? "Creating Account..." : "Create Account"}
+      </button>
 
       {/* Divider */}
       <div className="divider2">or Register with</div>

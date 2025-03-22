@@ -38,7 +38,6 @@ import AddCollaborator from "./AddCollaborator.tsx";
 import RepeatTime from "./RepeatTime.tsx";
 import useWindowSize from "./Layout.tsx";
 import LogoSmartHome from "./LogoSmartHome.tsx";
-import "./HomePage.css";
 import DeviceSmartFeature from "./DeviceSmartFeature.tsx";
 // import collabIcon from "../assets/addCollab/collab-profile.svg";
 import OwnerGuard from "../OwnerGuard.tsx";
@@ -50,6 +49,7 @@ import "./CircleDot.css";
 import "./glowingEffect.css";
 import "./Alert.css";
 import "./SyncButton.css";
+import "./HomePage.css";
 
 // Type definitions
 export interface Room {
@@ -1205,6 +1205,7 @@ const HomePage: React.FC = () => {
     { id: 1, person: "Alice", requestItem: "Garden" },
     { id: 2, person: "Bob", requestItem: "Kitchen" },
     { id: 3, person: "Charlie", requestItem: "Smart Lock" },
+    { id: 4, person: "David", requestItem: "Living Room" },
   ];
 
   // State to manage access requests
@@ -1238,8 +1239,8 @@ const HomePage: React.FC = () => {
               <div className="weather-div">
                 <WeatherDisplay />
               </div>
-              <div className="position-absolute flex-column room-container">
-                <div className="container-fluid p-3 pb-2">
+              <div className="position-absolute flex-column room-container overflow-hidden">
+                <div className="container-fluid room-header"> 
                   <div className="row align-items-center mb-2">
                     <div className="col-4 text-start">
                       <OwnerGuard>
@@ -1286,7 +1287,7 @@ const HomePage: React.FC = () => {
                         }}
                       >
                         <div
-                          className="p-2 py-5"
+                          className="room-item-border"
                           style={{
                             backgroundColor: "#eeeeee",
                             borderRadius: "16px",
@@ -1514,8 +1515,10 @@ const HomePage: React.FC = () => {
                               height: "40%",
                             }}
                           >
-                            <h5 className="mb-2 text-center">{r.title}</h5>
                             <p className="mb-0 text-center">
+                              <h5>{r.title}</h5>
+                            </p>
+                            <p className="mb-0 text-center device-count">
                               <span
                                 className="px-1"
                                 style={{

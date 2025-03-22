@@ -6,8 +6,12 @@
     margin-top: calc(100% - 94%);
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
     .warning-container {
-        width: 480px;
+        width: 380px;
+    }
+
+    .warning-word {
+        font-size: 14px;
     }
 }

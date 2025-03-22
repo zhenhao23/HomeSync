@@ -64,7 +64,7 @@ const AddCollaborator: React.FC<AddCollabProps> = ({ setActiveContent }) => {
               onClick={() => setActiveContent("viewCollaborators")}
               className="add-collab-back"
             >
-              <IoIosArrowBack size={22} className="add-collab-arrow" />
+              <IoIosArrowBack size={20} className="add-collab-arrow" />
               <span className="add-collab-word">Back</span>
             </div>
 
@@ -91,20 +91,16 @@ const AddCollaborator: React.FC<AddCollabProps> = ({ setActiveContent }) => {
               {addCollab.map((person) => (
                 <div className="add-collab-list" key={person.id}>
                   <div
-                    className="p-4 mb-4 d-flex"
+                    className="p-4 mb-4 d-flex add-collab-list-div"
                     style={{
                       backgroundColor: isSelected(person)
                         ? "#e3ebee"
                         : "#ffffff",
-                      borderRadius: "10px",
-                      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-                      width: "calc(100% - 15%)",
-                      height: "76px",
                     }}
                   >
                     <div className="d-flex align-items-center">
                       <img src={person.image} className="img-fluid" />
-                      <span className="ms-3">
+                      <span className="ms-3 person-name">
                         {person.name} {person.type === "Owner" ? "(Owner)" : ""}
                       </span>
                     </div>
@@ -128,13 +124,7 @@ const AddCollaborator: React.FC<AddCollabProps> = ({ setActiveContent }) => {
               }}
             >
               <button
-                className="btn p-2 px-5"
-                style={{
-                  backgroundColor: "#204160",
-                  color: "white",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                }}
+                className="btn add-collab-btn"
                 //onClick={() => handleConnectClick("deviceSetting")}
               >
                 <h6>Add</h6>

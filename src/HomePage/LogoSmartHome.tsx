@@ -4,7 +4,7 @@ import "./LogoSmartHome.css";
 
 const LogoSmartHome: React.FC = () => {
   return (
-    <div className="d-flex justify-content-center" style={{ zIndex: "20" }}>
+    <div className="d-flex justify-content-center logo-div" style={{ zIndex: "20" }}>
       <div className="rounded-circle logo-border">
         <div className="rounded-circle logo-inner">
           <div className="rounded-circle logo-core">

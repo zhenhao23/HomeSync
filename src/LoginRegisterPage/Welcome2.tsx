@@ -26,7 +26,7 @@ const Welcome2: React.FC = () => {
       <div className="main-content">
         <h1 className="main-title">Welcome Home!</h1>
         <p className="main-description">
-          Stay in Sync with Your Home <br /> Anytime, Anywhere
+          Stay in Sync with Your Home Anytime, Anywhere
         </p>
 
         {/* Illustration */}

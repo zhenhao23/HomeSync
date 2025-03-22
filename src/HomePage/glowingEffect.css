@@ -29,7 +29,7 @@
 }
 
 
-@media (min-width: 1440px) and (min-height: 900px) {
+@media (min-width: 1024px) and (min-height: 650px) {
 
   .lamp-glow, .aircond-glow {
     left: calc(100% - 39%);

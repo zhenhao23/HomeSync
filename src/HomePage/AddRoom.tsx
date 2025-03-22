@@ -272,10 +272,10 @@ const AddRoom: React.FC<AddRoomProps> = ({
         <div className="add-room-container">
           <div
             onClick={handleBackToHomePage}
-            className="ms-3 mt-3 add-room-back"
+            className="ms-3 mt-3 add-room-arrow"
           >
-            <IoIosArrowBack size={22} color="#204160" />
-            <span
+            <IoIosArrowBack size={20} color="#204160" />
+            <span className="add-room-back"
               style={{
                 marginLeft: "2px",
                 color: "#204160",
@@ -394,7 +394,7 @@ const AddRoom: React.FC<AddRoomProps> = ({
                   ""
                 )}
               </div>
-              <div
+              <div className="add-room-save-btn"
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -403,7 +403,7 @@ const AddRoom: React.FC<AddRoomProps> = ({
                 }}
               >
                 <button
-                  className="p-2 px-5 add-room-save"
+                  className="add-room-save"
                   onClick={handleAddRoom}
                 >
                   <h6>Save</h6>

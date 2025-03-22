@@ -36,12 +36,42 @@
     align-items: center;
 }
 
+.smart-feature-word {
+    color:#204160;
+}
 
-@media (min-width: 1280px) {
+.done-cancel-button {
+    background-color: #204160;
+    color: #ffffff;
+    border-radius: 90px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+    width: 65px;
+    height: 30px;
+    font-size: 15px;
+}
+
+.feature-label {
+    font-size: 20px;
+    color: #000000;
+    font-weight: 650;
+}
+
+.feature-detail-label {
+    font-size: 16px;
+    color: #979797;
+    font-weight: 700;
+}
+
+
+
+@media (min-width: 1024px) {
     .dev-smart-feature-container {
         border-radius: 30px;
-        width: 480px;
-        height: 650px;
+        width: 380px;
+        height: 520px;
         top: 50%; 
         left: 50%; 
         transform: translate(-50%, -50%);
@@ -67,11 +97,11 @@
     }
 
     .schedule, .smart-feature {
-        width: 480px;
+        width: 380px;
     }
 
     .smart-feature-back {
-        padding: 0 15px;
+        padding: 0 5px;
         position: absolute;
         top: 5%;
     }
@@ -84,17 +114,38 @@
         padding-top: 10%;
     }
 
-}
-
-@media (min-width: 1920px) {
-
-    .dev-smart-feature-container {
-        width: 550px;
-        height: 700px;
+    .smart-feature-word {
+        font-size: 1.25rem;
     }
 
-    .schedule1, .schedule2, .smart-feature {
-        width: 550px;
+    .smart-feature-back span {
+        font-size: 14px;
     }
 
+    .smart-feature-plus {
+        width: 27px;
+        height: 27px;
+    }
+
+    .done-cancel-button {
+        width: 60px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .feature-label {
+        font-size: 18px;
+    }
+
+    .feature-detail-label {
+        font-size: 14px;
+    }
+
+    .dev-smart-feature-list {
+        min-height: 75vh; /* Helps in flex containers */
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    
 }

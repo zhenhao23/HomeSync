@@ -21,7 +21,7 @@
 .view-notif-word {
     margin-left: 8px;
     color: #FFFFFF;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .view-notif-title {
@@ -34,15 +34,16 @@
 }
 
 .view-notif-list {
-    overflow: auto;
+    overflow-y: auto;
+    height: calc(100% - 20%);
 }
 
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
     .view-notif-laptop {
         border-radius: 30px;
-        width: 480px;
-        height: 650px;
+        width: 380px; 
+        height: 520px;
         top: 50%; 
         left: 50%; 
         transform: translate(-50%, -50%);
@@ -75,7 +76,7 @@
     }
 
     .view-notif-div, .view-notif-list {
-        width: 480px;
+        width: 380px;
     }
 
     .view-notif-word, .view-notif-title, .view-notif-arrow {
@@ -88,6 +89,15 @@
 
     .view-notif-div {
         top: 10%;
+    }
+
+    .view-notif-list {
+        overflow-x: hidden;
+        height: 450px;
+    }
+
+    .view-notif-title {
+        font-size: 1.25rem;
     }
 
 }

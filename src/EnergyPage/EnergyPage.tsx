@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaPlus, FaCaretUp, FaCaretDown } from "react-icons/fa";
+import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 import SwipeableCharts from "./SwipeableCharts";
 import LampImage from "../assets/devices/lamp.svg";
 import AirCondImage from "../assets/devices/aircond1.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
 import IrrigationImage from "../assets/devices/irrigation.svg";
+import EnergyUploadImage from "../assets/energy/energy-upload-button.svg";
 
 type TimeRange = "week" | "month" | "year";
 
@@ -153,15 +154,11 @@ const EnergyPage: React.FC = () => {
             </div>
             <div className="col-4 text-center"></div>
             <div className="col-4 text-end d-flex justify-content-end">
-              <button
-                className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
-                style={{
-                  backgroundColor: "#204160",
-                  width: "30px",
-                  height: "30px",
-                }}
-              >
-                <FaPlus color="white" />
+              <button className="me-2 btn rounded-circle p-1 d-flex align-items-center justify-content-center">
+                <img
+                  src={EnergyUploadImage}
+                  style={{ backgroundColor: "white" }}
+                ></img>
               </button>
             </div>
           </div>

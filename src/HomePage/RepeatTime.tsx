@@ -53,7 +53,7 @@ const RepeatTime: React.FC<RepeatTimeProps> = ({
                 position: "absolute",
               }}
             >
-              <IoIosArrowBack size={22} className="repeat-time-arrow" />
+              <IoIosArrowBack size={20} className="repeat-time-arrow" />
               <span className="repeat-time-word">Back</span>
             </div>
 
@@ -78,15 +78,7 @@ const RepeatTime: React.FC<RepeatTimeProps> = ({
                 style={{ marginTop: index === 0 ? "30px" : "0" }}
               >
                 <div className="d-flex justify-content-between">
-                  <div
-                    className="col-8"
-                    style={{
-                      marginLeft: "calc(100% - 90%)",
-                      fontSize: "18px",
-                    }}
-                  >
-                    {option}
-                  </div>
+                  <div className="col-8 option-div">{option}</div>
                   <label className="container col-1">
                     <input
                       type="radio"
@@ -116,7 +108,7 @@ const RepeatTime: React.FC<RepeatTimeProps> = ({
               <div className="text-center">
                 {!hasSelect && hasClickDone ? (
                   <div className="p-4">
-                    <span style={{ color: "red", fontSize: "15px" }}>
+                    <span style={{ color: "red", fontSize: "14px" }}>
                       Please select a repeat option!
                     </span>
                   </div>
@@ -124,13 +116,7 @@ const RepeatTime: React.FC<RepeatTimeProps> = ({
                   ""
                 )}
                 <button
-                  className="btn p-2 px-5"
-                  style={{
-                    backgroundColor: "#204160",
-                    color: "white",
-                    borderRadius: "12px",
-                    cursor: "pointer",
-                  }}
+                  className="btn repeat-time-done"
                   onClick={handleDoneClick}
                 >
                   <h6>Done</h6>

@@ -75,19 +75,24 @@
     border-radius: 12px;
     cursor: pointer;
     margin: 30px auto;
+    padding: 5px 40px; 
 }
 
-.add-room-back {
+.add-room-arrow {
     width: 65px;
     height: 30px; 
     cursor: pointer;
 }
 
+.room-setting-title {
+    font-size: 1.5rem;
+}
+
 @media (min-width: 1280px) {
     .add-room-container {
         border-radius: 30px;
-        width: 480px;
-        height: 650px;
+        width: 380px;
+        height: 520px;
         top: 50%; 
         left: 50%; 
         transform: translate(-50%, -50%);
@@ -108,15 +113,15 @@
     }
 
     .add-room-content {
-        width: 480px;
+        width: 380px;
     }
 
     .room-setting-title {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
 
     .add-room-input {
-        width: 400px;
+        width: 300px;
     }
 
     .exclamation-circle {
@@ -127,80 +132,12 @@
     .add-room-save {
         margin: 10px auto;
     }
-}
 
-@media (min-width: 1440px) {
-
-    .room-setting-title {
-        font-size: 1.6rem;
-    }
-
-    .add-room-input {
-        height: 45px;
-    }
-
-    .exclamation-circle {
-        font-size: 1.4rem;
-    }
-
-    .select-room-error span {
-        font-size: 16px;
-    }
-
-    .add-room-div {
-        width: 75%;
-        height: 75%;
+    .add-room-back {
+        font-size: 14px;
     }
 
     .room-setting-name, .room-setting-icon {
-        font-size: 19px;
+        font-size: 15px;
     }
-
-    .add-room-back span {
-        font-size: 1.1rem;
-    }
-
-    .add-room-div img {
-        width: 40px;
-        height: 45px;
-    }
-
-}
-
-@media (min-width: 1920px) {
-
-    .exclamation-circle {
-        font-size: 1.5rem;
-    }
-
-    .select-room-error span {
-        font-size: 18px;
-    }
-
-    .add-room-div img {
-        width: 50px;
-        height: 60px;
-    }
-
-    .room-setting-name, .room-setting-icon {
-        font-size: 20px;
-    }
-
-    .add-room-save h6 {
-        font-size: 1.2rem;
-    }
-
-    .add-room-back span {
-        font-size: 1.2rem;
-    }
-
-    .add-room-container {
-        width: 550px;
-        height: 700px;
-    }
-
-    .add-room-content {
-        width: 550px;
-    }
-
 }

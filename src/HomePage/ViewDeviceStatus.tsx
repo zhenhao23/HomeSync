@@ -311,7 +311,7 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
         {isLaptop ? (
           <div
             style={{ width: "100%" }}
-            className="d-flex justify-content-between align-items-center p-4 pb-1"
+            className="d-flex justify-content-between align-items-center p-3 pb-0"
           >
             <div className="col-4 text-start device-edit-div">
               <h5
@@ -337,7 +337,7 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                       handleEditRoomClick(); // Proceed to select the device if not swiped
                     }
                   }}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", padding: "20px" }}
                 />
               ) : (
                 <>
@@ -410,7 +410,7 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
 
         {/* Devices */}
         {isLaptop ? (
-          <div className="row laptop-container pt-4">
+          <div className="row laptop-container pt-3 overflow-auto">
             {filteredDevices.length > 0 ? (
               filteredDevices.map((device) => (
                 <div
@@ -516,6 +516,7 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                               <span className="on-text">ON</span>
                               <span className="off-text">OFF</span>
                             </label>
+                            <IoIosArrowForward size={22} className="ms-1" color="#404040" />
                           </div>
                         </div>
 

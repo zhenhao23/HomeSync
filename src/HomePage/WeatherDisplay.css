@@ -32,7 +32,7 @@
   }
 
   .weather-content {
-    width: 40%;
+    width: 50%;
   }
   
   .weather-date {
@@ -53,22 +53,22 @@
   }
 
   /* Small laptop size */
-  @media (min-width: 1280px) {
+  @media (min-width: 1024px) {
     .vector-sunbeam {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       transform: translateX(50%) translateY(-22%);
     }
     
     .vector-sun {
-      width: 30px;
-      height: 41px;
+      width: 22px;
+      height: 31px;
       transform: translateX(-52%) translateY(19%);
     }
     
     .vector-cloud {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       transform: translateX(-100%) translateY(28%);
     }
 
@@ -90,7 +90,7 @@
 
     .weather-container {
       position: relative;
-      background-color: #4C7380;
+      background-color: rgba(255, 255, 255, 0.2);
       border-radius: 18px;
       width: calc(100vw - 72vw);
       height: calc(100vh - 88vh);
@@ -100,62 +100,3 @@
     }
 
   }
-
-  /* Medium laptop size */
-  @media (min-width: 1440px) {
-
-      .weather-date {
-        font-size: 16px;
-      }
-
-      .weather-condition {
-        font-size: 20px;
-      }
-
-      .weather-location {
-        font-size: 16px;
-      }
-
-      .weather-temp {
-        font-size: 35px;
-      }
-
-}
-
- /* Large laptop size */
- @media (min-width: 1920px) {
-  .vector-sunbeam {
-    width: 62px;
-    height: 60px;
-    transform: translateX(50%) translateY(-22%);
-  }
-  
-  .vector-sun {
-    width: 34px;
-    height: 45px;
-    transform: translateX(-52%) translateY(19%);
-  }
-  
-  .vector-cloud {
-    width: 56px;
-    height: 56px;
-    transform: translateX(-100%) translateY(28%);
-  }
-
-  .weather-date {
-    font-size: 18px;
-  }
-  
-  .weather-condition {
-    font-size: 22px;
-  }
-  
-  .weather-location {
-    font-size: 18px;
-  }
-
-  .weather-temp {
-    font-size: 40px;
-  }
-
- }

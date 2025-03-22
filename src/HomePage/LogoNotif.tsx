@@ -16,7 +16,7 @@ const Background: React.FC<LogoNotifProps> = ({ setActiveContent }) => {
             className="rounded-circle notification-icon"
             onClick={() => setActiveContent("viewNotification")}
           >
-            <FaBell color="#204160" size={18} />
+            <FaBell color="#204160" size={15} />
             {/* Red Dot Notification */}
             {true && (
               <span className="bg-danger rounded-circle notification-dot"></span>

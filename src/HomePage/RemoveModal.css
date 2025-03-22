@@ -37,7 +37,7 @@
     font-size: 18px;
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
 
     .remove-room-container {
         padding: 30px;

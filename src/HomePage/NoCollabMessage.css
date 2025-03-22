@@ -11,8 +11,8 @@
     font-weight: 500;
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
     .no-collab-div {
-        width: 480px;
+        width: 380px;
     }
 }

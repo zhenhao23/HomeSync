@@ -39,8 +39,19 @@
     position: fixed;
 }
 
+.view-collab-add-btn {
+    background-color: #204160;
+    width: 30px;
+    height: 30px;
+}
 
-@media (min-width: 1280px) {
+.add-collab-btn-div {
+    width: 50%;
+}
+
+
+
+@media (min-width: 1024px) {
     .view-collab-background {
         position: fixed;
         top: 0;
@@ -56,8 +67,8 @@
 
     .view-collab-container {
         border-radius: 30px;
-        width: 480px;
-        height: 650px;
+        width: 380px;
+        height: 520px;
         top: 50%; 
         left: 50%; 
         transform: translate(-50%, -50%);
@@ -70,7 +81,7 @@
     }
 
     .collab-list {
-        width: 480px;
+        width: 380px;
     }
 
     .view-collab-header {
@@ -90,5 +101,27 @@
         top: 10%;
         width: 480px;
     }
+
+    .view-collab-title {
+        font-size: 1.25rem;
+    }
+
+    .view-collab-word {
+        font-size: 14px;
+    }
+
+    .collab-names {
+        font-size: 15px;
+    }
+
+    .view-collab-add-btn {
+        width: 27px;
+        height: 27px;
+    }
+
+    .add-collab-btn-div {
+        width: 28%;
+    }
+    
 
 }

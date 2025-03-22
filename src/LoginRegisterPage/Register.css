@@ -8,11 +8,11 @@
   justify-content: center;
   padding: 20px;
   border-radius: 40px;
-  overflow: hidden;
+  overflow: hidden;  
 }
 
 /* 🔹 Back Button */
-.back-btn {
+.register-container .back-btn {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -24,16 +24,10 @@
 }
 
 /* 🔹 HomeSync Logo */
-.register-logo-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.register-logo-bg {
+.register-container .register-logo-container {
   border: 1px dotted white;
   background-color: transparent;
-  width: 75px;
+  min-width: 75px;
   height: 75px;
   display: flex;
   align-items: center;
@@ -41,7 +35,7 @@
   border-radius: 50%;
 }
 
-.register-logo-inner {
+.register-container .register-logo-bg {
   background-color: #d3c1a3;
   width: 65px;
   height: 65px;
@@ -51,7 +45,7 @@
   border-radius: 50%;
 }
 
-.register-logo-img {
+.register-container .register-logo-inner {
   background-color: white;
   width: 55px;
   height: 55px;
@@ -59,10 +53,16 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  object-fit: contain;
 }
 
-.register-logo-text {
+.register-container .register-logo-img {
+  max-width: 75%;
+  max-height: 75%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.register-container .register-logo-text {
   font-size: 16px;
   color: white;
   font-weight: bold;
@@ -71,7 +71,7 @@
 }
 
 /* 🔹 Title & Subtitle */
-.register-title {
+.register-content .register-title {
   font-size: 24px;
   font-weight: bold;
   color: white;
@@ -79,7 +79,7 @@
   margin-top: 10px;
 }
 
-.register-subtitle {
+.register-content .register-subtitle {
   font-size: 16px;
   color: #ffb8b8;
   text-align: center;
@@ -87,43 +87,42 @@
 }
 
 /* 🔹 Input Fields */
-.input-container {
-  width: 80%;
-  max-width: 320px;
+.register-container .input-container {
+  width: 100%;
+  max-width: 280px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  margin-top: 30px;
 }
 
-.input-container label {
+.register-container .input-container label {
   font-size: 14px;
   color: white;
 }
 
-.input-box {
+.register-container .input-container input {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   border-radius: 20px;
   border: none;
-  font-size: 16px;
-  text-align: left;
+  margin-bottom: 20px;
 }
 
 /* 🔹 Create Account Button */
-.create-account-btn {
-  width: 100%; /* Change this from 80% to 100% to match parent container */
+.register-container .create-account-btn {
+  width: 60%; /* Change this from 80% to 100% to match parent container */
   background-color: #ffb8b8;
   color: white;
   padding: 12px;
   border: none;
-  border-radius: 20px;
+  border-radius: 40px;
   font-weight: bold;
   cursor: pointer;
   margin-top: 20px;
   align-self: center; /* Add this to help with alignment */
 }
 
-.create-account-btn:hover {
+.register-container .create-account-btn:hover {
   background-color: #efa6a6;
 }
 
@@ -157,14 +156,14 @@
 }
 
 /* 🔹 Google Register Button */
-.google-btn {
-  width: 80%;
-  max-width: 320px;
+.register-container .google-btn {
+  width: 100%;
+  max-width: 250px;
   background-color: white;
   color: black;
   padding: 12px;
   border: none;
-  border-radius: 20px;
+  border-radius: 40px;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -173,24 +172,24 @@
   gap: 10px;
 }
 
-.google-btn:hover {
+.register-container .google-btn:hover {
   background-color: #f0f0f0;
 }
 
-.google-icon {
+.register-container .google-icon {
   width: 20px;
   height: 20px;
 }
 
 /* 🔹 Sign-Up Link */
-.signup-link {
+.register-container .signup-link {
   font-size: 12px;
   color: white;
   text-align: center;
   margin-top: 15px;
 }
 
-.signup-link a {
+.register-container .signup-link a {
   color: #f3b3b3;
   text-decoration: none;
   font-weight: bold;
@@ -203,4 +202,75 @@
   background-color: white;
   border-radius: 5px;
   margin: 50px auto 0 auto;
+}
+
+.register-container .password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.register-container .eye-icon {
+  position: absolute;
+  right: 15px;
+  top: 35%;
+  transform: translateY(-60%); /* Center icon vertically */
+  cursor: pointer;
+  color: gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+@media (min-width: 1024px) and (min-height: 600px) {
+  .register-container {
+    border-radius: 0;
+  }
+
+  .register-container .create-account-btn {
+    font-size: 14px;
+    padding: 8px;
+    margin-top: 50px;
+    width: 12%;
+  }
+
+  .register-container .google-btn {
+    font-size: 14px;
+    margin: 5px;
+    padding: 8px;
+  }
+
+  .register-container .divider2 {
+    font-size: 14px;
+    margin: 10px;
+    padding: 0px;
+  }
+
+  .register-container .input-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Creates two equal-width columns */
+    gap: 10px;
+    width: 80%;
+    max-width: 750px;
+  }
+
+  .register-container .input-container input {
+    padding: 5px;
+    margin-bottom: 15px;
+    margin-bottom: 10px;
+    width: 250px;
+    margin: 15px;
+  }
+
+  .register-container .input-container label {
+    display: flex;
+    align-items: center;
+  }
+
+  .register-container .eye-icon {
+    right: 30px;
+    top: 40%;
+    transform: translateY(-20%);
+  }
 }

@@ -36,7 +36,6 @@
     margin: 0;
     gap: 40px;
     height: 76%;
-    overflow: auto;
     padding-bottom: 40px;
 }
 
@@ -83,10 +82,10 @@
 
 .edit-device-white {
     position: absolute;
-    top: -10px;
-    left: -10px;
-    width: 35px; 
-    height: 35px;
+    top: -5px;
+    left: -5px;
+    width: 25px; 
+    height: 25px;
     background-color: white;
     border-radius: 50%;
     z-index: 0;
@@ -95,15 +94,15 @@
 .edit-device-minus-button {
     cursor: pointer;
     position: absolute;
-    top: -15px;
-    left: -13px;
-    width: 40px; 
-    height: 40px;
+    top: -8px;
+    left: -8px;
+    width: 35px; 
+    height: 35px;
 }
 
 .room-device-title {
     color: #FFFFFF; 
-    font-size: 1.4rem;
+    font-size: 1.2rem;
 }
 
 .view-more{
@@ -114,78 +113,26 @@
     height: 40px;
     position: absolute;
     bottom: 6px;
-  }
+  } 
 
 
-@media (min-width: 1280px) and (min-height: 720px) {
-
-    .laptop-container {
-        padding: 0 40px;
-    }
+@media (min-width: 1024px) {
 
     .laptop-devices {
-        width: 28vw; 
+        width: 27vw; 
         height: 54vh;
     }
 
     .view-more {
         height: 5vh;
-      }
-}
-
-@media (min-width: 1350px) and (min-height: 720px) {
-
-    .laptop-container {
-        padding: 0 50px;
-    }
-}
-
-@media (min-width: 1440px) and (min-height: 900px) {
-
-    .laptop-container {
-        padding: 0 40px;
-    }
-
-    .laptop-devices {
-        width: 29vw; 
-        height: 50vh;
-    }
-
-    .view-more {
-        height: 7vh;
-        font-size: 18px;
-      }
-}
-
-@media (min-width: 1500px) and (min-height: 900px) {
-
-    .laptop-container {
-        padding: 0 45px;
     }
 }
 
 
-@media (min-width: 1920px) and (min-height: 1080px)  {
-
-    .laptop-container {
-        padding: 0 60px;
-    }
-
-    .laptop-devices {
-        width: 30vw; 
-        height: 45vh;
-    }
-
-    .view-more{
-        font-size: 22px;
-      }
-}
-
-
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
 
     .purple-container {
-        background-color: #4C7380;
+        background-color: rgba(255, 255, 255, 0.2);
         right: 0;
         width: 67%;
     }
@@ -197,13 +144,13 @@
 
     .add-device-div {
         background-color: #ffffff;
-        width: 33px;
-        height: 33px;
+        width: 30px;
+        height: 30px;
     }
 
     .add-device-button {
         color: #204160;
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .room-title-pen {
@@ -212,7 +159,7 @@
 
     .device-edit {
         color: #ffffff;
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .collab-image {
@@ -220,81 +167,14 @@
         height: 45px;
     }
 
-}
-
-@media (min-width: 1440px) {
-
-    .dev-container {
-        display: none;
-    }
-
-    .add-device-div {
-        width: 36px;
-        height: 36px;
-    }
-
-    .add-device-button {
-        font-size: 19px;
-    }
-
-    .device-edit {
-        font-size: 22px;
-    }
-
-    .collab-image {
-        width: 50px;
-        height: 50px;
-    }
-
-    .room-device-title {
-        font-size: 1.6rem;
-    }
-
-    .edit-device-minus-button {
-        top: -18px;
-        left: -16px;
-        width: 45px; 
-        height: 45px;
-    }
-    
-}
-
-@media (min-width: 1920px) {
-
-    .device-edit {
-        font-size: 25px;
-    }
-
-    .add-device-div {
-        width: 38px;
-        height: 38px;
-    }
-
-    .add-device-button {
-        font-size: 20px;
-    }
-
-    .collab-image {
-        width: 55px;
-        height: 55px;
-    }
-
-    .room-device-title {
-        font-size: 1.7rem;
-    }
-
-    .laptop-devices {
-        margin: 10px;
-        width: 28vw;
-    }
-
-    .edit-device-minus-button {
-        width: 50px; 
-        height: 50px;
+    .device-is-editing {
+        padding: 10px;
     }
 
     .laptop-container {
-        margin-top: -15px;
+        padding: 10px 60px !important;
+        max-height: 76vh;
+        overflow-y: auto;
     }
 
 }

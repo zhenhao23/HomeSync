@@ -270,7 +270,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
                 position: "absolute",
               }}
             >
-              <IoIosArrowBack className="device-setting-arrow" size={22} />
+              <IoIosArrowBack className="device-setting-arrow" size={20} />
               <span className="device-setting-back">Back</span>
             </div>
 
@@ -285,12 +285,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
           <div className="pb-2 p-3 device-setting-content">
             <div className="text-left pb-3 container-fluid"></div>
             <div className="container-fluid">
-              <p
-                className="mb-3 fw-normal"
-                style={{ color: "#204160", fontSize: "18px" }}
-              >
-                Name:
-              </p>
+              <p className="mb-3 fw-normal device-setting-label">Name:</p>
               <div className="d-flex justify-content-center">
                 <div
                   style={{
@@ -323,12 +318,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
               </div>
             </div>
             <div className="pt-3 container-fluid">
-              <span
-                className="mb-3 fw-normal"
-                style={{ color: "#204160", fontSize: "18px" }}
-              >
-                Icon:
-              </span>
+              <span className="mb-3 fw-normal device-setting-label">Icon:</span>
 
               <div
                 className="d-flex align-items-center"
@@ -383,7 +373,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
                       }}
                     >
                       <div
-                        className="p-3 text-center mt-4"
+                        className="p-3 text-center mt-4 devices-icon-div"
                         style={{
                           backgroundColor:
                             selectedDeviceIcon?.title === icon.title
@@ -391,9 +381,6 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
                               : icon.enabled
                               ? "#f5f5f5"
                               : "#e0e0e0", // Lighter shade for disabled icons
-                          borderRadius: "50%",
-                          maxWidth: "calc(100% - 20%)",
-                          maxHeight: "calc(100% - 20%)",
                           cursor: icon.enabled ? "pointer" : "not-allowed", // Change cursor for disabled icons
                           opacity: icon.enabled ? 1 : 0.75, // Less transparency for disabled icons
                         }}
@@ -433,7 +420,7 @@ const DeviceSetting: React.FC<DeviceSettingProps> = ({
             </div>
             <div className="device-setting-confirm">
               <button
-                className="btn p-2 px-5"
+                className="btn device-setting-confirm-btn"
                 style={{
                   backgroundColor: "#204160",
                   color: "white",

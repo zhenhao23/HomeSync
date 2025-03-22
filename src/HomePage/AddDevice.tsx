@@ -172,7 +172,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                 handleButtonClick("viewDeviceStatus");
               }}
             >
-              <IoIosArrowBack className="add-device-arrow" />
+              <IoIosArrowBack size={20} className="add-device-arrow" />
               <span className="add-device-word">Back</span>
             </div>
 
@@ -211,13 +211,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                 style={{ marginTop: index === 0 ? "30px" : "0" }}
               >
                 <div className="d-flex justify-content-between">
-                  <div
-                    className="col-8"
-                    style={{
-                      marginLeft: "calc(100% - 90%)",
-                      fontSize: "18px",
-                    }}
-                  >
+                  <div className="col-8 add-device-word-title">
                     {device.title}
                   </div>
                   <label className="container col-1">
@@ -249,7 +243,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   ""
                 )}
                 <button
-                  className="p-2 px-5 add-device-connect"
+                  className="add-device-connect"
                   onClick={() => handleConnectClick("deviceSetting")}
                 >
                   <h6>Connect</h6>

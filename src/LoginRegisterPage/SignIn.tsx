@@ -9,18 +9,26 @@ import { auth } from "../../backend/firebase/config/firebaseConfig";
 import "./SignIn.css";
 import Logo from "../assets/logo.svg";
 import GoogleLogo from "../assets/Google.svg";
-import { FaArrowLeft } from "react-icons/fa";
+import { IoIosArrowBack } from "react-icons/io";
+import { Eye, EyeOff } from "lucide-react";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // Inside handleEmailSignIn function
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Check if password is at least 6 characters
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
 
     try {
       // Firebase email/password sign in
@@ -70,7 +78,6 @@ const SignIn: React.FC = () => {
   };
 
   // Similarly update the handleGoogleSignIn function with the same home ID storage logic
-
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
 
@@ -118,35 +125,28 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="signin-container" style={{ backgroundColor: "#204160" }}>
+    <div className="signin-container">
       {/* Back Button */}
       <button className="back-btn" onClick={() => navigate(-1)}>
-        <FaArrowLeft size={20} />
+        <IoIosArrowBack size={20} />
       </button>
 
       {/* Top Section with HomeSync Logo */}
-      <div className="logo-container">
-        <div className="logo-bg">
-          <div className="logo-inner">
-            <img src={Logo} alt="Logo" className="logo-img" />
+      <div className="signin-logo-container">
+        <div className="signin-logo-bg">
+          <div className="signin-logo-inner">
+            <img src={Logo} alt="Logo" className="signin-logo-img" />
           </div>
         </div>
       </div>
-      <h4 className="logo-text">HomeSync</h4>
+      <h4 className="signin-logo-text">HomeSync</h4>
 
       {/* Heading */}
       <h1 className="signin-title">Welcome Back!</h1>
       <p className="signin-subtitle">Sign In to Your Smart Home.</p>
 
       {/* Error Message */}
-      {error && (
-        <p
-          className="error-message"
-          style={{ color: "red", textAlign: "center" }}
-        >
-          {error}
-        </p>
-      )}
+      {error && <p className="error-message">{error}</p>}
 
       {/* Input Fields */}
       <form onSubmit={handleEmailSignIn} className="input-container">
@@ -161,14 +161,22 @@ const SignIn: React.FC = () => {
         />
 
         <label>Password</label>
-        <input
-          type="password"
-          placeholder="Enter your password"
-          className="input-box"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="password-container">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            className="input-box"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <span
+            className="eye-icon"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+          </span>
+        </div>
 
         <a onClick={() => navigate("/forgot-pw")} className="forgot-password">
           Forgot Password?

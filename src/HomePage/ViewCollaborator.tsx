@@ -91,7 +91,7 @@ const ViewCollaborator: React.FC<ViewCollaboratorProps> = ({
               className="view-collab-back"
               onClick={() => setActiveContent("viewDeviceStatus")}
             >
-              <IoIosArrowBack size={22} className="view-collab-arrow" />
+              <IoIosArrowBack size={20} className="view-collab-arrow" />
               <span className="view-collab-word">Back</span>
             </div>
 
@@ -125,14 +125,9 @@ const ViewCollaborator: React.FC<ViewCollaboratorProps> = ({
                   3
                 </span>
               </div>
-              <div className="col-6 d-flex justify-content-end">
+              <div className="d-flex justify-content-end add-collab-btn-div">
                 <button
-                  className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center"
-                  style={{
-                    backgroundColor: "#204160",
-                    width: "30px",
-                    height: "30px",
-                  }}
+                  className="me-2 btn rounded-circle p-2 d-flex align-items-center justify-content-center view-collab-add-btn"
                   onClick={() => setActiveContent("addCollaborator")}
                 >
                   <FaPlus color="white" />
@@ -170,7 +165,7 @@ const ViewCollaborator: React.FC<ViewCollaboratorProps> = ({
                       >
                         <div className="d-flex align-items-center">
                           <img src={person.image} className="img-fluid" />
-                          <span className="ms-3">
+                          <span className="ms-3 collab-names">
                             {person.name}{" "}
                             {person.type === "Owner" ? "(Owner)" : ""}
                           </span>

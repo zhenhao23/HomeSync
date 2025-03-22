@@ -16,7 +16,7 @@
     top: 28vh;
     height: 100%;
     border-radius: 18px;
-    background-color: #4C7380;
+    background-color: rgba(255, 255, 255, 0.2);
     width: 28%;
 }
 
@@ -28,8 +28,9 @@
 
 .homesync-title {
   color: #ffffff;
-  font-size: 1.4rem;
+  font-size: 20px;
   margin-left: 10px;
+  margin-top: -5%;
 }
 
 .room-minus-button {
@@ -52,14 +53,19 @@
     z-index: 0;
 }
 
-  .room-item-div{
-    padding-top: 12px;
-  }
+.room-item-div{
+  padding-top: 5px;
+}
 
-  @media (min-width: 1280px) {
+.device-count span{
+  font-weight: 600;
+}
+
+
+  @media (min-width: 1024px) {
 
     .room-container-title {
-      font-size: 23px;
+      font-size: 1.3rem;
     }
 
     .room-container{
@@ -78,109 +84,39 @@
     }
 
     .add-room-button {
-      width: 28px;
-      height: 28px;
-    }
-
-  }
-
-  @media (min-width: 1440px) {
-
-    .room-container-title {
-      font-size: 27px;
-    }
-
-    .homesync-title {
-      font-size: 1.5rem;
-    }
-
-    .edit {
-      font-size: 20px;
-    }
-
-    .add-room-button {
-      width: 30px;
-      height: 30px;
-    }
-
-    .room-title {
-      font-size: 22px;
-    }
-
-    .device-count {
-      font-size: 18px;
+      width: 27px;
+      height: 27px;
     }
 
     .room-minus-button {
-      top: -5px;
+      cursor: pointer;
+      position: absolute;
+      top: -8px;
       left: -8px;
-      width: 34px;
-      height: 34px;
-  }
-
-    .minus-white {
-      top: -4px;
-      left: -5px;
       width: 30px;
       height: 30px;
-  }
+    }  
 
-  .room-container {
-    padding: 18px;
-  }
-
-  }
-
-  @media (min-width: 1920px) {
-
-    .homesync-title {
-      font-size: 1.6rem;
+    .room-header {
+      padding: 2%;
     }
-
-    .edit {
-      font-size: 24px;
-    }
-
-    .room-container-title {
-      font-size: 32px;
-    }
-
-    .add-room-button {
-      width: 32px;
-      height: 32px;
+    
+    .room-item-border {
+      padding-top: 1.5rem; 
+      padding-bottom: 1.8rem; 
+     
     }
 
     .room-title {
-      font-size: 26px;
+      font-weight: 600;
+      font-size: 17px;
     }
-
-    .device-count {
-      font-size: 22px;
-    }
-
-    .room-container {
-      padding: 25px;
-    }
-
-    .room-minus-button {
-      top: -15px;
-      left: -10px;
-      width: 40px;
-      height: 40px;
-  }
-
-    .minus-white {
-      top: -12px;
-      left: -8px;
-      width: 35px;
-      height: 35px;
-  }
 
   }
 
   
   /* Responsive Design: Apply a different border color on desktop */
-  @media (min-width: 1280px) {
+  @media (min-width: 1024px) {
     .room-item:focus {
     background: linear-gradient(90deg, #789EDC 50%, transparent 50%), 
                 linear-gradient(90deg, #789EDC 50%, transparent 50%), 
