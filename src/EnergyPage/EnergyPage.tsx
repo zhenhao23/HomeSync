@@ -61,7 +61,7 @@ const EnergyPage: React.FC = () => {
       return {
         image: deviceImages[device.type] || LampImage,
         title: device.name,
-        usage: `${device.value.toFixed(0)} kWh`,
+        usage: `${(device.value / 1000).toFixed(1)} kWh`,
         room: device.room,
         hours: `${Math.round(device.activeHours)} hours`,
         trend: Number(trend.toFixed(1)),

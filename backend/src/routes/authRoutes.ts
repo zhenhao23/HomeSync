@@ -665,8 +665,8 @@ function generateEnergyUsage(
   > = {
     light: { baseWatts: 60, avgHours: 8 },
     aircond: { baseWatts: 1800, avgHours: 6 },
-    petfeeder: { baseWatts: 15, avgHours: 1 },
-    irrigation: { baseWatts: 500, avgHours: 1 },
+    petfeeder: { baseWatts: 100, avgHours: 1 },
+    irrigation: { baseWatts: 250, avgHours: 1 },
     security: { baseWatts: 120, avgHours: 24 },
   };
 
@@ -754,30 +754,6 @@ async function populateHomeWithSampleData(homeId: number) {
             isActive: false,
             featurePeriod: "Daily",
             featureDetail: "8:00pm to 7:00am",
-          },
-        ],
-      },
-      {
-        displayName: "Living Room Lamp",
-        room: livingRoom,
-        type: "light",
-        iconType: "lamp",
-        status: true,
-        controls: [
-          {
-            controlType: "percentage",
-            currentValue: 75,
-            minValue: 0,
-            maxValue: 100,
-          },
-        ],
-        triggers: [
-          {
-            triggerType: "Auto Lighting",
-            conditionOperator: "Motion Sensor",
-            isActive: true,
-            featurePeriod: "Daily",
-            featureDetail: "6:00pm to 11:00pm",
           },
         ],
       },
