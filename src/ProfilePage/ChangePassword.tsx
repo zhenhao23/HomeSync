@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import "./ChangePassword.css";
 import axios from "axios";
@@ -6,6 +6,26 @@ import { useAuth } from "../contexts/AuthContext";
 
 // Debug log to check if environment variables are loaded
 console.log("API URL:", import.meta.env.VITE_API_URL);
+
+// Window size hook
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+};
 
 interface ChangePasswordProps {
   onBack: () => void;
@@ -20,6 +40,10 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { getToken } = useAuth(); // Get the authentication token function from your auth context
+
+  // Get window size for responsive layout
+  const { width } = useWindowSize();
+  const isLaptop = width >= 1024;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +114,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="cp-content-container">
+      <div className={`cp-content-container ${isLaptop ? 'cp-laptop-view' : ''}`}>
         <form onSubmit={handleSubmit} className="cp-password-form">
           {error && <div className="cp-alert cp-alert-danger">{error}</div>}
           {success && (

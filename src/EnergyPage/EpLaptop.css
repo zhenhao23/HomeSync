@@ -1,0 +1,474 @@
+/* ========== LAPTOP DASHBOARD STYLES ========== */
+@media (min-width: 1440px) {
+  /* Main Dashboard Container */
+  .dashboard-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 300px;
+    grid-template-rows: auto;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 80px); /* Account for the navbar height */
+    margin-top: 80px; /* Add margin to avoid overlap with navbar */
+    background-color: #204160;
+    color: #333;
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    overflow: hidden;
+  }
+
+  /* Energy Usage Charts Panel */
+  .energy-usage-panel {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 100%;
+  }
+
+  /* Line Chart Card */
+  .chart-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    height: 48%;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Pie Chart Card */
+  .pie-chart-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    height: 48%;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Devices List Panel */
+  .devices-panel {
+    grid-column: 2;
+    grid-row: 1;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 100%;
+  }
+
+  .devices-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .devices-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .device-count {
+    background-color: #4C7380;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-size: 16px;
+  }
+
+  .add-device-btn {
+    background-color: #204160;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+  }
+
+  /* Devices List */
+  .devices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+  }
+
+  .device-item {
+    background-color: #D8E4E8;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+  }
+
+  .devices-panel .device-icon {
+    background-color: rgb(234 230 230);
+    border-radius: 50%;
+    padding: 12px;
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+  }
+
+  .device-details {
+    flex-grow: 1;
+  }
+
+  .device-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .device-meta {
+    color: #6c757d;
+    font-size: 12px;
+  }
+
+  .device-usage {
+    text-align: right;
+  }
+
+  .usage-value {
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+
+  .usage-trend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 12px;
+  }
+
+  .trend-up {
+    color: #4CAF50;
+  }
+
+  .trend-down {
+    color: #FF5252;
+  }
+
+  /* Right Sidebar Panel - Download and Limit */
+  .right-sidebar {
+    grid-column: 3;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 100%;
+  }
+
+  /* Download Energy Data Card */
+  .download-card {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: white;
+    height: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .download-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .pdf-icon {
+    width: 80px;
+    margin: 10px auto;
+  }
+
+  .download-button {
+    color: white;
+    background-color: #F15642;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  /* Energy Limit Card */
+  .limit-card {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    color: white;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .limit-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .limit-image {
+    width: 80px;
+    margin: 10px auto;
+  }
+
+  .limit-text {
+    color: #ffffff;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+
+  .limit-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .type-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+  }
+
+  .limit-input-group {
+    display: flex;
+    width: 100%;
+  }
+
+  .limit-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px 0 0 4px;
+  }
+
+  .limit-unit {
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+    color: #333;
+  }
+
+  .limit-help {
+    color: #ffffff;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+
+  .edit-button {
+    background-color: #204160;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Charts Styling */
+  .chart-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+
+  .chart-card .chart-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 3px;
+    margin: auto;
+  }
+
+  .pie-chart-card .chart-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 3px;
+    margin:auto;
+  }
+
+  .chart-subtitle {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .chart-container {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chart-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .chart-data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  .chart-legen .legend-item {
+    display: flex;
+    align-items: center;
+    color: white;
+  }
+
+  .legend-color {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+
+  .chart-legend .legend-item {
+    display: flex;
+    align-items: center;
+    color: white;
+    margin-bottom: 4px;
+  }
+
+  .wattage-display {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .chart-legend {
+    margin-top: 8px;
+    overflow-y: auto;
+    max-height: 30%;
+  }
+  
+
+  /* Add these styles to your EpLaptop.css file */
+
+/* Download confirmation dialog overlay */
+.download-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.download-confirm-dialog {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.download-confirm-dialog h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #1d3a57;
+}
+
+.download-confirm-dialog p {
+  margin-bottom: 24px;
+  color: #4c7380;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dialog-buttons button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button {
+  background-color: #f1f5f7;
+  color: #4c7380;
+}
+
+.cancel-button:hover {
+  background-color: #e2e9ec;
+}
+
+.confirm-button {
+  background-color: #204160;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confirm-button:hover {
+  background-color: #1a3450;
+}
+
+/* Update the download button to be a real button instead of an anchor */
+.download-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #204160;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  margin-top: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.download-button:hover {
+  background-color: #1a3450;
+}
+}

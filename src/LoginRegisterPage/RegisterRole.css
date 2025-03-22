@@ -10,10 +10,6 @@
     border-radius: 40px;
     overflow: hidden;
   }
-
-  
-  
-  
   /* 🔹 Back Button */
   .back-btn {
     position: absolute;
@@ -181,3 +177,135 @@
     margin: 150px auto 0 auto;
   }
   
+  /* Desktop/Laptop View Styles */
+@media screen and (min-width: 1024px) {
+  /* Main container modifications */
+  .register-container {
+    padding-top: 80px;
+    max-width: 100%;
+    min-height: 100vh;
+  }
+  
+  /* Title and subtitle */
+  .register-title {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+  
+  .register-subtitle {
+    font-size: 20px;
+    margin-bottom: 40px;
+  }
+  
+  /* Logo container */
+/* 🔹 HomeSync Logo */
+.register-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.register-logo-bg {
+  border: 1px dotted white;
+  background-color: transparent;
+  width: 75px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.register-logo-inner {
+  background-color: #d3c1a3;
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.register-logo-img {
+  background-color: white;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.register-logo-text {
+  font-size: 16px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+  
+  /* Role selection area */
+  .role-selection {
+    width: 70%;
+    max-width: 900px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+  }
+  
+  /* Role cards */
+  .role-card {
+    flex: 1;
+    max-width: 400px;
+    height: 180px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30px 20px;
+    text-align: center;
+  }
+  
+  .role-icon {
+    width: 70px;
+    height: 70px;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  
+  .role-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .role-info h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  
+  .role-info p {
+    font-size: 16px;
+  }
+  
+  /* Role indicator */
+  .role-indicator {
+    width: 20px;
+    height: 20px;
+    top: 15px;
+    right: 15px;
+  }
+  
+  /* Next button */
+  .next-btn {
+    padding: 14px 60px;
+    font-size: 18px;
+    margin-top: 40px;
+  }
+  
+  /* Back button */
+  .back-btn {
+    top: 30px;
+    left: 30px;
+  }
+}
