@@ -758,6 +758,30 @@ async function populateHomeWithSampleData(homeId: number) {
         ],
       },
       {
+        displayName: "Living Room Lamp",
+        room: livingRoom,
+        type: "light",
+        iconType: "lamp",
+        status: true,
+        controls: [
+          {
+            controlType: "percentage",
+            currentValue: 75,
+            minValue: 0,
+            maxValue: 100,
+          },
+        ],
+        triggers: [
+          {
+            triggerType: "Auto Lighting",
+            conditionOperator: "Motion Sensor",
+            isActive: true,
+            featurePeriod: "Daily",
+            featureDetail: "6:00pm to 11:00pm",
+          },
+        ],
+      },
+      {
         displayName: "Air Cond",
         room: bedroom,
         type: "aircond",
