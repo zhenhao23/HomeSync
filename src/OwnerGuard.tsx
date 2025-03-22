@@ -7,10 +7,43 @@ interface OwnerGuardProps {
 const OwnerGuard: React.FC<OwnerGuardProps> = ({ children }) => {
   const [userPermission, setUserPermission] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentHomeId, setCurrentHomeId] = useState<string | null>(
+    localStorage.getItem("currentHomeId")
+  );
 
+  // Listen for changes to localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newHomeId = localStorage.getItem("currentHomeId");
+      if (newHomeId !== currentHomeId) {
+        setCurrentHomeId(newHomeId);
+      }
+    };
+
+    // Set up event listener for storage changes
+    window.addEventListener("storage", handleStorageChange);
+
+    // Check for changes every second as a fallback
+    // This helps when localStorage is modified in the same window
+    const intervalId = setInterval(() => {
+      const newHomeId = localStorage.getItem("currentHomeId");
+      if (newHomeId !== currentHomeId) {
+        setCurrentHomeId(newHomeId);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(intervalId);
+    };
+  }, [currentHomeId]);
+
+  // Fetch permission level whenever currentHomeId changes
   useEffect(() => {
     const fetchUserPermission = async () => {
       try {
+        setLoading(true);
+
         // Get the auth token
         const token = localStorage.getItem("authToken");
         if (!token) {
@@ -18,8 +51,7 @@ const OwnerGuard: React.FC<OwnerGuardProps> = ({ children }) => {
           return;
         }
 
-        // Get the current home ID
-        const currentHomeId = localStorage.getItem("currentHomeId");
+        // Check if we have a current home ID
         if (!currentHomeId) {
           setLoading(false);
           return;
@@ -52,7 +84,7 @@ const OwnerGuard: React.FC<OwnerGuardProps> = ({ children }) => {
     };
 
     fetchUserPermission();
-  }, []);
+  }, [currentHomeId]);
 
   // Don't render anything while loading
   if (loading) {

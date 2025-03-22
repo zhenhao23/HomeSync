@@ -12,6 +12,7 @@ import {
   PieChart as RechartsPieChart,
   Pie,
   Cell,
+  ReferenceLine, // Add this import at the top with the other recharts imports
 } from "recharts";
 import { useNavigate } from "react-router-dom";
 
@@ -465,6 +466,19 @@ const LineChartComponent: React.FC<{
                   `${value.toFixed(2)} kWh`,
                   "Total Usage",
                 ]}
+              />
+              {/* Add this ReferenceLine component */}
+              <ReferenceLine
+                y={120000}
+                label={{
+                  value: "Energy Limit",
+                  position: "insideTopRight",
+                  fill: "#FF5252",
+                  fontSize: 12,
+                }}
+                stroke="#FF5252"
+                strokeDasharray="5 5"
+                strokeWidth={2}
               />
               <Line
                 type="monotone"

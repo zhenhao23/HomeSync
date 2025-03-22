@@ -209,6 +209,7 @@ async function sendOTPEmail(
 }
 
 // Update the complete-registration endpoint
+// Update the complete-registration endpoint
 router.post("/complete-registration", (req: Request, res: Response) => {
   const completeRegistration = async () => {
     try {
@@ -219,7 +220,7 @@ router.post("/complete-registration", (req: Request, res: Response) => {
         lastName,
         role,
         firebaseUid,
-        homeName = "My Home",
+        homeName,
         googleUser = false,
       } = req.body;
 
@@ -244,10 +245,13 @@ router.post("/complete-registration", (req: Request, res: Response) => {
           1000 + Math.random() * 9000
         ).toString();
 
+        // Create personalized home name using firstName
+        const personalizedHomeName = homeName || `${firstName}'s Home`;
+
         // Create the home
         const home = await prisma.smartHome.create({
           data: {
-            name: homeName || "My Home",
+            name: personalizedHomeName,
             invitationCode: invitationCode,
             homeownerId: user.id,
           },
@@ -272,7 +276,7 @@ router.post("/complete-registration", (req: Request, res: Response) => {
           email,
           firstName,
           invitationCode,
-          homeName || "My Home"
+          personalizedHomeName
         );
 
         return res.status(201).json({
@@ -483,7 +487,7 @@ router.post("/register", (req: Request, res: Response) => {
         lastName,
         role = "user",
         firebaseUid,
-        homeName = "My Home",
+        homeName,
       } = req.body;
 
       // If firebaseUid is provided, use it instead of creating a new Firebase user
@@ -515,10 +519,13 @@ router.post("/register", (req: Request, res: Response) => {
       // Generate a unique invitation code for the home
       const invitationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
+      // Create personalized home name using firstName
+      const personalizedHomeName = homeName || `${firstName}'s Home`;
+
       // Create a default home for the new user
       const home = await prisma.smartHome.create({
         data: {
-          name: homeName,
+          name: personalizedHomeName,
           invitationCode: invitationCode,
           homeownerId: user.id,
         },
