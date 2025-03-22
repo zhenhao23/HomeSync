@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
 import {
@@ -348,6 +348,41 @@ const LineChartComponent: React.FC<{
   setTimeRange: (range: TimeRange) => void;
 }> = ({ data, timeRange, setTimeRange }) => {
   const navigate = useNavigate();
+  const [energyLimit, setEnergyLimit] = useState<number>(120000); // Default value
+
+  // Fetch the energy limit
+  useEffect(() => {
+    const fetchEnergyLimit = async () => {
+      try {
+        // Get the auth token from localStorage
+        const token = localStorage.getItem("authToken");
+        const homeId = localStorage.getItem("currentHomeId");
+
+        if (!token || !homeId) {
+          console.error("Token or homeId not found");
+          return;
+        }
+
+        const response = await fetch(
+          `https://homesync-production.up.railway.app/api/energy-limit/${homeId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setEnergyLimit(Number(data.energyLimit));
+        }
+      } catch (error) {
+        console.error("Error fetching energy limit:", error);
+      }
+    };
+
+    fetchEnergyLimit();
+  }, []);
 
   // Transform the data to handle historical view correctly
   const transformedData = transformChartData(data.dailyTotals, timeRange);
@@ -469,7 +504,7 @@ const LineChartComponent: React.FC<{
               />
               {/* Add this ReferenceLine component */}
               <ReferenceLine
-                y={120000}
+                y={energyLimit}
                 label={{
                   value: "Energy Limit",
                   position: "insideTopRight",

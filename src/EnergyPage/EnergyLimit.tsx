@@ -1,15 +1,119 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import EnergyLimitImage from "../assets/energy/energylimit.svg";
 
 const EnergyLimit: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
+  const [energyLimit, setEnergyLimit] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch current energy limit when component mounts
+    const fetchCurrentLimit = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("authToken");
+        const homeId = localStorage.getItem("currentHomeId");
+
+        if (!token || !homeId) {
+          setError("Authentication information missing");
+          return;
+        }
+
+        const response = await fetch(
+          `https://homesync-production.up.railway.app/api/energy-limit/${homeId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setEnergyLimit(data.energyLimit.toString());
+          setSelectedPeriod(
+            data.timeframe === "monthly" ? "This Month" : "This Year"
+          );
+        } else {
+          const errorData = await response.json();
+          setError(errorData.error || "Failed to fetch energy limit");
+        }
+      } catch (err) {
+        setError("Network error occurred");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCurrentLimit();
+  }, []);
 
   const handleBackClick = () => {
     // Navigate back to the previous page (Energy Page)
     navigate(-1);
+  };
+
+  const handleSubmit = async () => {
+    if (!energyLimit || !selectedPeriod) {
+      setError("Please enter an energy limit and select a time period");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      setSuccess(null);
+
+      const token = localStorage.getItem("authToken");
+      const homeId = localStorage.getItem("currentHomeId");
+
+      if (!token || !homeId) {
+        setError("Authentication information missing");
+        return;
+      }
+
+      const timeframe =
+        selectedPeriod === "This Month"
+          ? "monthly"
+          : selectedPeriod === "This Year"
+          ? "yearly"
+          : "monthly";
+
+      const response = await fetch(
+        `https://homesync-production.up.railway.app/api/energy-limit/${homeId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            energyLimit: parseFloat(energyLimit),
+            timeframe: timeframe,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setSuccess("Energy limit updated successfully!");
+        // Optionally navigate back after a delay
+        setTimeout(() => navigate(-1), 1500);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to update energy limit");
+      }
+    } catch (err) {
+      setError("Network error occurred");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,6 +157,18 @@ const EnergyLimit: React.FC = () => {
           </h3>
           <p className="text-muted">Save energy, Save Earth, Save Humanity!</p>
         </div>
+
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="alert alert-success" role="alert">
+            {success}
+          </div>
+        )}
 
         <div className="dropdown mb-5">
           <button
@@ -105,6 +221,8 @@ const EnergyLimit: React.FC = () => {
             className="form-control"
             placeholder="Enter value"
             aria-describedby="kwh-addon"
+            value={energyLimit}
+            onChange={(e) => setEnergyLimit(e.target.value)}
           />
           <span className="input-group-text" id="kwh-addon">
             kWh
@@ -125,8 +243,10 @@ const EnergyLimit: React.FC = () => {
             color: "white",
             borderRadius: "12px",
           }}
+          onClick={handleSubmit}
+          disabled={isLoading}
         >
-          Start
+          {isLoading ? "Updating..." : "Set Limit"}
         </button>
       </div>
     </>
