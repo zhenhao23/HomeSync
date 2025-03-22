@@ -40,7 +40,7 @@ import useWindowSize from "./Layout.tsx";
 import LogoSmartHome from "./LogoSmartHome.tsx";
 import "./HomePage.css";
 import DeviceSmartFeature from "./DeviceSmartFeature.tsx";
-import collabIcon from "../assets/addCollab/collab-profile.svg";
+// import collabIcon from "../assets/addCollab/collab-profile.svg";
 
 // Import styles
 import "./Switch.css";
@@ -414,13 +414,13 @@ const HomePage: React.FC = () => {
   ];
 
   // state to keep track the selected slot duration for petfeeder and irrigation
-  const [selectedDuration, setSelectedDuration] = useState("5 mins");
+  const [selectedDuration] = useState("5 mins");
 
   // Find the corresponding day object
   const todayDay = days.find((day) => day.name === todayName) || null;
 
   // state to track the selected day by user
-  const [activeDay, setActiveDay] = useState<Day | null>(todayDay);
+  const [activeDay] = useState<Day | null>(todayDay);
 
   // function to handle room clicked by user
   const handleRoomClick = (selectedRoom: {
@@ -912,71 +912,6 @@ const HomePage: React.FC = () => {
 
   const handleCancel = () => {
     setRequestAccess(false);
-  };
-
-  // API function to add a new smart feature/trigger to a device
-  const addDeviceFeatureAPI = async (
-    deviceId: number,
-    featureData: {
-      triggerType: string; // maps to 'feature'
-      conditionOperator: string; // maps to 'label'
-      isActive: boolean; // maps to 'status'
-      featurePeriod: string; // repeat option (Daily, Weekly, etc)
-      featureDetail: string; // time details
-    }
-  ) => {
-    try {
-      // Get the auth token from localStorage
-      const token = localStorage.getItem("authToken");
-
-      // If no token is available, show error
-      if (!token) {
-        throw new Error("Authentication required");
-      }
-
-      // Get the current homeId from localStorage
-      const homeId = localStorage.getItem("currentHomeId");
-
-      if (!homeId) {
-        throw new Error("Home ID not found");
-      }
-
-      // Send request to add the new feature as a device trigger
-      const response = await fetch(
-        `https://homesync-production.up.railway.app/api/devices/${deviceId}/triggers`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...featureData,
-            homeId: parseInt(homeId), // Send homeId for server-side validation
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Token expired or invalid
-          navigate("/signin");
-          throw new Error("Authentication token expired");
-        }
-
-        if (response.status === 403) {
-          throw new Error("You don't have permission to modify this device");
-        }
-
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to add smart feature");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error adding smart feature:", error);
-      throw error;
-    }
   };
 
   // state to track if user wants to add new smart feature schedule in manageDevice page
