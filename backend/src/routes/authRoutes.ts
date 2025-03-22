@@ -663,9 +663,9 @@ function generateEnergyUsage(
     string,
     { baseWatts: number; avgHours: number }
   > = {
-    light: { baseWatts: 600, avgHours: 8 },
+    light: { baseWatts: 3000, avgHours: 8 },
     aircond: { baseWatts: 15000, avgHours: 6 },
-    petfeeder: { baseWatts: 200, avgHours: 1 },
+    petfeeder: { baseWatts: 2000, avgHours: 1 },
     irrigation: { baseWatts: 5000, avgHours: 1 },
     security: { baseWatts: 800, avgHours: 24 },
   };
@@ -688,10 +688,14 @@ function generateEnergyUsage(
   }
 
   // Add some random variation (±40%)
-  const hoursVariation = (0.6 + Math.random() * 0.8) * seasonalFactor;
+  const hoursVariation = (0.2 + Math.random() * 1.6) * seasonalFactor;
   const actualHours = Math.min(pattern.avgHours * hoursVariation, 24);
 
-  const energyUsed = pattern.baseWatts * actualHours;
+  // In populateHomeWithSampleData
+  const householdEnergyFactor = 0.7 + Math.random() * 0.6; // 0.7-1.3x multiplier
+
+  // Then in generateEnergyUsage
+  const energyUsed = pattern.baseWatts * actualHours * householdEnergyFactor;
 
   return {
     energy: Number(energyUsed.toFixed(0)),

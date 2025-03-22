@@ -374,7 +374,10 @@ const LineChartComponent: React.FC<{
 
         if (response.ok) {
           const data = await response.json();
-          setEnergyLimit(Number(data.energyLimit));
+          let limitValue = Number(data.energyLimit);
+
+          // Store the base weekly limit
+          setEnergyLimit(limitValue);
         }
       } catch (error) {
         console.error("Error fetching energy limit:", error);
@@ -384,13 +387,30 @@ const LineChartComponent: React.FC<{
     fetchEnergyLimit();
   }, []);
 
+  // Calculate the displayed energy limit based on the time range
+  const getDisplayedEnergyLimit = () => {
+    if (timeRange === "week") {
+      return energyLimit; // Weekly limit stays the same
+    } else if (timeRange === "month") {
+      return energyLimit * 4; // Monthly limit is 4x weekly
+    } else if (timeRange === "year") {
+      return energyLimit * 4 * 12; // Yearly limit is 48x weekly
+    }
+    return energyLimit; // Default fallback
+  };
+
+  // Get the scaled energy limit value
+  const displayedEnergyLimit = getDisplayedEnergyLimit();
+
   // Transform the data to handle historical view correctly
   const transformedData = transformChartData(data.dailyTotals, timeRange);
 
   // Create nice Y-axis values
   const generateNiceYAxisTicks = (data: any[]) => {
     // Get max value from data
-    const maxValue = Math.max(...data.map((d) => d.total || 0));
+    const maxValue = Math.max(
+      ...[...data.map((d) => d.total || 0), displayedEnergyLimit]
+    );
 
     if (maxValue === 0) return [0, 25, 50, 75, 100]; // Default for empty data
 
@@ -502,9 +522,9 @@ const LineChartComponent: React.FC<{
                   "Total Usage",
                 ]}
               />
-              {/* Add this ReferenceLine component */}
+              {/* Updated ReferenceLine with scaled energy limit */}
               <ReferenceLine
-                y={energyLimit}
+                y={displayedEnergyLimit}
                 label={{
                   value: "Energy Limit",
                   position: "insideTopRight",

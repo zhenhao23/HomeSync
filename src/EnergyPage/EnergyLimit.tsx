@@ -35,10 +35,24 @@ const EnergyLimit: React.FC = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setEnergyLimit(data.energyLimit.toString());
-          setSelectedPeriod(
-            data.timeframe === "monthly" ? "This Month" : "This Year"
-          );
+          let limitValue = parseFloat(data.energyLimit);
+          const timeframe = data.timeframe;
+
+          // Set the default period based on timeframe
+          let period = "This Week";
+
+          // Convert the energy limit based on timeframe
+          if (timeframe === "monthly") {
+            limitValue = limitValue * 4; // Weekly to monthly
+            period = "This Month";
+          } else if (timeframe === "yearly") {
+            limitValue = limitValue * (4 * 12); // Weekly to yearly
+            period = "This Year";
+          }
+
+          // Format the limit nicely
+          setEnergyLimit(limitValue.toFixed(0));
+          setSelectedPeriod(period);
         } else {
           const errorData = await response.json();
           setError(errorData.error || "Failed to fetch energy limit");
@@ -78,12 +92,22 @@ const EnergyLimit: React.FC = () => {
         return;
       }
 
-      const timeframe =
-        selectedPeriod === "This Month"
-          ? "monthly"
-          : selectedPeriod === "This Year"
-          ? "yearly"
-          : "monthly";
+      // Process energy limit based on selected period
+      let processedLimit = parseFloat(energyLimit);
+      let timeframe = "weekly";
+
+      if (selectedPeriod === "This Month") {
+        // For monthly, we divide by 4 weeks
+        processedLimit = processedLimit / 4;
+        timeframe = "monthly";
+      } else if (selectedPeriod === "This Year") {
+        // For yearly, we divide by 48 weeks (4 weeks * 12 months)
+        processedLimit = processedLimit / (4 * 12);
+        timeframe = "yearly";
+      }
+
+      // Round to 2 decimal places for nice values
+      processedLimit = parseFloat(processedLimit.toFixed(2));
 
       const response = await fetch(
         `https://homesync-production.up.railway.app/api/energy-limit/${homeId}`,
@@ -94,7 +118,7 @@ const EnergyLimit: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            energyLimit: parseFloat(energyLimit),
+            energyLimit: processedLimit,
             timeframe: timeframe,
           }),
         }
@@ -165,7 +189,18 @@ const EnergyLimit: React.FC = () => {
         )}
 
         {success && (
-          <div className="alert alert-success" role="alert">
+          <div
+            className="alert alert-success"
+            role="alert"
+            style={{
+              backgroundColor: "#d4edda",
+              color: "#155724",
+              border: "1px solid #c3e6cb",
+              borderRadius: "8px",
+              padding: "10px 15px",
+              fontWeight: "500",
+            }}
+          >
             {success}
           </div>
         )}
