@@ -939,8 +939,8 @@
   }
 
   .progress-wrapper {
-      max-width: 150px; /* Ensure it doesn't get too large */
-      max-height: 150px;
+      max-width: 180px; /* Ensure it doesn't get too large */
+      max-height: 180px;
   }
 
   .progress-text .energy-usages {
