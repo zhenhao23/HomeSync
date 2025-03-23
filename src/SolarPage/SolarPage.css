@@ -331,8 +331,8 @@
   }
 
   .progress-icon .icon {
-    width: 15px;
-    height: 15px;
+    width: 25px;
+    height: 25px;
   }
 
   .solar-content-wrapper {
@@ -954,10 +954,6 @@
   .progress-icon {
     width: 30px;
     height: 30px;
-  }
-
-  .progress-icon .icon {
-    font-size: 0.1rem;
   }
 
 }
