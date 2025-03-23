@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import EnergyLimitImage from "../assets/energy/energylimit.svg";
+import styles from "./EnergyLimit.module.css"; // Import the CSS module
 
 const EnergyLimit: React.FC = () => {
   // Note: The UI works with kWh but the API/database expects Wh
@@ -175,15 +176,7 @@ const EnergyLimit: React.FC = () => {
           className="img-fluid mx-auto d-block"
         />
       </div>
-      <div
-        className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column align-items-center"
-        style={{
-          top: "40%",
-          height: "100%",
-          borderRadius: "18px",
-          paddingTop: "2rem",
-        }}
-      >
+      <div className={styles.slidingPanel}>
         <div className="text-center mb-4">
           <h3 className="fw-bold" style={{ color: "#204160" }}>
             Set Energy Usage Limit

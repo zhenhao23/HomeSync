@@ -1,151 +1,193 @@
 .dev-smart-feature-container {
-    background-color: white; 
-    position: fixed; 
-    overflow: auto;
-    top: 50%;
-    height: 45%;
-    border-radius: 18px;
-    padding-bottom: 15%;
+  background-color: white;
+  position: fixed;
+  overflow: auto;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 45%;
+  border-radius: 18px;
+  padding-bottom: 15%;
 }
 
-.schedule, .smart-feature {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100vw;
+/* Medium sized devices */
+@media (max-height: 850px) {
+  .dev-smart-feature-container {
+    top: 40%;
+  }
+}
+
+/* Small sized devices */
+@media (max-height: 700px) {
+  .dev-smart-feature-container {
+    top: 50%;
+  }
+}
+
+/* iPhone 14 Pro Max specific fix - moved lower */
+@media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
+  only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
+  .dev-smart-feature-container {
+    top: 50%; /* Moved from 40% to 50% to display lower */
+    height: 55%;
+  }
+}
+
+/* iPhone 14/15 Pro/Pro Max general fix - moved lower */
+@media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
+  .dev-smart-feature-container {
+    top: 50%; /* Moved from 40% to 50% to display lower */
+    height: 55%;
+  }
+}
+
+/* iOS Safari general fix */
+@supports (-webkit-touch-callout: none) and
+  (not (-webkit-device-pixel-ratio: 3)) {
+  .dev-smart-feature-container {
+    top: 55%; /* Moved from 52% to 55% for slightly lower position */
+  }
+}
+
+/* Rest of your existing styles... */
+.schedule,
+.smart-feature {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
 }
 
 .smart-feature-plus {
-    background-color: #204160;
-    width: 30px;
-    height: 30px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background-color: #204160;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .feature-button-div {
-    display: flex;
-    justify-content: end;
+  display: flex;
+  justify-content: end;
 }
 
 .smart-feature-div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .smart-feature-word {
-    color:#204160;
+  color: #204160;
 }
 
 .done-cancel-button {
-    background-color: #204160;
-    color: #ffffff;
-    border-radius: 90px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    font-weight: 500;
-    width: 65px;
-    height: 30px;
-    font-size: 15px;
+  background-color: #204160;
+  color: #ffffff;
+  border-radius: 90px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  font-weight: 500;
+  width: 65px;
+  height: 30px;
+  font-size: 15px;
 }
 
 .feature-label {
-    font-size: 20px;
-    color: #000000;
-    font-weight: 650;
+  font-size: 20px;
+  color: #000000;
+  font-weight: 650;
 }
 
 .feature-detail-label {
-    font-size: 16px;
-    color: #979797;
-    font-weight: 700;
+  font-size: 16px;
+  color: #979797;
+  font-weight: 700;
 }
 
-
-
 @media (min-width: 1024px) {
-    .dev-smart-feature-container {
-        border-radius: 30px;
-        width: 380px;
-        height: 520px;
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%);
-        position: absolute;
-        background-color: white;
-        display: flex;
-        flex-direction: column; /* Ensures children stack vertically */
-        overflow: hidden;
-        z-index: 300;
-    }
+  .dev-smart-feature-container {
+    border-radius: 30px;
+    width: 380px;
+    height: 520px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    background-color: white;
+    display: flex;
+    flex-direction: column; /* Ensures children stack vertically */
+    overflow: hidden;
+    z-index: 300;
+  }
 
-    .smart-feature-background {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.3);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 200;
-    }
+  .smart-feature-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+  }
 
-    .schedule, .smart-feature {
-        width: 380px;
-    }
+  .schedule,
+  .smart-feature {
+    width: 380px;
+  }
 
-    .smart-feature-back {
-        padding: 0 5px;
-        position: absolute;
-        top: 5%;
-    }
+  .smart-feature-back {
+    padding: 0 5px;
+    position: absolute;
+    top: 5%;
+  }
 
-    .feature-button-div {
-        margin: 0 10px;
-    }
+  .feature-button-div {
+    margin: 0 10px;
+  }
 
-    .smart-feature-title, .feature-button-div {
-        padding-top: 10%;
-    }
+  .smart-feature-title,
+  .feature-button-div {
+    padding-top: 10%;
+  }
 
-    .smart-feature-word {
-        font-size: 1.25rem;
-    }
+  .smart-feature-word {
+    font-size: 1.25rem;
+  }
 
-    .smart-feature-back span {
-        font-size: 14px;
-    }
+  .smart-feature-back span {
+    font-size: 14px;
+  }
 
-    .smart-feature-plus {
-        width: 27px;
-        height: 27px;
-    }
+  .smart-feature-plus {
+    width: 27px;
+    height: 27px;
+  }
 
-    .done-cancel-button {
-        width: 60px;
-        height: 28px;
-        font-size: 14px;
-    }
+  .done-cancel-button {
+    width: 60px;
+    height: 28px;
+    font-size: 14px;
+  }
 
-    .feature-label {
-        font-size: 18px;
-    }
+  .feature-label {
+    font-size: 18px;
+  }
 
-    .feature-detail-label {
-        font-size: 14px;
-    }
+  .feature-detail-label {
+    font-size: 14px;
+  }
 
-    .dev-smart-feature-list {
-        min-height: 75vh; /* Helps in flex containers */
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    
-    
+  .dev-smart-feature-list {
+    min-height: 75vh; /* Helps in flex containers */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }

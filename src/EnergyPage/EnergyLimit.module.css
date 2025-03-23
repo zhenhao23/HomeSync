@@ -6,15 +6,12 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   height: 100%;
   border-radius: 18px;
   /* Default for desktop */
-  top: 38%;
-}
-
-.deviceContainer {
-  height: calc(100% - 460px);
-  overflow: auto;
+  top: 40%;
+  padding-top: 2rem;
 }
 
 /* Medium sized devices */
@@ -22,51 +19,34 @@
   .slidingPanel {
     top: 40%;
   }
-
-  .deviceContainer {
-    height: calc(100% - 440px);
-  }
 }
 
 /* Small sized devices */
 @media (max-height: 700px) {
   .slidingPanel {
-    top: 50%;
-  }
-
-  .deviceContainer {
-    height: calc(100% - 430px);
+    top: 45%;
   }
 }
 
-/* iPhone 14 Pro Max specific fix - simplified and more targeted */
+/* iPhone 14 Pro Max specific fix - moved lower */
 @media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
   only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 40%; /* Move it lower on the screen */
-  }
-
-  .deviceContainer {
-    height: calc(100% - 520px);
+    top: 50%; /* Moved lower on iPhone Pro */
   }
 }
 
-/* iPhone 14/15 Pro/Pro Max general fix */
+/* iPhone 14/15 Pro/Pro Max general fix - moved lower */
 @media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 40%;
-  }
-
-  .deviceContainer {
-    height: calc(100% - 520px);
+    top: 50%; /* Moved lower on iPhone Pro */
   }
 }
 
-/* iOS Safari general fix - this should execute after the iPhone specific queries */
+/* iOS Safari general fix */
 @supports (-webkit-touch-callout: none) and
   (not (-webkit-device-pixel-ratio: 3)) {
   .slidingPanel {
-    /* Slightly lower position for iOS devices in general, but not Pro models already handled above */
-    top: 52%;
+    top: 55%; /* Slightly lower position for iOS devices in general */
   }
 }
