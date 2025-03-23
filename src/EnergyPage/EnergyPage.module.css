@@ -43,22 +43,22 @@
 @media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
   only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 60%; /* Move it lower on the screen */
+    top: 50%; /* Move it lower on the screen */
   }
 
   .deviceContainer {
-    height: calc(100% - 400px);
+    height: calc(100% - 450px);
   }
 }
 
 /* iPhone 14/15 Pro/Pro Max general fix */
 @media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 60%;
+    top: 50%;
   }
 
   .deviceContainer {
-    height: calc(100% - 400px);
+    height: calc(100% - 450px);
   }
 }
 
