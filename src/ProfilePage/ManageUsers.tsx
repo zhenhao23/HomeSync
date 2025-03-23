@@ -84,7 +84,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
       ).toString();
     }
   };
- 
 
   const handleTouchEnd = (e: React.TouchEvent, userId: number) => {
     if (!isDragging.current) return;
@@ -111,8 +110,6 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
       setSwipedUserId(null);
     }, 200);
   };
-
-  
 
   const addUser = () => {
     if (!email) return;
@@ -189,8 +186,12 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
               onTouchEnd={(e) => handleTouchEnd(e, user.id)}
               onClick={() => setSelectedUser(user)}
               style={{
-                transform: `translateX(${swipedUserId === user.id ? translateX : 0}px)`,
-                transition: isDragging.current ? "none" : "transform 0.2s ease-out",
+                transform: `translateX(${
+                  swipedUserId === user.id ? translateX : 0
+                }px)`,
+                transition: isDragging.current
+                  ? "none"
+                  : "transform 0.2s ease-out",
               }}
             >
               <div className="user-content">

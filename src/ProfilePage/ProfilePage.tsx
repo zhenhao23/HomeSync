@@ -1021,7 +1021,7 @@ const ProfilePage = () => {
                     className="profile-image profile-image2"
                   />
                   <button className="camera-icon">
-                    <FaCamera size={18} />
+                    <FaCamera size={18} color="#666" />
                   </button>
                 </div>
                 <div className="user-details">
@@ -1113,19 +1113,19 @@ const ProfilePage = () => {
           <div className="laptop-profile-container">
             {/* Profile Section */}
             <div className="laptop-profile-left">
-              <div className="laptop-profile-info">
-                <div className="laptop-profile-image-container">
+              <div className="profile-info">
+                <div className="profile-image-container">
                   <img
                     src={userData.profileImage}
                     alt="Profile"
-                    className="laptop-profile-image"
+                    className="profile-image profile-image2"
                   />
-                  <div className="laptop-camera-icon">
-                    <FaCamera size={16} color="#666" />
-                  </div>
+                  <button className="camera-icon">
+                    <FaCamera size={18} color="#666" />
+                  </button>
                 </div>
                 <div className="laptop-user-details">
-                  <h2 className="laptop-user-name">{userData.name}</h2>
+                  <h3 className="user-name">{userData.name}</h3>
                   <p className="laptop-user-email">{userData.email}</p>
                 </div>
               </div>
@@ -1206,7 +1206,7 @@ const ProfilePage = () => {
                       onClick={handleAddHome}
                     >
                       <FaHome className="laptop-button-icon" />
-                      <span>Switch Home</span>
+                      <span>Add Home</span>
                     </button>
                     <button
                       className="laptop-log-out-button"
