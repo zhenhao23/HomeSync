@@ -18,7 +18,7 @@ import {
   FaBed,
   FaCouch,
   FaUtensils,
-  FaQuestionCircle // Added for Help icon
+  FaQuestionCircle, // Added for Help icon
 } from "react-icons/fa";
 import EditProfilePage from "./EditProfile";
 import ChangePasswordPage from "./ChangePassword";
@@ -184,7 +184,7 @@ const ProfilePage = () => {
   // 2. Ensure the home loading is properly handled
 
   // Replace the duplicate useEffect with the correct single implementation
-  
+
   // Added state for Help/Download modal
   const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -426,28 +426,30 @@ const ProfilePage = () => {
   const handleDownloadUserGuide = () => {
     // First close the modal
     setShowHelpModal(false);
-    
+
     // Create a blob with the PDF content and proper MIME type
-    fetch('/HomeSyncUserGuide.pdf')
-      .then(response => response.blob())
-      .then(blob => {
+    fetch("/HomeSyncUserGuide.pdf")
+      .then((response) => response.blob())
+      .then((blob) => {
         // Create a link element
-        const link = document.createElement('a');
-        const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+        const link = document.createElement("a");
+        const url = window.URL.createObjectURL(
+          new Blob([blob], { type: "application/pdf" })
+        );
         link.href = url;
-        link.download = 'HomeSyncUserGuide.pdf';
-        
+        link.download = "HomeSyncUserGuide.pdf";
+
         // Append to the document, click it, and remove it
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         // Clean up the URL object
         window.URL.revokeObjectURL(url);
       })
-      .catch(error => {
-        console.error('Error downloading PDF:', error);
-        alert('Failed to download the User Guide. Please try again later.');
+      .catch((error) => {
+        console.error("Error downloading PDF:", error);
+        alert("Failed to download the User Guide. Please try again later.");
       });
   };
 
@@ -727,20 +729,23 @@ const ProfilePage = () => {
       </div>
     );
   };
-  
+
   // Help/Download modal
   const HelpModal = () => {
     return (
       <div className="home-modal">
         <div className="home-modal-content">
           <div className="modal-header">Download User Guide</div>
-          
+
           <div className="help-content" style={{ padding: "20px 10px" }}>
             <p>Do you want to download the User Guide PDF?</p>
           </div>
-          
+
           <div className="modal-actions">
-            <button className="cancel-button" onClick={() => setShowHelpModal(false)}>
+            <button
+              className="cancel-button"
+              onClick={() => setShowHelpModal(false)}
+            >
               Cancel
             </button>
             <button className="done-button" onClick={handleDownloadUserGuide}>
@@ -751,7 +756,7 @@ const ProfilePage = () => {
       </div>
     );
   };
-  
+
   // Invite modal for adding new users
   const InviteModal = () => {
     return (
@@ -888,30 +893,32 @@ const ProfilePage = () => {
     );
   };
 
-    // Logout confirmation modal
+  // Logout confirmation modal
   const LogoutModal = () => {
     return (
       <div className="modal-overlay">
         <div className="invite-modal">
           <h3>Confirm Logout</h3>
-          <p>
-            Are you sure you want to log out?
-          </p>
+          <p>Are you sure you want to log out?</p>
           <div className="modal-actions">
             <button onClick={() => setShowLogoutModal(false)}>Cancel</button>
-            <button onClick={() => {
-              setShowLogoutModal(false);
-              // Implement logout functionality
-              alert("Logging out...");
-              // In a real app, you would clear auth tokens, cookies, etc.
-              // and redirect to login page
-            }}>Logout</button>
+            <button
+              onClick={() => {
+                setShowLogoutModal(false);
+                // Implement logout functionality
+                alert("Logging out...");
+                // In a real app, you would clear auth tokens, cookies, etc.
+                // and redirect to login page
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
     );
   };
-  
+
   // Context menu for right-click delete functionality
   const ContextMenu = () => {
     if (!contextMenuPosition) return null;
@@ -975,7 +982,7 @@ const ProfilePage = () => {
       default:
         return (
           <>
-            <h1 className="profile-heading">My Profile</h1>
+            <h1 className="profile-heading mb-3">My Profile</h1>
             <div className="profile-content">
               {/* Profile Section */}
               <div className="profile-info">
@@ -1023,10 +1030,7 @@ const ProfilePage = () => {
                     </button>
                   </OwnerGuard>
 
-                  <button
-                    className="menu-item"
-                    onClick={handleHelpClick}
-                  >
+                  <button className="menu-item" onClick={handleHelpClick}>
                     <FaQuestionCircle className="menu-icon" />
                     <span>Help</span>
                   </button>
@@ -1141,15 +1145,15 @@ const ProfilePage = () => {
 
                   <div className="laptop-profile-options">
                     {/* Changed Languages to Help */}
-                    <div 
+                    <div
                       className="laptop-option-item"
                       onClick={handleHelpClick}
                     >
                       <FaQuestionCircle className="laptop-option-icon" />
                       <span>Help</span>
                     </div>
-                    
-                    <div 
+
+                    <div
                       className="laptop-option-item"
                       onClick={() => setCurrentPage("change-password")}
                     >

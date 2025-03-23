@@ -7,11 +7,11 @@
 .profile-heading {
   color: white;
   font-size: 24px;
-  margin-bottom: 24px;
+  /* margin-bottom: 24px; */
   text-align: center;
   font-weight: 600;
   position: relative;
-  margin-top: 27%;
+  margin-top: 24%;
 }
 
 /* Main white container */

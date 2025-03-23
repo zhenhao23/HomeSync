@@ -257,7 +257,8 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
       </header>
 
       {loading && (
-        <div className="loading-indicator">Loading energy data...</div>
+        <></>
+        // <div className="loading-indicator">Loading energy data...</div>
       )}
 
       {error && <div className="error-message">{error}</div>}

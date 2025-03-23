@@ -44,7 +44,7 @@ router.get("/energy/rooms", verifyToken, (req: Request, res: Response) => {
 
       // Calculate the date 30 days ago
       const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 28);
 
       // Get all rooms in the accessible homes
       const rooms = await prisma.room.findMany({

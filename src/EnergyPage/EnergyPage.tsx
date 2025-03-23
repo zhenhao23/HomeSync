@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 import SwipeableCharts from "./SwipeableCharts";
 import LampImage from "../assets/devices/lamp.svg";
@@ -38,12 +38,23 @@ interface ProcessedDevice {
 
 const EnergyPage: React.FC = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
+  // Initialize with placeholder skeleton data to prevent blank screen
   const [aggregatedData, setAggregatedData] = useState<AggregatedData>({
-    deviceTotals: [],
+    deviceTotals: Array(4).fill({
+      name: "Loading...",
+      type: "light",
+      room: "Room",
+      value: 0,
+      activeHours: 0,
+      previousValue: 0,
+      previousActiveHours: 0,
+    }),
     dailyTotals: [],
   });
-  const [isLoading, setIsLoading] = useState(true);
+
+  // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const deviceImages: { [key: string]: string } = {
     light: LampImage,
@@ -51,6 +62,138 @@ const EnergyPage: React.FC = () => {
     petfeeder: PetFeederImage,
     irrigation: IrrigationImage,
   };
+
+  // Add cache for different time ranges
+  const [cachedData, setCachedData] = useState<
+    Record<TimeRange, AggregatedData | null>
+  >({
+    week: null,
+    month: null,
+    year: null,
+  });
+
+  // Modified setTimeRange function
+  const handleTimeRangeChange = useCallback(
+    (newTimeRange: TimeRange) => {
+      setTimeRange(newTimeRange);
+
+      // If we have cached data, use it immediately while fetching fresh data
+      if (cachedData[newTimeRange]) {
+        setAggregatedData(cachedData[newTimeRange]!);
+      }
+    },
+    [cachedData]
+  );
+
+  // Function to fetch data for a specific time range
+  const fetchDataForRange = async (
+    range: TimeRange
+  ): Promise<AggregatedData | null> => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      const response = await fetch(
+        `https://homesync-production.up.railway.app/api/devices/energy/aggregated?timeRange=${range}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ${range} data`);
+      }
+
+      const data = await response.json();
+      console.log(`Received ${range} data:`, data.deviceTotals);
+
+      return data;
+    } catch (err) {
+      console.error(`Error fetching ${range} data:`, err);
+      setError(err instanceof Error ? err.message : "An error occurred");
+      return null;
+    }
+  };
+
+  // Function to preload all time ranges
+  const preloadAllTimeRanges = async () => {
+    // Already showing skeleton data, so no need to set loading
+
+    // First fetch the current timeRange
+    const currentRangeData = await fetchDataForRange(timeRange);
+
+    if (currentRangeData) {
+      setAggregatedData(currentRangeData);
+      setCachedData((prev) => ({
+        ...prev,
+        [timeRange]: currentRangeData,
+      }));
+    }
+
+    // Then fetch the other ranges in the background
+    const otherRanges = ["week", "month", "year"].filter(
+      (r) => r !== timeRange
+    ) as TimeRange[];
+
+    // Use Promise.all to fetch other ranges in parallel
+    const results = await Promise.all(
+      otherRanges.map(async (range) => {
+        const data = await fetchDataForRange(range);
+        return { range, data };
+      })
+    );
+
+    // Update the cache with all results
+    const newCache = { ...cachedData };
+    results.forEach(({ range, data }) => {
+      if (data) {
+        newCache[range] = data;
+      }
+    });
+
+    setCachedData(newCache);
+    // setIsLoading(false);
+    setIsInitialLoad(false);
+  };
+
+  // Effect to handle initial loading of all data - use a more stable approach
+  useEffect(() => {
+    if (isInitialLoad) {
+      preloadAllTimeRanges();
+    }
+  }, [isInitialLoad]);
+
+  // Effect for subsequent fetches when timeRange changes (refreshing data)
+  useEffect(() => {
+    if (!isInitialLoad) {
+      const fetchSingleRange = async () => {
+        // Don't show loading indicator for cached data
+        if (!cachedData[timeRange]) {
+          // Instead of full loading state, just update current data
+          // This prevents the UI from disappearing
+        }
+
+        const data = await fetchDataForRange(timeRange);
+
+        if (data) {
+          setAggregatedData(data);
+          setCachedData((prev) => ({
+            ...prev,
+            [timeRange]: data,
+          }));
+        }
+
+        // setIsLoading(false);
+      };
+
+      fetchSingleRange();
+    }
+  }, [timeRange, isInitialLoad]);
 
   const processDeviceData = (devices: DeviceTotal[]): ProcessedDevice[] => {
     return devices.map((device) => {
@@ -69,47 +212,12 @@ const EnergyPage: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        // Get the auth token from localStorage (assuming your app stores it there)
-        const token = localStorage.getItem("authToken");
+  // Never show empty loading state - only skeleton data
+  // const showLoadingState = isLoading && !cachedData[timeRange];
 
-        if (!token) {
-          throw new Error("Authentication token not found");
-        }
-
-        const response = await fetch(
-          `https://homesync-production.up.railway.app/api/devices/energy/aggregated?timeRange=${timeRange}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch aggregated data");
-        }
-
-        const data = await response.json();
-        console.log(`Received ${timeRange} data:`, data.deviceTotals);
-        setAggregatedData(data);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [timeRange]);
-
-  if (isLoading) {
-    return <div className="text-center p-4">Loading...</div>;
-  }
+  // if (showLoadingState) {
+  //  return <div className="text-center p-4">Loading...</div>;
+  // }
 
   if (error) {
     return <div className="text-center p-4 text-danger">Error: {error}</div>;
@@ -121,7 +229,7 @@ const EnergyPage: React.FC = () => {
     <>
       <SwipeableCharts
         timeRange={timeRange}
-        setTimeRange={setTimeRange}
+        setTimeRange={handleTimeRangeChange}
         energyData={aggregatedData}
       />
       <div
@@ -203,7 +311,6 @@ const EnergyPage: React.FC = () => {
                     </div>
                     <div className="col-6 ps-5">
                       <h6 className="mb-0">{device.title}</h6>
-                      {/* <div className="text-muted small mb-0">{device.room}</div> */}
                       <div className="text-muted small">{device.hours}</div>
                     </div>
                     <div className="col-4 text-end d-flex flex-column align-items-end ps-0">

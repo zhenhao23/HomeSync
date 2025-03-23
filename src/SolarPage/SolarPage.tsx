@@ -101,6 +101,9 @@ const SolarPage: React.FC = () => {
   const [showEnergyFlow, setShowEnergyFlow] = useState(false);
   const [activeYieldTab, setActiveYieldTab] = useState("today");
 
+  // Add this new state for the animated energy usage value
+  const [displayedEnergyUsage, setDisplayedEnergyUsage] = useState(0);
+
   // Energy flow data
   const [energyFlowData, setEnergyFlowData] = useState<EnergyFlowData>({
     today: {
@@ -134,7 +137,59 @@ const SolarPage: React.FC = () => {
   const strokeWidth = 16;
   const circumference = 2 * Math.PI * radius;
   // This will now properly use the dynamic value from state
-  const offset = circumference - (energyUsage / 100) * circumference;
+  // const offset = circumference - (energyUsage / 100) * circumference;
+
+  // Add new state for animated offset
+  const [displayedOffset, setDisplayedOffset] = useState(circumference);
+
+  // Update the animation effect to use easing
+  useEffect(() => {
+    // Only animate if the target value is different from current display value
+    if (energyUsage !== displayedEnergyUsage) {
+      // Define animation duration and steps
+      const duration = 2000; // 2 seconds (slightly longer for better easing effect)
+      const interval = 16; // Update every 16ms for smoother animation (60fps)
+      // const steps = duration / interval;
+
+      // Calculate target offset
+      const targetOffset = circumference - (energyUsage / 100) * circumference;
+
+      // Start time for easing calculation
+      const startTime = Date.now();
+      const initialUsage = displayedEnergyUsage;
+      const initialOffset = displayedOffset;
+      const usageDiff = energyUsage - initialUsage;
+      const offsetDiff = targetOffset - initialOffset;
+
+      const timer = setInterval(() => {
+        const elapsedTime = Date.now() - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+
+        // Apply easing function (ease-out cubic)
+        // This slows down the animation as it approaches the target value
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+        const newUsage = initialUsage + usageDiff * easedProgress;
+        const newOffset = initialOffset + offsetDiff * easedProgress;
+
+        // Update values
+        setDisplayedEnergyUsage(Math.round(newUsage));
+        setDisplayedOffset(newOffset);
+
+        // Clear interval when done
+        if (progress >= 1) {
+          clearInterval(timer);
+          setDisplayedEnergyUsage(energyUsage);
+          setDisplayedOffset(targetOffset);
+        }
+      }, interval);
+
+      return () => clearInterval(timer);
+    }
+  }, [energyUsage, circumference]);
+
+  // Replace the offset calculation to use the animated value
+  // const offset = circumference - (energyUsage / 100) * circumference;
 
   // Navigation items
   const navItems: NavItem[] = [
@@ -449,6 +504,7 @@ const SolarPage: React.FC = () => {
     <div className="solar-progress">
       <div className="progress-wrapper">
         <svg className="progress-circle">
+          {/* Background and progress circles */}
           <circle
             cx="128"
             cy="128"
@@ -463,7 +519,15 @@ const SolarPage: React.FC = () => {
             className="progress-bar"
             strokeWidth={strokeWidth}
             strokeDasharray={circumference}
-            strokeDashoffset={offset}
+            strokeDashoffset={displayedOffset}
+          />
+          {/* Add a yellow background circle for text with linear gradient */}
+          <circle
+            cx="128"
+            cy="128"
+            r="100"
+            fill="url(#textBackgroundGradient)"
+            opacity="1"
           />
           <defs>
             <linearGradient
@@ -476,11 +540,21 @@ const SolarPage: React.FC = () => {
               <stop offset="0%" stopColor="#FFB800" />
               <stop offset="100%" stopColor="#FFCF53" />
             </linearGradient>
+            <linearGradient
+              id="textBackgroundGradient"
+              x1="100%"
+              y1="0%"
+              x2="0%"
+              y2="0%"
+            >
+              <stop offset="0%" stopColor="#FFB00F" />
+              <stop offset="100%" stopColor="#FFD602" />
+            </linearGradient>
           </defs>
         </svg>
         <div className="progress-text">
-          <p className="energy-usages">Energy Usages</p>
-          <h2 className="energy-percent">{energyUsage}%</h2>
+          <p className="energy-usages">Solar Battery</p>
+          <h2 className="energy-percent">{displayedEnergyUsage}%</h2>
           <p className="energy-usages">{currentPower} kW</p>
         </div>
         <div className="progress-icon" onClick={() => setShowEnergyFlow(true)}>
