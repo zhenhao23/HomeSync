@@ -314,6 +314,11 @@
 
 /* ========== UPDATED LAPTOP STYLES ========== */
 @media (min-width: 1024px) {
+  .weather-header {
+    font-size: 15px;
+  }
+  
+
   /* Laptop Container */
   .solar-container-laptop {
     font-family: "Segoe UI", "Roboto", sans-serif;
@@ -325,16 +330,19 @@
     padding: 20px;
   }
 
-  .solar-content-wrapper {
-    display: flex;
-    gap: 10%;
-    width: 98vw;
-    padding: 20px;
-    position: relative;
-    margin-top: 30px;
-    height: calc(100vh - 100px);
+  .progress-icon .icon {
+    width: 15px;
+    height: 15px;
   }
 
+  .solar-content-wrapper {
+    display: flex;
+    margin-top: 30px;
+    height: 105%;
+    justify-content: center;
+    gap: 4%;
+  }
+ 
   /* Left Panel - Solar Energy Status */
   .solar-left-panel {
     width: 40%;
@@ -349,12 +357,9 @@
 
   .header-wrapper-laptop {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 10px 20px;
-    margin-left: 60%;
-    padding-bottom: 76px;
   }
 
   .solar-heading3 {
@@ -364,12 +369,11 @@
   }
 
   .weather-benefits-container {
-    width: 95%;
+    width: 98%;
     background-color: rgb(32 65 95);
     border-radius: 20px;
-    margin-top: 30px;
     padding: 20px;
-    overflow-y: auto;
+    overflow-y: hidden;
   }
 
   .laptop-weather-section {
@@ -379,7 +383,8 @@
   .laptop-weather-section .weather-prediction,
   .laptop-benefits-section .weather-prediction {
     color: white;
-    font-size: 22px;
+    font-size: 17px;
+    margin: 0px;
   }
 
   .laptop-weather-section .weather-item {
@@ -396,8 +401,6 @@
 
   .estimate-generation-laptop {
     width: 100%;
-    padding: 5px 0;
-    margin: 15px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     text-align: left;
@@ -432,20 +435,19 @@
   }
 
   .energy-flow-panel {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 20px;
     padding: 20px;
     height: 100%;
     display: flex;
     flex-direction: column;
+    width: 40%;
   }
 
   .energy-flow-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    margin-left: 40%;
+    justify-content: center;
+    margin-bottom: 25px;
   }
 
   .header-energy-flow {
@@ -454,16 +456,21 @@
     margin: 0;
   }
 
+  .weather-section{
+    margin-bottom: 10px;
+  }
+
   .upload-button {
     background-color: white;
     border: none;
-    border-radius: 8px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    border-radius: 10px;
+    width: 35px;
+    height: 35px;
     cursor: pointer;
+
+    position: absolute;
+    right: 12%; /* Push to the right */
+    top: 15%; 
   }
 
   .upload-button svg {
@@ -521,8 +528,9 @@
   .energy-flow-table {
     background-color: rgb(32 65 96);
     border-radius: 15px;
-    padding: 15px;
-    margin-top: auto;
+    padding: 25px;
+    margin-top: 10px;
+    height: 70%;
   }
 
   .flow-period-tabs {
@@ -610,6 +618,7 @@
     font-weight: 500;
     color: #ffffff;
   }
+
 }
 
 /* Add this to your SolarPage.css file */
@@ -928,6 +937,29 @@
   .yield-tabs {
     flex-wrap: wrap;
   }
+
+  .progress-wrapper {
+      max-width: 130px; /* Ensure it doesn't get too large */
+      max-height: 130px;
+  }
+
+  .progress-text .energy-usages {
+    font-size: 12px;
+  }
+
+  .progress-text .energy-percent {
+    font-size: 1.7rem;
+  }
+
+  .progress-icon {
+    width: 25px;
+    height: 25px;
+  }
+
+  .progress-icon .icon {
+    font-size: 0.1rem;
+  }
+
 }
 
 /* Download confirmation dialog */
