@@ -1,0 +1,39 @@
+.slidingPanel {
+  background-color: white;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 18px;
+  top: 50%;
+}
+
+.deviceContainer {
+  height: calc(100% - 460px);
+  overflow: auto;
+}
+
+/* Medium sized devices */
+@media (max-height: 850px) {
+  .slidingPanel {
+    top: 40%;
+  }
+
+  .deviceContainer {
+    height: calc(100% - 440px);
+  }
+}
+
+/* Small sized devices */
+@media (max-height: 700px) {
+  .slidingPanel {
+    top: 50%;
+  }
+
+  .deviceContainer {
+    height: calc(100% - 430px);
+  }
+}

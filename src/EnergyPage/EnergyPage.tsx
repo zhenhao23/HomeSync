@@ -6,6 +6,7 @@ import AirCondImage from "../assets/devices/aircond1.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
 import IrrigationImage from "../assets/devices/irrigation.svg";
 import EnergyUploadImage from "../assets/energy/energy-upload-button.svg";
+import styles from "./EnergyPage.module.css"; // Import the CSS module
 
 type TimeRange = "week" | "month" | "year";
 
@@ -56,9 +57,6 @@ const EnergyPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Add a state to track window height
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-
   const deviceImages: { [key: string]: string } = {
     light: LampImage,
     aircond: AirCondImage,
@@ -87,22 +85,6 @@ const EnergyPage: React.FC = () => {
     },
     [cachedData]
   );
-
-  useEffect(() => {
-    // Handler to call on window resize
-    const handleResize = () => {
-      setWindowHeight(window.innerHeight);
-    };
-
-    // Add event listener
-    window.addEventListener("resize", handleResize);
-
-    // Call handler right away so state gets updated with initial window size
-    handleResize();
-
-    // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []); // Empty array ensures effect runs only on mount and unmount
 
   // Function to fetch data for a specific time range
   const fetchDataForRange = async (
@@ -251,14 +233,7 @@ const EnergyPage: React.FC = () => {
         setTimeRange={handleTimeRangeChange}
         energyData={aggregatedData}
       />
-      <div
-        className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
-        style={{
-          top: windowHeight < 700 ? "50%" : windowHeight < 850 ? "40%" : "50%",
-          height: "100%",
-          borderRadius: "18px",
-        }}
-      >
+      <div className={styles.slidingPanel}>
         <div className="container-fluid p-3 pb-2">
           <div className="row align-items-center mb-3">
             <div className="col-4 text-start">
@@ -285,23 +260,14 @@ const EnergyPage: React.FC = () => {
                 <img
                   src={EnergyUploadImage}
                   style={{ backgroundColor: "white" }}
-                ></img>
+                  alt="Upload"
+                />
               </button>
             </div>
           </div>
         </div>
 
-        <div
-          className="container-fluid overflow-auto px-4"
-          style={{
-            height:
-              windowHeight < 700
-                ? "calc(100% - 430px)"
-                : windowHeight < 850
-                ? "calc(100% - 440px)"
-                : "calc(100% - 460px)",
-          }}
-        >
+        <div className={`container-fluid px-4 ${styles.deviceContainer}`}>
           <div className="row g-3 pb-5">
             {processedDevices.map((device, index) => (
               <div key={index} className="col-12 mt-3">
