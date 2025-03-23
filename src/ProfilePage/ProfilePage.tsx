@@ -982,7 +982,7 @@ const ProfilePage = () => {
       default:
         return (
           <div
-            className="profile-wrapper"
+            className="profile-page"
             style={{
               height: "100vh",
               overflow: "hidden",
@@ -990,23 +990,39 @@ const ProfilePage = () => {
             }}
           >
             <h1 className="profile-heading mb-3">My Profile</h1>
-            <div className="profile-content">
+
+            <div
+              className="profile-content"
+              style={{
+                position: "absolute",
+                top: "18%",
+                bottom: "1%",
+                left: "0",
+                right: "0",
+                margin: "0 auto",
+                width: "100%",
+                background: "white",
+                borderRadius: "48px 48px 0 0",
+                padding: "20px",
+                overflowY: "auto",
+                WebkitOverflowScrolling: "touch", // For smooth scrolling on iOS
+                paddingBottom: "20px", // Extra padding for bottom navbar
+              }}
+            >
               {/* Profile Section */}
               <div className="profile-info">
                 <div className="profile-image-container">
-                  <div className="profile-image">
-                    <img
-                      className="profile-image2"
-                      src={userData.profileImage}
-                      alt="Profile"
-                    />
-                  </div>
-                  <div className="camera-icon">
-                    <FaCamera size={16} color="#666" />
-                  </div>
+                  <img
+                    src={userData.profileImage}
+                    alt="Profile"
+                    className="profile-image profile-image2"
+                  />
+                  <button className="camera-icon">
+                    <FaCamera size={18} />
+                  </button>
                 </div>
                 <div className="user-details">
-                  <h2 className="user-name">{userData.name}</h2>
+                  <h3 className="user-name">{userData.name}</h3>
                   <p className="user-email">{userData.email}</p>
                 </div>
               </div>

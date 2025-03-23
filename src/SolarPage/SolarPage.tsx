@@ -910,14 +910,13 @@ const SolarPage: React.FC = () => {
         </>
       ) : (
         // Mobile view with navigation bar
-        // Mobile view with navigation bar
         <>
           <div
             className="solar-container"
             style={{
               height: "100vh",
               overflow: "hidden", // Prevent the whole container from scrolling
-              position: "relative", // Keep positioning context
+              position: "relative", // Add positioning context
             }}
           >
             {/* Solar Energy Heading */}
@@ -931,43 +930,37 @@ const SolarPage: React.FC = () => {
                 <Sliders className="filter-icon" stroke="black" size={16} />
               </button>
             </div>
-
             {/* Energy Usage Circular Progress */}
             <CircularProgress />
-
             <div
-              className="info-container container-fluid px-4"
+              className="info-container container-fluid px-0"
               style={{
                 position: "absolute", // Position absolutely
                 bottom: 0, // Attach to bottom
                 left: 0, // Attach to left
                 right: 0, // Attach to right
-                height: "calc(100% - 410px)", // Calculate height based on remaining space
+                height: "calc(100% - 410px)",
                 borderRadius: "30px 30px 0 0",
                 backgroundColor: "white",
-                overflowY: "auto", // Allow scrolling only within this container
-                paddingBottom: "80px", // Add padding for bottom nav
+                overflowY: "auto", // Allow vertical scrolling within this container
+                paddingBottom: "60px", // Add extra padding for bottom navbar
               }}
             >
-              <div
-                className="overflow-auto"
-                style={{
-                  height: "100%", // Make this inner div scrollable
-                  paddingBottom: "10px", // Add bottom padding for content
-                }}
-              >
-                {/* Weather Section */}
-                <WeatherSection />
+              <div className="px-4">
+                <div className="overflow-auto" style={{ height: "100%" }}>
+                  {/* Weather Section */}
+                  <WeatherSection />
 
-                {/* Estimated Generation */}
-                <div className="estimate-generation">
-                  <p className="estimation ps-0">
-                    Estimate Generation: {estimateGeneration} kW
-                  </p>
+                  {/* Estimated Generation */}
+                  <div className="estimate-generation">
+                    <p className="estimation ps-0">
+                      Estimate Generation: {estimateGeneration} kW
+                    </p>
+                  </div>
+
+                  {/* Environmental Benefits */}
+                  <EnvironmentalBenefits />
                 </div>
-
-                {/* Environmental Benefits */}
-                <EnvironmentalBenefits />
               </div>
             </div>
           </div>

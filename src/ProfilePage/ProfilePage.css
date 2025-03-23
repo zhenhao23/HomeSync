@@ -1,13 +1,7 @@
 .profile-page {
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden; /* Prevent page level scrolling */
-}
-
-.profile-wrapper {
   height: 100vh;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
 }
 
 .profile-heading {
@@ -22,20 +16,20 @@
 
 /* Main white container */
 .profile-content {
-  position: fixed;
+  position: absolute;
   top: 18%;
   bottom: 1%;
   left: 0;
   right: 0;
-  margin: 0 auto;
   width: 100%;
   background: white;
   color: black;
   border-radius: 48px 48px 0 0;
   padding: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow-y: auto; /* Enable vertical scrolling only within container */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  padding-bottom: 80px; /* Space for navbar */
 }
 
 /* Profile section */
