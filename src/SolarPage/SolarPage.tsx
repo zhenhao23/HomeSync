@@ -916,7 +916,7 @@ const SolarPage: React.FC = () => {
             style={{
               height: "100vh",
               overflow: "hidden", // Prevent the whole container from scrolling
-              position: "relative", // Add positioning context
+              position: "absolute", // Add positioning context
             }}
           >
             {/* Solar Energy Heading */}

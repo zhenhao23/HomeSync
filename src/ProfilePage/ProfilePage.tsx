@@ -986,7 +986,7 @@ const ProfilePage = () => {
             style={{
               height: "100vh",
               overflow: "hidden",
-              position: "relative",
+              position: "absolute",
             }}
           >
             <h1 className="profile-heading mb-3">My Profile</h1>
