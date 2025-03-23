@@ -29,7 +29,7 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  padding-bottom: 80px; /* Space for navbar */
+  /* padding-bottom: 80px; Space for navbar */
 }
 
 /* Profile section */

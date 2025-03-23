@@ -137,7 +137,7 @@
   right: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
-  padding-bottom: 80px; /* To account for the bottom navbar */
+  /* padding-bottom: 80px; To account for the bottom navbar */
 }
 
 .info-header {

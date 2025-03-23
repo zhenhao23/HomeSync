@@ -986,7 +986,7 @@ const ProfilePage = () => {
             style={{
               height: "100vh",
               overflow: "hidden",
-              position: "absolute",
+              position: "relative",
             }}
           >
             <h1 className="profile-heading mb-3">My Profile</h1>
@@ -1006,7 +1006,7 @@ const ProfilePage = () => {
                 padding: "20px",
                 overflowY: "auto",
                 WebkitOverflowScrolling: "touch", // For smooth scrolling on iOS
-                paddingBottom: "20px", // Extra padding for bottom navbar
+                // paddingBottom: "20px", // Extra padding for bottom navbar
               }}
             >
               {/* Profile Section */}
