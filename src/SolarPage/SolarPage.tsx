@@ -1,6 +1,8 @@
 import { BsSunrise, BsCloudRain } from "react-icons/bs";
 import { IoLeafOutline } from "react-icons/io5";
-import { Zap, Sliders, Upload, Download } from "lucide-react"; 
+import { GiCoalPile } from "react-icons/gi";
+import { PiFactory } from "react-icons/pi";
+import { Zap, Sliders, Upload, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { FaHome, FaBolt, FaSun, FaUser } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -78,7 +80,6 @@ const SolarPage: React.FC = () => {
 
     setHomeId(parseInt(storedHomeId));
   }, []);
-  
 
   // New state for download confirmation dialog
   const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
@@ -180,18 +181,24 @@ const SolarPage: React.FC = () => {
   // Function to handle download confirmation
   const handleDownloadConfirm = () => {
     console.log("Downloading energy report...");
-    
+
     // Get the currently active data based on the selected tab
-    const data = 
-      activeYieldTab === "today" 
-        ? energyFlowData.today 
-        : activeYieldTab === "monthly" 
-          ? energyFlowData.monthly 
-          : energyFlowData.total;
+    const data =
+      activeYieldTab === "today"
+        ? energyFlowData.today
+        : activeYieldTab === "monthly"
+        ? energyFlowData.monthly
+        : energyFlowData.total;
 
     // Create a CSV content string
     const csvContent = `
-     Type,${activeYieldTab === "today" ? "Daily (kWh)" : activeYieldTab === "monthly" ? "Monthly (kWh)" : "Annual (kWh)"}
+     Type,${
+       activeYieldTab === "today"
+         ? "Daily (kWh)"
+         : activeYieldTab === "monthly"
+         ? "Monthly (kWh)"
+         : "Annual (kWh)"
+     }
      PV,${data.pvGeneration}
      Imported,${data.importedEnergy}
      Exported,${data.exportedEnergy}
@@ -476,7 +483,7 @@ const SolarPage: React.FC = () => {
           <h2 className="energy-percent">{energyUsage}%</h2>
           <p className="energy-usages">{currentPower} kW</p>
         </div>
-        <div className="progress-icon">
+        <div className="progress-icon" onClick={() => setShowEnergyFlow(true)}>
           <Zap className="icon" />
         </div>
       </div>
@@ -535,9 +542,7 @@ const SolarPage: React.FC = () => {
           </div>
           <div className="benefit-item">
             <div className="benefit-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="#f8b500" strokeWidth="2" />
-              </svg>
+              <PiFactory size={24} /> {/* CO2 emissions icon */}
             </div>
             <div className="benefit-details">
               <p className="benefit-title">CO2 Emission Saved</p>
@@ -548,9 +553,7 @@ const SolarPage: React.FC = () => {
           </div>
           <div className="benefit-item">
             <div className="benefit-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="#f8b500" strokeWidth="2" />
-              </svg>
+              <GiCoalPile size={24} /> {/* Coal icon */}
             </div>
             <div className="benefit-details">
               <p className="benefit-title">Standard Coal Saved</p>
@@ -720,24 +723,24 @@ const SolarPage: React.FC = () => {
         </div>
 
         {/* Download confirmation dialog */}
-          {showDownloadConfirm && (
-            <div className="download-confirm-overlay">
-              <div className="download-confirm-dialog">
-                <h3 >Download Energy Report</h3>
-                <p >Do you want to download the energy report?</p>
-                <div className="dialog-buttons">
-                  <button onClick={handleDownloadCancel}>Cancel</button>
-                  <button
-                    onClick={handleDownloadConfirm}
-                    className="confirm-button"
-                  >
-                    <Download size={16} />
-                    <span>Download</span>
-                  </button>
-                </div>
+        {showDownloadConfirm && (
+          <div className="download-confirm-overlay">
+            <div className="download-confirm-dialog">
+              <h3>Download Energy Report</h3>
+              <p>Do you want to download the energy report?</p>
+              <div className="dialog-buttons">
+                <button onClick={handleDownloadCancel}>Cancel</button>
+                <button
+                  onClick={handleDownloadConfirm}
+                  className="confirm-button"
+                >
+                  <Download size={16} />
+                  <span>Download</span>
+                </button>
               </div>
             </div>
-          )}
+          </div>
+        )}
       </div>
     );
   };
@@ -833,41 +836,66 @@ const SolarPage: React.FC = () => {
         </>
       ) : (
         // Mobile view with navigation bar
+        // Mobile view with navigation bar
         <>
-          <div className="solar-container">
+          <div
+            className="solar-container"
+            style={{
+              height: "100vh",
+              overflow: "hidden", // Prevent the whole container from scrolling
+              position: "relative", // Add positioning context
+            }}
+          >
             {/* Solar Energy Heading */}
             <div className="header-wrapper">
+              <div className="header-spacer"></div>
               <h2 className="solar-heading">Solar Energy Status</h2>
               <button
-                className="status-button"
+                className="btn rounded-circle p-2 d-flex align-items-center justify-content-center filter-button"
                 onClick={() => setShowEnergyFlow(true)}
-                aria-label="Show Energy Flow"
               >
-                <Sliders className="filter-icon" stroke="#1d3a57" size={24} />
+                <Sliders className="filter-icon" stroke="black" size={16} />
               </button>
             </div>
-
             {/* Energy Usage Circular Progress */}
             <CircularProgress />
+            <div
+              className="info-container container-fluid px-4 "
+              style={{
+                position: "absolute", // Position absolutely
+                bottom: 0, // Attach to bottom
+                left: 0, // Attach to left
+                right: 0, // Attach to right
+                height: "calc(100% - 410px)",
+                borderRadius: "30px 30px 0 0",
+                backgroundColor: "white",
+                overflowY: "auto",
+                paddingBottom: "20px",
+              }}
+            >
+              <div>
+                <div
+                  className="overflow-auto"
+                  style={{
+                    height: "100%", // Make this inner div scrollable
+                    paddingBottom: "60px", // Add bottom padding for content
+                  }}
+                >
+                  {/* Weather Section */}
+                  <WeatherSection />
 
-            {/* Main Container (white card) */}
-            <div className="info-container">
-              {/* Weather Section */}
-              <WeatherSection />
+                  {/* Estimated Generation */}
+                  <div className="estimate-generation">
+                    <p className="estimation ps-0">
+                      Estimate Generation: {estimateGeneration} kW
+                    </p>
+                  </div>
 
-              {/* Estimated Generation */}
-              <div className="estimate-generation">
-                <p className="estimation">
-                  Estimate Generation: {estimateGeneration} kW
-                </p>
+                  {/* Environmental Benefits */}
+                  <EnvironmentalBenefits />
+                </div>
               </div>
-
-              {/* Environmental Benefits */}
-              <EnvironmentalBenefits />
             </div>
-
-            {/* Home Indicator */}
-            <div className="home-indicator"></div>
           </div>
         </>
       )}

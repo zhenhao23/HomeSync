@@ -1,7 +1,7 @@
 /* Keeping all original mobile styling from your provided CSS */
 /* Mobile Styles (Original) */
 .solar-container {
-  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  font-family: "Segoe UI", "Roboto", sans-serif;
   height: 100vh;
   width: 100%;
   color: white;
@@ -10,17 +10,36 @@
   overflow: hidden;
 }
 
+/* Updated header-wrapper for centered heading with right-aligned button */
 .header-wrapper {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 60px 60px 10px;
+  padding: 60px 10px 10px 20px; /* Reduce right padding to 10px */
 }
 
 .solar-heading {
   font-size: 25px;
   font-weight: 600;
   margin: 0;
+  text-align: center;
+  grid-column: 2;
+}
+
+.header-spacer {
+  grid-column: 1;
+}
+
+.filter-button {
+  grid-column: 3;
+  justify-self: end;
+  margin-right: 12px; /* Change this from 20px to 5px */
+  margin-top: 8px;
+  background-color: white;
+  width: 32px;
+  height: 32px;
+  box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
 }
 
 .status-button {
@@ -84,7 +103,7 @@
   font-size: 16px;
 }
 
-.energy-percent{
+.energy-percent {
   margin: 0;
   font-size: 60px;
   font-weight: bold;
@@ -164,7 +183,7 @@
   margin-bottom: 20px;
 }
 
-.weather-header{
+.weather-header {
   font-size: 20px;
   margin-top: 10%;
 }
@@ -294,15 +313,15 @@
 @media (min-width: 1440px) {
   /* Laptop Container */
   .solar-container-laptop {
-    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    font-family: "Segoe UI", "Roboto", sans-serif;
     height: 100vh;
     width: 100%;
     color: white;
-    overflow: hidden; 
+    overflow: hidden;
     background-color: #1d3a57;
     padding: 20px;
   }
-  
+
   .solar-content-wrapper {
     display: flex;
     height: calc(100vh - 200px);
@@ -311,7 +330,7 @@
     position: relative;
     margin-top: 100px;
   }
-  
+
   /* Left Panel - Solar Energy Status */
   .solar-left-panel {
     width: 45%;
@@ -322,7 +341,7 @@
     border-radius: 25px;
     padding: 20px;
   }
-  
+
   .header-wrapper-laptop {
     display: flex;
     justify-content: space-between;
@@ -338,7 +357,7 @@
     font-weight: 600;
     margin: 0;
   }
-  
+
   .weather-benefits-container {
     width: 95%;
     background-color: rgb(32 65 95);
@@ -347,29 +366,29 @@
     padding: 20px;
     overflow-y: auto;
   }
-  
+
   .laptop-weather-section {
     padding: 0;
   }
-  
+
   .laptop-weather-section .weather-prediction,
   .laptop-benefits-section .weather-prediction {
     color: white;
     font-size: 22px;
   }
-  
+
   .laptop-weather-section .weather-item {
     color: white;
   }
-  
+
   .laptop-weather-section .energy-usages {
     color: white;
   }
-  
+
   .laptop-weather-section .weather-header {
     color: white;
   }
-  
+
   .estimate-generation-laptop {
     width: 100%;
     padding: 5px 0;
@@ -378,25 +397,25 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     text-align: left;
   }
-  
+
   .estimate-generation-laptop .estimation {
     color: white;
     font-size: 16px;
     padding: 0;
   }
-  
+
   .laptop-benefits-section {
     padding-top: 10px;
   }
-  
+
   .laptop-benefits-section .benefit-title {
     color: rgba(255, 255, 255, 0.7);
   }
-  
+
   .laptop-benefits-section .benefit-value {
     color: white;
   }
-  
+
   /* Right Panel - Energy Flow */
   .solar-right-panel {
     width: 55%;
@@ -406,7 +425,7 @@
     border-radius: 25px;
     overflow: hidden;
   }
-  
+
   .energy-flow-panel {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
@@ -415,7 +434,7 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .energy-flow-header {
     display: flex;
     justify-content: space-between;
@@ -423,13 +442,13 @@
     margin-bottom: 20px;
     margin-left: 40%;
   }
-  
+
   .header-energy-flow {
     font-size: 24px;
     font-weight: 600;
     margin: 0;
   }
-  
+
   .upload-button {
     background-color: white;
     border: none;
@@ -441,11 +460,11 @@
     align-items: center;
     cursor: pointer;
   }
-  
+
   .upload-button svg {
     color: #1d3a57;
   }
-  
+
   /* Yield Tabs */
   .yield-tabs {
     display: flex;
@@ -454,7 +473,7 @@
     margin-bottom: 20px;
     overflow: hidden;
   }
-  
+
   .yield-tab {
     flex: 1;
     background: none;
@@ -468,126 +487,124 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .yield-tab.active {
     background-color: #f8f8f8;
     color: #333;
     font-weight: bold;
   }
-  
+
   .yield-value {
     display: block;
     font-weight: bold;
     margin-top: 4px;
     color: #1d3a57;
   }
-  
 
-.icon-container {
-  width: 40px;
-  height: 40px;
-  background-color: rgba(248, 181, 0, 0.1);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 5px;
-}
+  .icon-container {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(248, 181, 0, 0.1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+  }
 
-/* Energy Flow Table Styling */
-.energy-flow-table {
-  background-color:rgb(32 65 96);
-  border-radius: 15px;
-  padding: 15px;
-  margin-top: auto;
-}
+  /* Energy Flow Table Styling */
+  .energy-flow-table {
+    background-color: rgb(32 65 96);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: auto;
+  }
 
-.flow-period-tabs {
-  display: flex;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 15px;
-}
+  .flow-period-tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+  }
 
-.period-tab {
-  padding: 8px 15px;
-  margin-right: 10px;
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: #888;
-  cursor: pointer;
-  position: relative;
-}
+  .period-tab {
+    padding: 8px 15px;
+    margin-right: 10px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #888;
+    cursor: pointer;
+    position: relative;
+  }
 
-.period-tab.active {
-  color: #ffffff;
-  font-weight: bold;
-}
+  .period-tab.active {
+    color: #ffffff;
+    font-weight: bold;
+  }
 
-.period-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #f8b500;
-}
+  .period-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #f8b500;
+  }
 
-.flow-data-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+  .flow-data-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
-.flow-data-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
-}
+  .flow-data-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
 
-.data-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  .data-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-.color-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
+  .color-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
 
-.color-indicator.pv {
-  background-color: #f8b500;
-}
+  .color-indicator.pv {
+    background-color: #f8b500;
+  }
 
-.color-indicator.imported {
-  background-color: #4682B4;
-}
+  .color-indicator.imported {
+    background-color: #4682b4;
+  }
 
-.color-indicator.exported {
-  background-color: #2ecc71;
-}
+  .color-indicator.exported {
+    background-color: #2ecc71;
+  }
 
-.color-indicator.load {
-  background-color: #e74c3c;
-}
+  .color-indicator.load {
+    background-color: #e74c3c;
+  }
 
-.info-icon {
-  color: #ccc;
-  font-size: 12px;
-  cursor: help;
-}
+  .info-icon {
+    color: #ccc;
+    font-size: 12px;
+    cursor: help;
+  }
 
-.data-value {
-  text-align: right;
-  font-weight: 500;
-  color: #ffffff;
-}
-
+  .data-value {
+    text-align: right;
+    font-weight: 500;
+    color: #ffffff;
+  }
 }
 
 /* Add this to your SolarPage.css file */
@@ -615,7 +632,6 @@
   font-size: 14px;
 }
 
-
 @media (min-width: 1280px) {
   .bottom-navbar {
     justify-content: center;
@@ -628,45 +644,44 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
-}
+  }
 
-.nav-button {
+  .nav-button {
     background-color: #204160 !important;
     color: #ffffff !important;
     outline: none !important;
     box-shadow: none !important;
-}
+  }
 
-.nav-button.active {
+  .nav-button.active {
     border-bottom: 2px solid #ffffff;
     border-radius: 0;
-}
-    
-.nav-label {
-  font-size: 17px;
-  font-weight: 600;
-}
+  }
 
+  .nav-label {
+    font-size: 17px;
+    font-weight: 600;
+  }
 }
 
 @media (min-width: 1440px) {
-.bottom-navbar {
-width: 520px;
-}
+  .bottom-navbar {
+    width: 520px;
+  }
 
-.nav-label {
-font-size: 18px;
-}
+  .nav-label {
+    font-size: 18px;
+  }
 }
 
 @media (min-width: 1920px) {
-.bottom-navbar {
-width: 550px;
-}
+  .bottom-navbar {
+    width: 550px;
+  }
 
-.nav-label {
-font-size: 20px;
-}
+  .nav-label {
+    font-size: 20px;
+  }
 }
 
 /* Additional styles to ensure navbar doesn't conflict with main content */
@@ -696,7 +711,7 @@ font-size: 20px;
   }
 }
 
- /* Add these styles to your SolarPage.css file */
+/* Add these styles to your SolarPage.css file */
 
 /* Energy Flow Graph Styling */
 .energy-flow-graph {
@@ -774,7 +789,6 @@ font-size: 20px;
   z-index: 2;
 }
 
-
 /* Graph Legend - NEW */
 .graph-legend {
   position: absolute;
@@ -810,7 +824,7 @@ font-size: 20px;
 }
 
 .grid-color {
-  background-color: #4682B4;
+  background-color: #4682b4;
   height: 3px;
 }
 
@@ -840,7 +854,7 @@ font-size: 20px;
 }
 
 .grid-line {
-  stroke: #4682B4;
+  stroke: #4682b4;
   stroke-width: 3;
   fill: none;
 }
@@ -887,30 +901,29 @@ font-size: 20px;
     max-width: none;
     padding: 32px;
   }
-  
+
   .weather-section {
     flex-direction: row;
     flex-wrap: wrap;
   }
-  
+
   .weather-item {
     flex: 1;
     min-width: 200px;
   }
-  
+
   .env-benefits-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .nav-label {
     display: inline;
   }
-  
+
   .yield-tabs {
     flex-wrap: wrap;
   }
 }
-
 
 /* Download confirmation dialog */
 .energy-flow-panel .download-confirm-overlay {
