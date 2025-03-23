@@ -8,7 +8,8 @@
   flex-direction: column;
   height: 100%;
   border-radius: 18px;
-  top: 50%;
+  /* Default for desktop */
+  top: 38%;
 }
 
 .deviceContainer {
@@ -35,5 +36,37 @@
 
   .deviceContainer {
     height: calc(100% - 430px);
+  }
+}
+
+/* iPhone 14 Pro Max specific fix - simplified and more targeted */
+@media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
+  only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
+  .slidingPanel {
+    top: 60%; /* Move it lower on the screen */
+  }
+
+  .deviceContainer {
+    height: calc(100% - 400px);
+  }
+}
+
+/* iPhone 14/15 Pro/Pro Max general fix */
+@media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
+  .slidingPanel {
+    top: 60%;
+  }
+
+  .deviceContainer {
+    height: calc(100% - 400px);
+  }
+}
+
+/* iOS Safari general fix - this should execute after the iPhone specific queries */
+@supports (-webkit-touch-callout: none) and
+  (not (-webkit-device-pixel-ratio: 3)) {
+  .slidingPanel {
+    /* Slightly lower position for iOS devices in general, but not Pro models already handled above */
+    top: 52%;
   }
 }
