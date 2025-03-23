@@ -17,15 +17,24 @@ h2 {
   margin-right: 1rem;
 }
 
-.manage-users {
-  display: flex;
-  justify-content: center;
-  margin-top: 13%;
+.header {
+  margin-top: 15%;
+  
 }
 
-.content-container {
+.back-button {
+  position: absolute;
+  cursor: pointer;
+  color: white;
+  background: none;
+  border: none;
+  font-size: 16px;
+}
+
+
+.manage-users .content-container {
   position: fixed;
-  top: 18%;
+  top: 13%;
   bottom: 1%;
   left: 50%;
   transform: translateX(-50%);

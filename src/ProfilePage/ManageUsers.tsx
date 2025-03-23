@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import "./ManageUsers.css";
 import UserDevices from "./UserDevices";
 import ProfileImage from "./img1.jpeg";
@@ -53,11 +53,14 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
   const currentTranslateX = useRef<number>(0);
   const isDragging = useRef<boolean>(false);
 
+  const [translateX, setTranslateX] = useState(0);
+
   const handleTouchStart = (e: React.TouchEvent, userId: number) => {
     if (userId === 1) return; // Prevent swiping for owner
     touchStartX.current = e.touches[0].clientX;
     isDragging.current = true;
     setSwipedUserId(userId);
+    setTranslateX(0); // Reset
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -81,6 +84,7 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
       ).toString();
     }
   };
+ 
 
   const handleTouchEnd = (e: React.TouchEvent, userId: number) => {
     if (!isDragging.current) return;
@@ -108,6 +112,8 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
     }, 200);
   };
 
+  
+
   const addUser = () => {
     if (!email) return;
     const newUser: UserType = {
@@ -127,30 +133,37 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
   }
 
   return (
-    <div className="manage-users border">
+    <div className="manage-users">
       <div className="header">
+        {/* Back Button - Stays on the Left */}
         <div
           onClick={onBack}
           style={{
             padding: "8px 15px",
             cursor: "pointer",
             position: "absolute",
+            left: 0, // Ensures it's on the left
+            display: "flex",
+            alignItems: "center",
           }}
         >
           <IoIosArrowBack size={22} color="#FFFFFF" />
           <span
-            style={{
-              marginLeft: "8px",
-              color: "#FFFFFF",
-              fontSize: "16px",
-            }}
+            style={{ marginLeft: "8px", color: "#FFFFFF", fontSize: "16px" }}
           >
             Back
           </span>
         </div>
+
+        {/* Centered Title */}
         <h3
           className="fw-bold"
-          style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+          style={{
+            color: "#FFFFFF",
+            fontSize: "1.5rem",
+            textAlign: "center",
+            flex: 1, // Ensures it takes available space
+          }}
         >
           Manage Users
         </h3>
@@ -175,11 +188,11 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
               onTouchMove={handleTouchMove}
               onTouchEnd={(e) => handleTouchEnd(e, user.id)}
               onClick={() => setSelectedUser(user)}
+              style={{
+                transform: `translateX(${swipedUserId === user.id ? translateX : 0}px)`,
+                transition: isDragging.current ? "none" : "transform 0.2s ease-out",
+              }}
             >
-              <div className="delete-indicator">
-                <FaTrash />
-                <span>Delete</span>
-              </div>
               <div className="user-content">
                 {user.profilePic ? (
                   <img
@@ -192,6 +205,29 @@ const ManageUsers: React.FC<ManageUsersProps> = ({
                 )}
                 <span>{user.name}</span>
               </div>
+              {/* <div>
+                {swipedUserId === user.id && (
+                  <button
+                    onClick={() =>
+                      setUsers(users.filter((u) => u.id !== user.id))
+                    }
+                    style={{
+                      backgroundColor: "red",
+                      padding: "10px",
+                      display: "flex",
+                      borderRadius: "50%",
+                      border: "none",
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      zIndex: 10,
+                    }}
+                  >
+                    <FaTrashAlt color="white" size={18} />
+                  </button>
+                )}
+              </div> */}
             </li>
           ))}
         </ul>
