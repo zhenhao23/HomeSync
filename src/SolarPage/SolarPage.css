@@ -313,7 +313,7 @@
 }
 
 /* ========== UPDATED LAPTOP STYLES ========== */
-@media (min-width: 1440px) {
+@media (min-width: 1024px) {
   /* Laptop Container */
   .solar-container-laptop {
     font-family: "Segoe UI", "Roboto", sans-serif;
@@ -327,22 +327,24 @@
 
   .solar-content-wrapper {
     display: flex;
-    height: calc(100vh - 200px);
-    gap: 30px;
+    gap: 10%;
+    width: 98vw;
     padding: 20px;
     position: relative;
-    margin-top: 100px;
+    margin-top: 30px;
+    height: calc(100vh - 100px);
   }
 
   /* Left Panel - Solar Energy Status */
   .solar-left-panel {
-    width: 45%;
+    width: 40%;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 25px;
     padding: 20px;
+    height: 100%;
   }
 
   .header-wrapper-laptop {

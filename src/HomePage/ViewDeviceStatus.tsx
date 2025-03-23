@@ -310,8 +310,11 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
       <div className="position-fixed purple-container">
         {isLaptop ? (
           <div
-            style={{ width: "100%" }}
-            className="d-flex justify-content-between align-items-center p-3 pb-0"
+            style={{ 
+              width: "100%",
+              padding: isDeviceEditing ? "20px" : "10px",
+             }}
+            className="d-flex justify-content-between align-items-center"
           >
             <div className="col-4 text-start device-edit-div">
               <h5
@@ -327,8 +330,8 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
               </h3>
               {isDeviceEditing ? (
                 <FaPen
-                  className="mb-1"
-                  size={18}
+                  className="mb-2"
+                  size={15}
                   color="white"
                   onClick={(e) => {
                     if (swipedDevice === getDevice().device_id.toString()) {
@@ -337,8 +340,9 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                       handleEditRoomClick(); // Proceed to select the device if not swiped
                     }
                   }}
-                  style={{ cursor: "pointer", padding: "20px" }}
+                  style={{ cursor: "pointer" }}
                 />
+                
               ) : (
                 <>
                   <div onClick={() => setActiveContent("viewCollaborators")}>
@@ -516,7 +520,11 @@ const ViewDeviceStatus: React.FC<ViewDeviceStatusProps> = ({
                               <span className="on-text">ON</span>
                               <span className="off-text">OFF</span>
                             </label>
-                            <IoIosArrowForward size={22} className="ms-1" color="#404040" />
+                            <IoIosArrowForward
+                              size={22}
+                              className="ms-1"
+                              color="#404040"
+                            />
                           </div>
                         </div>
 

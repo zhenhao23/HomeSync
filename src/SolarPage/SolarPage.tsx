@@ -8,6 +8,7 @@ import { FaHome, FaBolt, FaSun, FaUser } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import EnergyFlowComponent from "./EnergyFlowPage";
 import "./SolarPage.css";
+import LogoSmartHome from "../HomePage/LogoSmartHome";
 
 // Window size hook
 const useWindowSize = () => {
@@ -131,7 +132,7 @@ const SolarPage: React.FC = () => {
 
   // Get window size for responsive layout
   const { width } = useWindowSize();
-  const isLaptop = width >= 1440;
+  const isLaptop = width >= 1024;
 
   const radius = 120;
   const strokeWidth = 16;
@@ -651,7 +652,7 @@ const SolarPage: React.FC = () => {
     //     : energyFlowData.total;
 
     return (
-      <div className="energy-flow-panel">
+      <div className="energy-flow-panel border border-5">
         {/* Same structure as before but update field references */}
         <div className="energy-flow-header">
           <h2 className="header-energy-flow">Energy Flow</h2>
@@ -821,6 +822,13 @@ const SolarPage: React.FC = () => {
 
   return (
     <>
+      <div className="d-flex align-items-center px-5 mt-3" style={{position: "absolute"}}>
+        <div className="m-3">
+          <LogoSmartHome />
+        </div>
+        <h3 className="homesync-title">HomeSync</h3>
+      </div>
+
       {isLaptop ? (
         // Laptop view with both panels and the navigation bar
         <>
@@ -873,9 +881,9 @@ const SolarPage: React.FC = () => {
 
           {/* Solar page content */}
           <div className="solar-container-laptop">
-            <div className="solar-content-wrapper">
+            <div className="solar-content-wrapper border border-5">
               {/* Left Panel - Solar Energy Status */}
-              <div className="solar-left-panel">
+              <div className="solar-left-panel border border-5">
                 <div className="header-wrapper-laptop">
                   <h2 className="solar-heading3">Solar Energy Status</h2>
                 </div>
