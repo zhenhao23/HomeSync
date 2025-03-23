@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  FaArrowLeft,
   FaBed,
   FaCouch,
   FaUtensils,
@@ -13,6 +12,7 @@ import AnnaProfilePic from "./anna-profile.avif";
 import AdrianProfilePic from "./adrian-profile.avif";
 import JoshuaProfilePic from "./joshua-profile.avif";
 import LilyProfilePic from "./lily-profile.avif";
+import { IoIosArrowBack } from "react-icons/io";
 
 // Add this helper function
 const getProfilePicture = (profilePicPath: string) => {
@@ -66,8 +66,36 @@ const UserDevices: React.FC<UserDevicesProps> = ({ onBack, user }) => {
     <div className="user-devices">
       {/* Header Section */}
       <div className="header">
-        <FaArrowLeft className="back-icon" onClick={onBack} />
-        <h2 className="header-title">Manage Users</h2>
+        {/* <FaArrowLeft className="back-icon" onClick={onBack} /> */}
+        <div
+          onClick={onBack}
+          style={{
+            padding: "8px 15px",
+            cursor: "pointer",
+            position: "absolute",
+            left: 0, // Ensures it's on the left
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <IoIosArrowBack size={22} color="#FFFFFF" />
+          <span
+            style={{ marginLeft: "8px", color: "#FFFFFF", fontSize: "16px" }}
+          >
+            Back
+          </span>
+        </div>
+        <h3
+          className="fw-bold"
+          style={{
+            color: "#FFFFFF",
+            fontSize: "1.5rem",
+            textAlign: "center",
+            flex: 1, // Ensures it takes available space
+          }}
+        >
+          Manage Users
+        </h3>
       </div>
 
       {/* Content Container */}

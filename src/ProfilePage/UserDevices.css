@@ -51,13 +51,13 @@
 /* Content Container */
 .content-container {
   position: fixed;
-  top: 18%;
+  top: 13%;
   bottom: 1%;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   background: white;
-  border-radius: 48px 48px 0 0;
+  border-radius: 32px 32px 0 0;
   padding: 2rem 1.5rem;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
