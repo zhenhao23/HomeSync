@@ -56,6 +56,9 @@ const EnergyPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  // Add a state to track window height
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
   const deviceImages: { [key: string]: string } = {
     light: LampImage,
     aircond: AirCondImage,
@@ -84,6 +87,22 @@ const EnergyPage: React.FC = () => {
     },
     [cachedData]
   );
+
+  useEffect(() => {
+    // Handler to call on window resize
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty array ensures effect runs only on mount and unmount
 
   // Function to fetch data for a specific time range
   const fetchDataForRange = async (
@@ -235,47 +254,7 @@ const EnergyPage: React.FC = () => {
       <div
         className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
         style={{
-          top: (() => {
-            // Get current window width and height
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-
-            // iPhone SE width is around 375px
-            if (width <= 375) {
-              return "50%";
-            }
-            // iPhone 12 Pro (390 x 844)
-            else if (
-              width >= 385 &&
-              width <= 395 &&
-              height >= 840 &&
-              height <= 850
-            ) {
-              return "40%";
-            }
-            // iPhone 14 Pro Max (430 x 932)
-            else if (
-              width >= 425 &&
-              width <= 435 &&
-              height >= 920 &&
-              height <= 940
-            ) {
-              return "38%";
-            }
-            // Samsung Galaxy S8+ (360 x 740)
-            else if (
-              width >= 350 &&
-              width <= 370 &&
-              height >= 730 &&
-              height <= 750
-            ) {
-              return "50%"; // Adjust this value as needed
-            }
-            // Default for other devices
-            else {
-              return "40%";
-            }
-          })(),
+          top: windowHeight < 700 ? "50%" : windowHeight < 850 ? "40%" : "38%",
           height: "100%",
           borderRadius: "18px",
         }}
@@ -315,44 +294,12 @@ const EnergyPage: React.FC = () => {
         <div
           className="container-fluid overflow-auto px-4"
           style={{
-            height: (() => {
-              const width = window.innerWidth;
-              const height = window.innerHeight;
-
-              // iPhone SE and similar small devices
-              if (width <= 375) {
-                return "calc(100% - 440px)";
-              }
-              // iPhone 12 Pro (390 x 844)
-              else if (
-                width >= 385 &&
-                width <= 395 &&
-                height >= 840 &&
-                height <= 850
-              ) {
-                return "calc(100% - 440px)";
-              }
-              // iPhone 14 Pro Max (430 x 932)
-              else if (
-                width >= 425 &&
-                width <= 435 &&
-                height >= 920 &&
-                height <= 940
-              ) {
-                return "calc(100% - 440px)";
-              }
-              // Samsung Galaxy S8+ and similar mid-sized devices
-              else if (
-                width >= 350 &&
-                width <= 370 &&
-                height >= 730 &&
-                height <= 750
-              ) {
-                return "calc(100% - 440px)";
-              }
-              // Default for larger devices
-              return "calc(100% - 460px)";
-            })(),
+            height:
+              windowHeight < 700
+                ? "calc(100% - 430px)"
+                : windowHeight < 850
+                ? "calc(100% - 440px)"
+                : "calc(100% - 460px)",
           }}
         >
           <div className="row g-3 pb-5">
