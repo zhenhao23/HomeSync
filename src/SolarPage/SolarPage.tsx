@@ -695,7 +695,12 @@ const SolarPage: React.FC = () => {
       <div className="energy-flow-panel">
         {/* Same structure as before but update field references */}
         <div className="energy-flow-header">
-          <h2 className="header-energy-flow">Energy Flow</h2>
+          <h3
+            className="fw-bold"
+            style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+          >
+            Energy Flow
+          </h3>
           <button className="upload-button" onClick={handleShareClick}>
             <Upload size={18} />
           </button>

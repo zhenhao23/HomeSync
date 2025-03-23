@@ -4,11 +4,11 @@
 .ep-edit-profile {
   color: white;
   font-size: 24px;
-  margin-bottom: 24px;
   text-align: center;
   font-weight: 600;
   position: relative;
-  margin-top: 18%; /* Moved higher */
+  margin-top: 5%;
+
 }
 
 .ep-text-start {
@@ -34,14 +34,14 @@
 
 .ep-content-container {
   position: fixed;
-  top: 18%;
+  top: 13%;
   bottom: 1%; /* Moved Up from 0% */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   background: white;
   color: black;
-  border-radius: 48px;
+  border-radius: 32px;
   padding: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -85,16 +85,17 @@
 .ep-form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #666;
+  color: #878787;
   font-size: 0.9rem;
   margin-top: 40px;
+  font-weight: 600;
 }
 
 .ep-form-control {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;
-  border-radius: 32px;
+  border-radius: 10px;
   font-size: 1rem;
   transition: border-color 0.2s;
 }
@@ -109,13 +110,14 @@
   background-color: rgb(32, 65, 96);
   border: none;
   text-transform: capitalize;
-  width: 45%; /* Half width of input fields */
+  font-weight: 500;
   margin: 0 auto; /* Center the button */
   display: block; /* Needed for margin auto */
-  border-radius: 32px; /* More rounded shape */
+  border-radius: 20px; /* More rounded shape */
   padding: 0.75rem;
   margin-top: 90px;
   color: #fff;
+
 }
 
 .ep-btn-primary:active {
@@ -127,11 +129,11 @@
   padding: 0 1rem;
 }
 /* Ensure title is centered properly */
-.ep-col-4.text-center h3 {
+.ep-col-4 .text-center h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: #333;
-  margin-top: -10px; /* Moves title a bit higher */
+  margin-top: 0; 
 }
 
 .ep-btn.p-0 {
@@ -140,10 +142,9 @@
   color: #fcfcfc;
   font-size: 1.2rem;
   padding: 0;
-  margin-top: 3%;
 }
 
 .ep-save-button-container {
   margin-top: 2.5rem; /* Increased spacing above button */
-  padding: 0 1rem;
+  padding: 0 6rem;
 }

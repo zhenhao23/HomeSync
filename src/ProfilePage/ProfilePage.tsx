@@ -989,23 +989,27 @@ const ProfilePage = () => {
               position: "relative",
             }}
           >
-            <h1 className="profile-heading">My Profile</h1>
+            <h3
+              className="fw-bold profile-heading"
+              style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+            >
+              My Profile
+            </h3>
 
             <div
               className="profile-content"
               style={{
                 position: "absolute",
-                top: "18%",
+                top: "13%",
                 bottom: "0" /* Changed from 1% to avoid extra space */,
                 left: "0",
                 right: "0",
                 margin: "0 auto",
                 width: "100%",
                 background: "white",
-                borderRadius: "48px 48px 0 0",
+                borderRadius: "32px",
                 padding: "20px",
                 overflowY: "auto",
-                paddingBottom: "80px" /* Add padding for bottom navbar */,
               }}
             >
               {/* Profile Section */}
@@ -1087,7 +1091,7 @@ const ProfilePage = () => {
                 <div className="mobile-action-buttons">
                   <button className="add-home-button" onClick={handleAddHome}>
                     <FaHome className="button-icon" />
-                    <span>Switch Home</span>
+                    <span>Add Home</span>
                   </button>
                   <button className="log-out-button" onClick={handleLogout}>
                     <FaSignOutAlt className="button-icon" />
