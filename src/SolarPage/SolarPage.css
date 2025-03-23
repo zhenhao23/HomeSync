@@ -939,21 +939,21 @@
   }
 
   .progress-wrapper {
-      max-width: 130px; /* Ensure it doesn't get too large */
-      max-height: 130px;
+      max-width: 150px; /* Ensure it doesn't get too large */
+      max-height: 150px;
   }
 
   .progress-text .energy-usages {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .progress-text .energy-percent {
-    font-size: 1.7rem;
+    font-size: 2rem;
   }
 
   .progress-icon {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
   }
 
   .progress-icon .icon {
