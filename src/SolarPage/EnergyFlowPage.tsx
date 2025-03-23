@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft, Share2, Info, Download } from "lucide-react";
 import "./EnergyFlowPage.css";
 import { useNavigate } from "react-router-dom";
+import pdfIcon2 from "../assets/energy/download-pdf-icon.svg";
 
 interface EnergyData {
   pv: {
@@ -374,23 +375,23 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
 
       {/* Download confirmation dialog */}
       {showDownloadConfirm && (
-        <div className="download-confirm-overlay">
-          <div className="download-confirm-dialog">
-            <h3>Download Energy Report</h3>
-            <p>Do you want to download the energy report?</p>
-            <div className="dialog-buttons">
-              <button onClick={handleDownloadCancel}>Cancel</button>
-              <button
-                onClick={handleDownloadConfirm}
-                className="confirm-button"
-              >
-                <Download size={16} />
-                <span>Download</span>
-              </button>
+          <div className="download-confirm-overlay">
+            <div className="download-confirm-dialog text-center">
+              <h3>Download Energy Report</h3>
+              <img src={pdfIcon2}></img>
+              <div className="dialog-buttons">
+                <button onClick={handleDownloadCancel}>Cancel</button>
+                <button
+                  onClick={handleDownloadConfirm}
+                  className="confirm-button"
+                >
+                  <Download size={16} />
+                  <span>Download</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

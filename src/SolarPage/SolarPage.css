@@ -318,7 +318,6 @@
     font-size: 15px;
   }
   
-
   /* Laptop Container */
   .solar-container-laptop {
     font-family: "Segoe UI", "Roboto", sans-serif;
@@ -330,11 +329,6 @@
     padding: 20px;
   }
 
-  .progress-icon .icon {
-    width: 25px;
-    height: 25px;
-  }
-
   .solar-content-wrapper {
     display: flex;
     margin-top: 30px;
@@ -342,7 +336,7 @@
     justify-content: center;
     gap: 4%;
   }
- 
+
   /* Left Panel - Solar Energy Status */
   .solar-left-panel {
     width: 40%;
@@ -952,8 +946,8 @@
   }
 
   .progress-icon {
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
   }
 
 }

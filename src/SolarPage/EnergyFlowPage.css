@@ -212,7 +212,7 @@
     max-width: 320px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   }
-  
+
   .download-confirm-dialog h3 {
     margin-top: 0;
     margin-bottom: 16px;
@@ -224,11 +224,12 @@
     color: #4a5568;
     margin-bottom: 24px;
   }
-  
+
   .dialog-buttons {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
+    margin-top: 10px;
   }
   
   .energy-flow-container .dialog-buttons button {

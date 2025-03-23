@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import EnergyFlowComponent from "./EnergyFlowPage";
 import "./SolarPage.css";
 import LogoSmartHome from "../HomePage/LogoSmartHome";
+import pdfIcon from "../assets/energy/download-pdf-icon.svg";
 
 // Window size hook
 const useWindowSize = () => {
@@ -805,9 +806,9 @@ const SolarPage: React.FC = () => {
         {/* Download confirmation dialog */}
         {showDownloadConfirm && (
           <div className="download-confirm-overlay">
-            <div className="download-confirm-dialog">
+            <div className="download-confirm-dialog text-center">
               <h3>Download Energy Report</h3>
-              <p>Do you want to download the energy report?</p>
+              <img src={pdfIcon}></img>
               <div className="dialog-buttons">
                 <button onClick={handleDownloadCancel}>Cancel</button>
                 <button
