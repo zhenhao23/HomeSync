@@ -996,7 +996,7 @@ const ProfilePage = () => {
               style={{
                 position: "absolute",
                 top: "18%",
-                bottom: "1%",
+                bottom: "0" /* Changed from 1% to avoid extra space */,
                 left: "0",
                 right: "0",
                 margin: "0 auto",
@@ -1005,8 +1005,7 @@ const ProfilePage = () => {
                 borderRadius: "48px 48px 0 0",
                 padding: "20px",
                 overflowY: "auto",
-                WebkitOverflowScrolling: "touch", // For smooth scrolling on iOS
-                // paddingBottom: "20px", // Extra padding for bottom navbar
+                paddingBottom: "80px" /* Add padding for bottom navbar */,
               }}
             >
               {/* Profile Section */}

@@ -14,7 +14,7 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  /* padding: 60px 10px 10px 20px; Reduce right padding to 10px */
+  padding: 60px 10px 10px 20px; /* Reduce right padding to 10px */
 }
 
 .solar-heading {
