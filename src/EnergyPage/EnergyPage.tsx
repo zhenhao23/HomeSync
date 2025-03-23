@@ -254,7 +254,7 @@ const EnergyPage: React.FC = () => {
       <div
         className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
         style={{
-          top: windowHeight < 700 ? "50%" : windowHeight < 850 ? "40%" : "38%",
+          top: windowHeight < 700 ? "50%" : windowHeight < 850 ? "40%" : "50%",
           height: "100%",
           borderRadius: "18px",
         }}
