@@ -3,15 +3,11 @@
   position: fixed;
   overflow: auto;
   top: 50%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
   height: 45%;
   border-radius: 18px;
   padding-bottom: 15%;
 }
 
-/* Rest of your existing styles... */
 .schedule,
 .smart-feature {
   display: flex;
@@ -150,44 +146,5 @@
     min-height: 75vh; /* Helps in flex containers */
     overflow-y: auto;
     overflow-x: hidden;
-  }
-}
-
-/* Medium sized devices */
-@media (max-height: 850px) {
-  .dev-smart-feature-container {
-    top: 40%;
-  }
-}
-
-/* Small sized devices */
-@media (max-height: 700px) {
-  .dev-smart-feature-container {
-    top: 50%;
-  }
-}
-
-/* iPhone 14 Pro Max specific fix - moved lower */
-@media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
-  only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
-  .dev-smart-feature-container {
-    top: 50%; /* Moved from 40% to 50% to display lower */
-    height: 55%;
-  }
-}
-
-/* iPhone 14/15 Pro/Pro Max general fix - moved lower */
-@media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
-  .dev-smart-feature-container {
-    top: 50%; /* Moved from 40% to 50% to display lower */
-    height: 55%;
-  }
-}
-
-/* iOS Safari general fix */
-@supports (-webkit-touch-callout: none) and
-  (not (-webkit-device-pixel-ratio: 3)) {
-  .dev-smart-feature-container {
-    top: 55%; /* Moved from 52% to 55% for slightly lower position */
   }
 }
