@@ -953,7 +953,7 @@
 }
 
 /* Download confirmation dialog */
-.energy-flow-panel .download-confirm-overlay {
+.download-confirm-overlay {
   position: fixed;
   top: 0;
   left: 0;

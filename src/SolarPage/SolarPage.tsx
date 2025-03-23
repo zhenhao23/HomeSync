@@ -10,6 +10,7 @@ import EnergyFlowComponent from "./EnergyFlowPage";
 import "./SolarPage.css";
 import LogoSmartHome from "../HomePage/LogoSmartHome";
 import pdfIcon from "../assets/energy/download-pdf-icon.svg";
+import React from "react";
 
 // Window size hook
 const useWindowSize = () => {
@@ -83,6 +84,19 @@ const SolarPage: React.FC = () => {
     setHomeId(parseInt(storedHomeId));
   }, []);
 
+  // Click outside to close active tooltip
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      setActiveTooltip(null);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
   // New state for download confirmation dialog
   const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
 
@@ -143,6 +157,26 @@ const SolarPage: React.FC = () => {
 
   // Add new state for animated offset
   const [displayedOffset, setDisplayedOffset] = useState(circumference);
+
+  // States for tooltips
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+
+  // Definitions for tooltips
+  const definitions = {
+    pv: "This refers to the technology used in solar panels to convert sunlight into electricity. 'PV' usually means your solar panel system.",
+    imported:
+      "This is the energy brought in from the grid. When your solar panels aren’t producing enough power, your home draws energy from the utility grid, which is 'imported'.",
+    exported:
+      "This is the energy sent back to the grid. When your solar panels produce more power than your home is using, the excess is 'exported' to the grid, which might earn you credits depending on your utility plan.",
+    load: "This term refers to the total energy demand or consumption of your home at a given moment. It’s the amount of power your appliances and devices are drawing.",
+  };
+
+  // Function to handle info icon click
+  const handleInfoClick = (type: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    setActiveTooltip(type);
+    console.log(activeTooltip);
+  };
 
   // Update the animation effect to use easing
   useEffect(() => {
@@ -737,7 +771,12 @@ const SolarPage: React.FC = () => {
               <div className="data-label">
                 <span className="color-indicator pv"></span>
                 <span>PV Generation</span>
-                <span className="info-icon">ⓘ</span>
+                <span
+                  className="info-icon"
+                  onClick={(e) => handleInfoClick("PV (Photovoltaic)", e)}
+                >
+                  ⓘ
+                </span>
               </div>
               <div className="data-value">
                 {energyFlowData.today.pvGeneration.toFixed(2)} kWh
@@ -754,7 +793,12 @@ const SolarPage: React.FC = () => {
               <div className="data-label">
                 <span className="color-indicator imported"></span>
                 <span>Imported</span>
-                <span className="info-icon">ⓘ</span>
+                <span
+                  className="info-icon"
+                  onClick={(e) => handleInfoClick("Imported", e)}
+                >
+                  ⓘ
+                </span>
               </div>
               <div className="data-value">
                 {energyFlowData.today.importedEnergy.toFixed(2)} kWh
@@ -771,7 +815,12 @@ const SolarPage: React.FC = () => {
               <div className="data-label">
                 <span className="color-indicator exported"></span>
                 <span>Exported</span>
-                <span className="info-icon">ⓘ</span>
+                <span
+                  className="info-icon"
+                  onClick={(e) => handleInfoClick("Exported", e)}
+                >
+                  ⓘ
+                </span>
               </div>
               <div className="data-value">
                 {energyFlowData.today.exportedEnergy.toFixed(2)} kWh
@@ -787,8 +836,13 @@ const SolarPage: React.FC = () => {
             <div className="flow-data-row">
               <div className="data-label">
                 <span className="color-indicator load"></span>
-                <span>Home Consumption</span>
-                <span className="info-icon">ⓘ</span>
+                <span>Load</span>
+                <span
+                  className="info-icon"
+                  onClick={(e) => handleInfoClick("Load", e)}
+                >
+                  ⓘ
+                </span>
               </div>
               <div className="data-value">
                 {energyFlowData.today.loadEnergy.toFixed(2)} kWh
@@ -981,6 +1035,39 @@ const SolarPage: React.FC = () => {
             </div>
           </div>
         </>
+      )}
+
+      {activeTooltip === "PV (Photovoltaic)" && (
+        <div className="download-confirm-overlay">
+          <div className="download-confirm-dialog">
+            <h3>{activeTooltip}</h3>
+            <div style={{ fontWeight: "400" }}>{definitions.pv}</div>
+          </div>
+        </div>
+      )}
+      {activeTooltip === "Imported" && (
+        <div className="download-confirm-overlay">
+          <div className="download-confirm-dialog">
+            <h3>{activeTooltip}</h3>
+            <div style={{ fontWeight: "400" }}>{definitions.imported}</div>
+          </div>
+        </div>
+      )}
+      {activeTooltip === "Exported" && (
+        <div className="download-confirm-overlay">
+          <div className="download-confirm-dialog">
+            <h3>{activeTooltip}</h3>
+            <div style={{ fontWeight: "400" }}>{definitions.exported}</div>
+          </div>
+        </div>
+      )}
+      {activeTooltip === "Load" && (
+        <div className="download-confirm-overlay">
+          <div className="download-confirm-dialog">
+            <h3>{activeTooltip}</h3>
+            <div style={{ fontWeight: "400" }}>{definitions.load}</div>
+          </div>
+        </div>
       )}
     </>
   );
