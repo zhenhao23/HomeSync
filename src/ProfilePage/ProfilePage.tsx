@@ -989,7 +989,7 @@ const ProfilePage = () => {
               position: "relative",
             }}
           >
-            <h1 className="profile-heading mb-3">My Profile</h1>
+            <h1 className="profile-heading">My Profile</h1>
 
             <div
               className="profile-content"

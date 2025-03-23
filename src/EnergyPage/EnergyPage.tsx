@@ -235,7 +235,47 @@ const EnergyPage: React.FC = () => {
       <div
         className="bg-white position-fixed start-50 translate-middle-x w-100 d-flex flex-column"
         style={{
-          top: "40%",
+          top: (() => {
+            // Get current window width and height
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // iPhone SE width is around 375px
+            if (width <= 375) {
+              return "50%";
+            }
+            // iPhone 12 Pro (390 x 844)
+            else if (
+              width >= 385 &&
+              width <= 395 &&
+              height >= 840 &&
+              height <= 850
+            ) {
+              return "40%";
+            }
+            // iPhone 14 Pro Max (430 x 932)
+            else if (
+              width >= 425 &&
+              width <= 435 &&
+              height >= 920 &&
+              height <= 940
+            ) {
+              return "38%";
+            }
+            // Samsung Galaxy S8+ (360 x 740)
+            else if (
+              width >= 350 &&
+              width <= 370 &&
+              height >= 730 &&
+              height <= 750
+            ) {
+              return "50%"; // Adjust this value as needed
+            }
+            // Default for other devices
+            else {
+              return "40%";
+            }
+          })(),
           height: "100%",
           borderRadius: "18px",
         }}
@@ -275,7 +315,44 @@ const EnergyPage: React.FC = () => {
         <div
           className="container-fluid overflow-auto px-4"
           style={{
-            height: "calc(100% - 430px)",
+            height: (() => {
+              const width = window.innerWidth;
+              const height = window.innerHeight;
+
+              // iPhone SE and similar small devices
+              if (width <= 375) {
+                return "calc(100% - 440px)";
+              }
+              // iPhone 12 Pro (390 x 844)
+              else if (
+                width >= 385 &&
+                width <= 395 &&
+                height >= 840 &&
+                height <= 850
+              ) {
+                return "calc(100% - 440px)";
+              }
+              // iPhone 14 Pro Max (430 x 932)
+              else if (
+                width >= 425 &&
+                width <= 435 &&
+                height >= 920 &&
+                height <= 940
+              ) {
+                return "calc(100% - 440px)";
+              }
+              // Samsung Galaxy S8+ and similar mid-sized devices
+              else if (
+                width >= 350 &&
+                width <= 370 &&
+                height >= 730 &&
+                height <= 750
+              ) {
+                return "calc(100% - 440px)";
+              }
+              // Default for larger devices
+              return "calc(100% - 460px)";
+            })(),
           }}
         >
           <div className="row g-3 pb-5">
