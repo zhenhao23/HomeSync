@@ -981,7 +981,14 @@ const ProfilePage = () => {
         );
       default:
         return (
-          <>
+          <div
+            className="profile-wrapper"
+            style={{
+              height: "100vh",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
             <h1 className="profile-heading mb-3">My Profile</h1>
             <div className="profile-content">
               {/* Profile Section */}
@@ -1074,7 +1081,7 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-          </>
+          </div>
         );
     }
   };

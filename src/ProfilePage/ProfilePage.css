@@ -1,33 +1,41 @@
 .profile-page {
   min-height: 100vh;
-  padding: 16px;
+  position: relative;
+  overflow: hidden; /* Prevent page level scrolling */
+}
+
+.profile-wrapper {
+  height: 100vh;
+  overflow: hidden;
   position: relative;
 }
 
 .profile-heading {
   color: white;
   font-size: 24px;
-  /* margin-bottom: 24px; */
   text-align: center;
   font-weight: 600;
   position: relative;
   margin-top: 24%;
+  padding: 0 16px;
 }
 
 /* Main white container */
 .profile-content {
   position: fixed;
   top: 18%;
-  bottom: 1%; /* Moved Up from 0% */
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 1%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   width: 100%;
   background: white;
   color: black;
-  border-radius: 48px;
+  border-radius: 48px 48px 0 0;
   padding: 20px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-y: auto; /* Enable vertical scrolling only within container */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 /* Profile section */

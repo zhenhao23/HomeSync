@@ -917,7 +917,7 @@ const SolarPage: React.FC = () => {
             style={{
               height: "100vh",
               overflow: "hidden", // Prevent the whole container from scrolling
-              position: "relative", // Add positioning context
+              position: "relative", // Keep positioning context
             }}
           >
             {/* Solar Energy Heading */}
@@ -931,43 +931,43 @@ const SolarPage: React.FC = () => {
                 <Sliders className="filter-icon" stroke="black" size={16} />
               </button>
             </div>
+
             {/* Energy Usage Circular Progress */}
             <CircularProgress />
+
             <div
-              className="info-container container-fluid px-4 "
+              className="info-container container-fluid px-4"
               style={{
                 position: "absolute", // Position absolutely
                 bottom: 0, // Attach to bottom
                 left: 0, // Attach to left
                 right: 0, // Attach to right
-                height: "calc(100% - 410px)",
+                height: "calc(100% - 410px)", // Calculate height based on remaining space
                 borderRadius: "30px 30px 0 0",
                 backgroundColor: "white",
-                overflowY: "auto",
-                paddingBottom: "20px",
+                overflowY: "auto", // Allow scrolling only within this container
+                paddingBottom: "80px", // Add padding for bottom nav
               }}
             >
-              <div>
-                <div
-                  className="overflow-auto"
-                  style={{
-                    height: "100%", // Make this inner div scrollable
-                    paddingBottom: "60px", // Add bottom padding for content
-                  }}
-                >
-                  {/* Weather Section */}
-                  <WeatherSection />
+              <div
+                className="overflow-auto"
+                style={{
+                  height: "100%", // Make this inner div scrollable
+                  paddingBottom: "10px", // Add bottom padding for content
+                }}
+              >
+                {/* Weather Section */}
+                <WeatherSection />
 
-                  {/* Estimated Generation */}
-                  <div className="estimate-generation">
-                    <p className="estimation ps-0">
-                      Estimate Generation: {estimateGeneration} kW
-                    </p>
-                  </div>
-
-                  {/* Environmental Benefits */}
-                  <EnvironmentalBenefits />
+                {/* Estimated Generation */}
+                <div className="estimate-generation">
+                  <p className="estimation ps-0">
+                    Estimate Generation: {estimateGeneration} kW
+                  </p>
                 </div>
+
+                {/* Environmental Benefits */}
+                <EnvironmentalBenefits />
               </div>
             </div>
           </div>
