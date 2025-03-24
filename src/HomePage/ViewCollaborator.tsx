@@ -6,6 +6,31 @@ import RemoveCollabModal from "./RemoveCollabModal";
 import NoCollabMessage from "./NoCollabMessage";
 import "./ViewCollaborator.css";
 
+// Import the profile images
+import ProfileImage from "../ProfilePage/img1.jpeg";
+import AnnaProfilePic from "../ProfilePage/anna-profile.avif";
+import AdrianProfilePic from "../ProfilePage/adrian-profile.avif";
+import JoshuaProfilePic from "../ProfilePage/joshua-profile.avif";
+import LilyProfilePic from "../ProfilePage/lily-profile.avif";
+
+// Add this helper function to get the correct profile picture
+const getProfilePicture = (profilePicPath: string) => {
+  switch (profilePicPath) {
+    case "/img1.jpeg":
+      return ProfileImage;
+    case "/anna-profile.avif":
+      return AnnaProfilePic;
+    case "/adrian-profile.avif":
+      return AdrianProfilePic;
+    case "/joshua-profile.avif":
+      return JoshuaProfilePic;
+    case "/lily-profile.avif":
+      return LilyProfilePic;
+    default:
+      return ProfileImage;
+  }
+};
+
 interface ViewCollaboratorProps {
   setActiveContent: (content: string) => void;
   roomsState: Room[];
@@ -164,7 +189,21 @@ const ViewCollaborator: React.FC<ViewCollaboratorProps> = ({
                         onTouchMove={(e) => handleCollabTouchMove(e, person.id)}
                       >
                         <div className="d-flex align-items-center">
-                          <img src={person.image} className="img-fluid" />
+                          <img
+                            src={
+                              person.image
+                                ? getProfilePicture(person.image)
+                                : ProfileImage
+                            }
+                            className="img-fluid"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "50%",
+                              objectFit: "cover",
+                            }}
+                            alt={person.name}
+                          />
                           <span className="ms-3 collab-names">
                             {person.name}{" "}
                             {person.type === "Owner" ? "(Owner)" : ""}

@@ -1272,7 +1272,10 @@ const ProfilePage = () => {
                         <div className="laptop-user-profile">
                           {user.profilePic ? (
                             <div className="laptop-user-pic">
-                              <img src={user.profilePic} alt={user.name} />
+                              <img
+                                src={getProfilePicture(user.profilePic)}
+                                alt={user.name}
+                              />
                             </div>
                           ) : (
                             <div className="laptop-default-avatar">
