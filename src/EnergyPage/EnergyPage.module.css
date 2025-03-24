@@ -48,7 +48,7 @@
   }
 
   .deviceContainer {
-    height: calc(100% - 580px) !important;
+    height: calc(100% - 540px) !important;
   }
 }
 
@@ -59,7 +59,7 @@
   }
 
   .deviceContainer {
-    height: calc(100% - 580px) !important;
+    height: calc(100% - 540px) !important;
   }
 }
 
@@ -71,4 +71,3 @@
     top: 52% !important;
   }
 }
-
