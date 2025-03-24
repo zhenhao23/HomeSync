@@ -138,7 +138,7 @@ const PieChartComponent: React.FC<{
   return (
     <div
       className="container-fluid"
-      style={{ transform: "translateX(0%) translateY(24%)" }}
+      style={{ transform: "translateX(0%) translateY(18%)" }}
     >
       <div className="row mb-0 ms-3">
         <div className="col-6 p-0">
@@ -443,7 +443,7 @@ const LineChartComponent: React.FC<{
   return (
     <div
       className="container-fluid"
-      style={{ transform: "translateX(0%) translateY(22%)" }}
+      style={{ transform: "translateX(0%) translateY(18%)" }}
     >
       <div className="row mb-0 ms-3">
         <div className="col-6 p-0">
@@ -479,7 +479,7 @@ const LineChartComponent: React.FC<{
         className="row"
         style={{ transform: "translateX(-4%) translateY(0%)" }}
       >
-        <div className="col-12 p-0 mb-0 ms-5">
+        <div className="col-12 p-0 mb-0 ms-5 mt-0">
           <span style={{ color: "white", fontSize: "11px" }}>kWh</span>
         </div>
 
@@ -612,7 +612,7 @@ const SwipeableCharts: React.FC<SwipeableChartsProps> = ({
       <div
         style={{
           position: "absolute",
-          bottom: "18%",
+          bottom: "12%",
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 10,
