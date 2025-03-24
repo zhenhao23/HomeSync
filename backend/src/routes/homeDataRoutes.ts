@@ -173,8 +173,8 @@ function mapDeviceControlsToDevData(controls: any[]): any {
 function mapDeviceTriggersToContent(triggers: any[]): any[] {
   return triggers.map((trigger) => ({
     feature_id: trigger.id,
-    feature: trigger.featurePeriod || "Default", // Use featurePeriod as the feature name
-    label: trigger.featureDetail || trigger.conditionOperator, // Use featureDetail as the label
+    feature: trigger.triggerType || "Default", // Use featurePeriod as the feature name
+    label: trigger.conditionOperator || trigger.featureDetail, // Use featureDetail as the label
     status: trigger.isActive,
     isUserAdded: trigger.featurePeriod !== "Default",
   }));
