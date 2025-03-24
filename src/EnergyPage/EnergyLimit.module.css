@@ -32,14 +32,14 @@
 @media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
   only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 50%; /* Moved lower on iPhone Pro */
+    top: 40%; /* Moved lower on iPhone Pro */
   }
 }
 
 /* iPhone 14/15 Pro/Pro Max general fix - moved lower */
 @media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 50%; /* Moved lower on iPhone Pro */
+    top: 40%; /* Moved lower on iPhone Pro */
   }
 }
 
@@ -47,6 +47,6 @@
 @supports (-webkit-touch-callout: none) and
   (not (-webkit-device-pixel-ratio: 3)) {
   .slidingPanel {
-    top: 55%; /* Slightly lower position for iOS devices in general */
+    top: 45%; /* Slightly lower position for iOS devices in general */
   }
 }

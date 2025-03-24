@@ -48,7 +48,7 @@
   }
 
   .deviceContainer {
-    height: calc(100% - 520px) !important;
+    height: calc(100% - 580px) !important;
   }
 }
 
@@ -59,7 +59,7 @@
   }
 
   .deviceContainer {
-    height: calc(100% - 520px) !important;
+    height: calc(100% - 580px) !important;
   }
 }
 
