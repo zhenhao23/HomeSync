@@ -5,7 +5,6 @@ import LampImage from "../assets/devices/lamp.svg";
 import AirCondImage from "../assets/devices/aircond1.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
 import IrrigationImage from "../assets/devices/irrigation.svg";
-import EnergyUploadImage from "../assets/energy/energy-upload-button.svg";
 import styles from "./EnergyPage.module.css"; // Import the CSS module
 
 type TimeRange = "week" | "month" | "year";
@@ -255,15 +254,6 @@ const EnergyPage: React.FC = () => {
               </h5>
             </div>
             <div className="col-4 text-center"></div>
-            <div className="col-4 text-end d-flex justify-content-end">
-              <button className="me-2 btn rounded-circle p-1 d-flex align-items-center justify-content-center">
-                <img
-                  src={EnergyUploadImage}
-                  style={{ backgroundColor: "white" }}
-                  alt="Upload"
-                />
-              </button>
-            </div>
           </div>
         </div>
 
