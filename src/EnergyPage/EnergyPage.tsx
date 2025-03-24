@@ -234,7 +234,7 @@ const EnergyPage: React.FC = () => {
         energyData={aggregatedData}
       />
       <div className={styles.slidingPanel}>
-        <div className="container-fluid p-3 pb-2">
+        <div className="container-fluid p-3 pb-0">
           <div className="row align-items-center mb-3">
             <div className="col-4 text-start">
               <h5 className="mb-0 ms-3">
