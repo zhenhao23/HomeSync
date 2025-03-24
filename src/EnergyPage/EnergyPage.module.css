@@ -49,6 +49,7 @@
 
   .deviceContainer {
     height: calc(100% - 540px) !important;
+    padding-bottom: 60px;
   }
 }
 
@@ -60,6 +61,7 @@
 
   .deviceContainer {
     height: calc(100% - 540px) !important;
+    padding-bottom: 60px;
   }
 }
 
