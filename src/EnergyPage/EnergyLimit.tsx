@@ -150,6 +150,29 @@ const EnergyLimit: React.FC = () => {
     }
   };
 
+  const useWindowSize = () => {
+    const [windowSize, setWindowSize] = useState({
+      width: typeof window !== "undefined" ? window.innerWidth : 0,
+    });
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+        });
+      };
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return windowSize;
+  };
+
+  // Get window size for responsive layout
+  const { width } = useWindowSize();
+  const isLaptop = width >= 1024;
+
   return (
     <>
       <div
@@ -167,14 +190,18 @@ const EnergyLimit: React.FC = () => {
         className="container-fluid text-center position-relative"
         style={{ transform: "translateX(0%) translateY(20%)" }}
       >
-        <h2 className="mb-3" style={{ color: "white" }}>
-          <b>Energy Limit</b>
-        </h2>
-        <img
-          src={EnergyLimitImage}
-          alt="Energy Limit"
-          className="img-fluid mx-auto d-block"
-        />
+        {!isLaptop && (
+          <>
+            <h2 className="mb-3" style={{ color: "white" }}>
+              <b>Energy Limit</b>
+            </h2>
+            <img
+              src={EnergyLimitImage}
+              alt="Energy Limit"
+              className="img-fluid mx-auto d-block"
+            />
+          </>
+        )}
       </div>
       <div className={styles.slidingPanel}>
         <div className="text-center mb-4">
