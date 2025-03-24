@@ -150,142 +150,298 @@ const EnergyLimit: React.FC = () => {
     }
   };
 
+  // Window size hook
+  const useWindowSize = () => {
+    const [windowSize, setWindowSize] = useState({
+      width: typeof window !== "undefined" ? window.innerWidth : 0,
+    });
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+        });
+      };
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return windowSize;
+  };
+
+  // Get window size for responsive layout
+  const { width } = useWindowSize();
+  const isLaptop = width >= 1024;
+
   return (
     <>
-      <div
-        className="container-fluid position-relative"
-        style={{ transform: "translateX(2%) translateY(260%)" }}
-      >
-        <IoIosArrowBack
-          size={24}
-          color="white"
-          style={{ cursor: "pointer" }}
-          onClick={handleBackClick}
-        />
-      </div>
-      <div
-        className="container-fluid text-center position-relative"
-        style={{ transform: "translateX(0%) translateY(60%)" }}
-      >
-        <h2 className="mb-3" style={{ color: "white" }}>
-          <b>Energy Limit</b>
-        </h2>
-        <img
-          src={EnergyLimitImage}
-          alt="Energy Limit"
-          className="img-fluid mx-auto d-block"
-        />
-      </div>
-      <div className={styles.slidingPanel}>
-        <div className="text-center mb-4">
-          <h3 className="fw-bold" style={{ color: "#204160" }}>
-            Set Energy Usage Limit
-          </h3>
-          <p className="text-muted">Save energy, Save Earth, Save Humanity!</p>
-        </div>
-
-        {error && (
-          <div className="alert alert-danger" role="alert">
-            {error}
-          </div>
-        )}
-
-        {success && (
+      {isLaptop ? (
+        <>
           <div
-            className="alert alert-success"
-            role="alert"
-            style={{
-              backgroundColor: "#d4edda",
-              color: "#155724",
-              border: "1px solid #c3e6cb",
-              borderRadius: "8px",
-              padding: "10px 15px",
-              fontWeight: "500",
-            }}
+            className="container-fluid position-relative"
+            style={{ transform: "translateY(260%)" }}
           >
-            {success}
+            <IoIosArrowBack
+              size={24}
+              color="white"
+              style={{ cursor: "pointer" }}
+              onClick={handleBackClick}
+            />
           </div>
-        )}
+          <div className={styles.slidingPanel}>
+            <div className="text-center mb-4">
+              <h3 className="fw-bold" style={{ color: "#ffffff" }}>
+                Set Energy Usage Limit
+              </h3>
+              <p style={{color: "#8DA3B8"}}>
+                Save energy, Save Earth, Save Humanity!
+              </p>
+            </div>
 
-        <div className="dropdown mb-5">
-          <button
-            className="btn dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            style={{
-              backgroundColor: "white",
-              border: "1px solid #6c757d",
-              color: "#6c757d",
-            }}
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div
+                className="alert alert-success"
+                role="alert"
+                style={{
+                  backgroundColor: "#d4edda",
+                  color: "#155724",
+                  border: "1px solid #c3e6cb",
+                  borderRadius: "8px",
+                  padding: "10px 15px",
+                  fontWeight: "500",
+                }}
+              >
+                {success}
+              </div>
+            )}
+
+            <div className="dropdown mb-5">
+              <button
+                className="btn dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #6c757d",
+                  color: "#6c757d",
+                }}
+              >
+                {selectedPeriod || "Select Type"}
+              </button>
+              <ul className="dropdown-menu">
+                <li>
+                  <a
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => setSelectedPeriod("This Week")}
+                  >
+                    This Week
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => setSelectedPeriod("This Month")}
+                  >
+                    This Month
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => setSelectedPeriod("This Year")}
+                  >
+                    This Year
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="input-group mb-2" style={{ width: "200px" }}>
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Enter value"
+                aria-describedby="kwh-addon"
+                value={energyLimit}
+                onChange={(e) => setEnergyLimit(e.target.value)}
+              />
+              <span className="input-group-text" id="kwh-addon">
+                kWh
+              </span>
+            </div>
+
+            <p
+              className="text-center mb-5"
+              style={{ width: "300px", fontSize: "0.8rem", color: "#8DA3B8" }}
+            >
+              Example: 500 kWh
+            </p>
+
+            <button
+              className="btn p-2 px-5"
+              style={{
+                backgroundColor: "#204160",
+                color: "white",
+                borderRadius: "12px",
+              }}
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? "Updating..." : "Set Limit"}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div
+            className="container-fluid position-relative"
+            style={{ transform: "translateX(2%) translateY(260%)" }}
           >
-            {selectedPeriod || "Select Type"}
-          </button>
-          <ul className="dropdown-menu">
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => setSelectedPeriod("This Week")}
-              >
-                This Week
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => setSelectedPeriod("This Month")}
-              >
-                This Month
-              </a>
-            </li>
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => setSelectedPeriod("This Year")}
-              >
-                This Year
-              </a>
-            </li>
-          </ul>
-        </div>
+            <IoIosArrowBack
+              size={24}
+              color="white"
+              style={{ cursor: "pointer" }}
+              onClick={handleBackClick}
+            />
+          </div>
+          <div
+            className="container-fluid text-center position-relative"
+            style={{ transform: "translateX(0%) translateY(60%)" }}
+          >
+            <h2 className="mb-3" style={{ color: "white" }}>
+              <b>Energy Limit</b>
+            </h2>
+            <img
+              src={EnergyLimitImage}
+              alt="Energy Limit"
+              className="img-fluid mx-auto d-block"
+            />
+          </div>
+          <div className={styles.slidingPanel}>
+            <div className="text-center mb-4">
+              <h3 className="fw-bold" style={{ color: "#204160" }}>
+                Set Energy Usage Limit
+              </h3>
+              <p className="text-muted">
+                Save energy, Save Earth, Save Humanity!
+              </p>
+            </div>
 
-        <div className="input-group mb-2" style={{ width: "200px" }}>
-          <input
-            type="number"
-            className="form-control"
-            placeholder="Enter value"
-            aria-describedby="kwh-addon"
-            value={energyLimit}
-            onChange={(e) => setEnergyLimit(e.target.value)}
-          />
-          <span className="input-group-text" id="kwh-addon">
-            kWh
-          </span>
-        </div>
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
 
-        <p
-          className="text-center text-muted mb-5"
-          style={{ width: "300px", fontSize: "0.8rem" }}
-        >
-          Example: 500 kWh
-        </p>
+            {success && (
+              <div
+                className="alert alert-success"
+                role="alert"
+                style={{
+                  backgroundColor: "#d4edda",
+                  color: "#155724",
+                  border: "1px solid #c3e6cb",
+                  borderRadius: "8px",
+                  padding: "10px 15px",
+                  fontWeight: "500",
+                }}
+              >
+                {success}
+              </div>
+            )}
 
-        <button
-          className="btn p-2 px-5"
-          style={{
-            backgroundColor: "#204160",
-            color: "white",
-            borderRadius: "12px",
-          }}
-          onClick={handleSubmit}
-          disabled={isLoading}
-        >
-          {isLoading ? "Updating..." : "Set Limit"}
-        </button>
-      </div>
+            <div className="dropdown mb-5">
+              <button
+                className="btn dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #6c757d",
+                  color: "#6c757d",
+                }}
+              >
+                {selectedPeriod || "Select Type"}
+              </button>
+              <ul className="dropdown-menu">
+                <li>
+                  <a
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => setSelectedPeriod("This Week")}
+                  >
+                    This Week
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => setSelectedPeriod("This Month")}
+                  >
+                    This Month
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="dropdown-item"
+                    href="#"
+                    onClick={() => setSelectedPeriod("This Year")}
+                  >
+                    This Year
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="input-group mb-2" style={{ width: "200px" }}>
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Enter value"
+                aria-describedby="kwh-addon"
+                value={energyLimit}
+                onChange={(e) => setEnergyLimit(e.target.value)}
+              />
+              <span className="input-group-text" id="kwh-addon">
+                kWh
+              </span>
+            </div>
+
+            <p
+              className="text-center text-muted mb-5"
+              style={{ width: "300px", fontSize: "0.8rem" }}
+            >
+              Example: 500 kWh
+            </p>
+
+            <button
+              className="btn p-2 px-5"
+              style={{
+                backgroundColor: "#204160",
+                color: "white",
+                borderRadius: "12px",
+              }}
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? "Updating..." : "Set Limit"}
+            </button>
+          </div>
+        </>
+      )}
     </>
   );
 };
