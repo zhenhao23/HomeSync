@@ -194,7 +194,7 @@ const EnergyLimit: React.FC = () => {
               <h3 className="fw-bold" style={{ color: "#ffffff" }}>
                 Set Energy Usage Limit
               </h3>
-              <p style={{color: "#8DA3B8"}}>
+              <p style={{ color: "#8DA3B8" }}>
                 Save energy, Save Earth, Save Humanity!
               </p>
             </div>
