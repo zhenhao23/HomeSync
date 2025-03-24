@@ -13,7 +13,7 @@
 }
 
 .deviceContainer {
-  height: calc(100% - 460px);
+  height: calc(100% - 420px);
   overflow: auto;
 }
 
