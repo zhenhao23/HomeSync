@@ -1026,10 +1026,10 @@ const SolarPage: React.FC = () => {
                 borderRadius: "30px 30px 0 0",
                 backgroundColor: "white",
                 overflowY: "auto", // Allow vertical scrolling within this container
-                paddingBottom: "80px", // Add extra padding for bottom navbar
+                // paddingBottom: "80px", // Add extra padding for bottom navbar
               }}
             >
-              <div className="px-4">
+              <div className="px-4" style={{ height: "calc(100% - 120px)" }}>
                 <div className="overflow-auto" style={{ height: "100%" }}>
                   {/* Weather Section */}
                   <WeatherSection />
