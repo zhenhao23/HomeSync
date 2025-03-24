@@ -476,7 +476,7 @@ const LineChartComponent: React.FC<{
       </div>
 
       <div
-        className="row"
+        className="row my-0"
         style={{ transform: "translateX(-4%) translateY(0%)" }}
       >
         <div className="col-12 p-0 mb-0 ms-5 mt-0">
@@ -612,7 +612,7 @@ const SwipeableCharts: React.FC<SwipeableChartsProps> = ({
       <div
         style={{
           position: "absolute",
-          bottom: "12%",
+          bottom: "10%",
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 10,

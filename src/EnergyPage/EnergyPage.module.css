@@ -20,7 +20,7 @@
 /* Medium sized devices */
 @media (max-height: 850px) {
   .slidingPanel {
-    top: 50%;
+    top: 45%;
   }
 
   .deviceContainer {
