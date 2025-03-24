@@ -20,7 +20,7 @@
 /* Medium sized devices */
 @media (max-height: 850px) {
   .slidingPanel {
-    top: 55%;
+    top: 45%;
   }
 
   .deviceContainer {
@@ -43,7 +43,7 @@
 @media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
   only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 55%; /* Move it lower on the screen */
+    top: 40%; /* Move it lower on the screen */
   }
 
   .deviceContainer {
@@ -54,7 +54,7 @@
 /* iPhone 14/15 Pro/Pro Max general fix */
 @media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
   .slidingPanel {
-    top: 55%;
+    top: 40%;
   }
 
   .deviceContainer {
