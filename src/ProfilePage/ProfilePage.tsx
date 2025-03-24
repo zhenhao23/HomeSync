@@ -985,7 +985,7 @@ const ProfilePage = () => {
             className="profile-page"
             style={{
               height: "100vh",
-              overflow: "hidden",
+              overflowY: "hidden",
               position: "relative",
             }}
           >
