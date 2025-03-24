@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Share2, Info, Download } from "lucide-react";
+import { Share2, Info, Download } from "lucide-react";
 import "./EnergyFlowPage.css";
 import { useNavigate } from "react-router-dom";
 import pdfIcon2 from "../assets/energy/download-pdf-icon.svg";
+import { IoIosArrowBack } from "react-icons/io";
 
 interface EnergyData {
   pv: {
@@ -246,16 +247,44 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
 
   return (
     <div className="energy-flow-container">
-      <header className="flow-header">
-        <button onClick={onBack} className="ef-back-button">
-          <ArrowLeft size={24} />
-          <span>Back</span>
-        </button>
-        <h1 className="energy-flow">Energy Flow</h1>
+      <div className="flow-header">
+        <div
+          className="back-button"
+          onClick={onBack}
+          style={{
+            padding: "8px 0px",
+            cursor: "pointer",
+            position: "absolute",
+          }}
+        >
+          <IoIosArrowBack size={22} color="#FFFFFF" />
+          <span
+            style={{
+              color: "#FFFFFF",
+              fontSize: "16px",
+            }}
+          >
+            Back
+          </span>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <h3
+            className="fw-bold me-3 flow-title"
+            style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+          >
+            Energy Flow
+          </h3>
+        </div>
         <button className="ef-share-button" onClick={handleShareClick}>
           <Share2 size={24} />
         </button>
-      </header>
+      </div>
 
       {loading && (
         <></>
@@ -304,7 +333,7 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
                 <div className="download-confirm-overlay">
                   <div className="download-confirm-dialog">
                     <h3>{activeTooltip}</h3>
-                    <div style={{fontWeight: "400"}}>{definitions.pv}</div>
+                    <div style={{ fontWeight: "400" }}>{definitions.pv}</div>
                   </div>
                 </div>
               )}
@@ -329,7 +358,9 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
                 <div className="download-confirm-overlay">
                   <div className="download-confirm-dialog">
                     <h3>{activeTooltip}</h3>
-                    <div style={{fontWeight: "400"}}>{definitions.imported}</div>
+                    <div style={{ fontWeight: "400" }}>
+                      {definitions.imported}
+                    </div>
                   </div>
                 </div>
               )}
@@ -354,7 +385,9 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
                 <div className="download-confirm-overlay">
                   <div className="download-confirm-dialog">
                     <h3>{activeTooltip}</h3>
-                    <div style={{fontWeight: "400"}}>{definitions.exported}</div>
+                    <div style={{ fontWeight: "400" }}>
+                      {definitions.exported}
+                    </div>
                   </div>
                 </div>
               )}
@@ -379,7 +412,7 @@ const EnergyFlowPage: React.FC<EnergyFlowPageProps> = ({ onBack }) => {
                 <div className="download-confirm-overlay">
                   <div className="download-confirm-dialog">
                     <h3>{activeTooltip}</h3>
-                    <div style={{fontWeight: "400"}}>{definitions.load}</div>
+                    <div style={{ fontWeight: "400" }}>{definitions.load}</div>
                   </div>
                 </div>
               )}

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { FaArrowLeft, FaCamera } from "react-icons/fa";
+import { FaCamera } from "react-icons/fa";
 import ProfileImage from "./img1.jpeg"; // Import the local image
 import "./EditProfile.css";
+import { IoIosArrowBack } from "react-icons/io";
 
 interface EditProfileProps {
   onBack: () => void;
@@ -98,17 +99,46 @@ const EditProfile: React.FC<EditProfileProps> = ({
   return (
     <>
       <div className="ep-container-fluid p-3 pb-2">
-        <div className="ep-row align-items-center ep-mb-3">
-          <div className="ep-col-4 text-start">
-            <button className="ep-btn p-0" onClick={onBack}>
-              <FaArrowLeft />
-            </button>
+        <div style={{ position: "relative", top: "45px", width: "100%" }}>
+          {/* Back Button */}
+          <div
+            onClick={onBack}
+            style={{
+              cursor: "pointer",
+              position: "absolute",
+              marginTop: "5px",
+            }}
+          >
+            <IoIosArrowBack size={22} color="#FFFFFF" />
+            <span
+              style={{
+                color: "#FFFFFF",
+                fontSize: "16px",
+              }}
+            >
+              Back
+            </span>
           </div>
-          <div className="ep-col-4 text-center">
-            <h1 className="ep-edit-profile">Edit Profile</h1>
+
+          {/* Room Title */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {/* Display the title normally when not in edit mode */}
+            <h3
+              className="fw-bold me-2"
+              style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+            >
+              Edit Profile
+            </h3>
           </div>
-          <div className="ep-col-4" />
         </div>
+
+        <div className="ep-col-4" />
       </div>
 
       <div className="ep-content-container">

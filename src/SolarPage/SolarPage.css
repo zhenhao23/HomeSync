@@ -463,8 +463,7 @@
     cursor: pointer;
 
     position: absolute;
-    right: 12%; /* Push to the right */
-    top: 15%;
+    margin-left: 30%;
   }
 
   .upload-button svg {

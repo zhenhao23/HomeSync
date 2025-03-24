@@ -695,7 +695,12 @@ const SolarPage: React.FC = () => {
       <div className="energy-flow-panel">
         {/* Same structure as before but update field references */}
         <div className="energy-flow-header">
-          <h2 className="header-energy-flow">Energy Flow</h2>
+          <h3
+            className="fw-bold"
+            style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+          >
+            Energy Flow
+          </h3>
           <button className="upload-button" onClick={handleShareClick}>
             <Upload size={18} />
           </button>
@@ -946,9 +951,12 @@ const SolarPage: React.FC = () => {
             <div className="solar-content-wrapper">
               {/* Left Panel - Solar Energy Status */}
               <div className="solar-left-panel">
-                <div className="header-wrapper-laptop">
-                  <h2 className="solar-heading3">Solar Energy Status</h2>
-                </div>
+                <h3
+                  className="fw-bold"
+                  style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+                >
+                  Solar Energy Status
+                </h3>
 
                 {/* Energy Usage Circular Progress */}
                 <CircularProgress />
@@ -992,7 +1000,12 @@ const SolarPage: React.FC = () => {
             {/* Solar Energy Heading */}
             <div className="header-wrapper">
               <div className="header-spacer"></div>
-              <h2 className="solar-heading">Solar Energy Status</h2>
+              <h3
+                className="fw-bold me-2"
+                style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+              >
+                Solar Energy Status
+              </h3>
               <button
                 className="btn rounded-circle p-2 d-flex align-items-center justify-content-center filter-button"
                 onClick={() => setShowEnergyFlow(true)}

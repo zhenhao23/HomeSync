@@ -3,12 +3,10 @@
   /* Main container styling for laptop view */
   .laptop-container {
     display: flex;
-    width: 100vw;  /* Full width */
-    height: 100vh; /* Full height of the screen */
+    width: 100vw;
+    min-height: 100vh;
     font-family: 'Segoe UI', 'Roboto', sans-serif;
     color: white;
-    padding: 20px;
-    overflow: hidden;
   }
 
 
@@ -69,7 +67,6 @@
   .laptop-content-wrapper {
     display: flex;
     width: 100%;
-    height: calc(100vh - 100px);
     margin-top: 80px;
     gap: 30px;
     padding: 0 40px;
@@ -78,22 +75,21 @@
   .laptop-profile-container {
     display: flex;
     width: 100%;
-    gap: 30px;
+    gap: 60px;
+
+    /* border: 5px solid red; */
   }
    .laptop-profile-left {
     width: 38%;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 25px;
     padding: 30px;
     display: flex;
     flex-direction: column;
+
+    /* border: 5px solid red; */
   }
-   .laptop-profile-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 30px;
-  }
+
    .laptop-profile-image-container {
     position: relative;
     width: 150px;
@@ -106,19 +102,7 @@
     border-radius: 50%;
     object-fit: cover;
   }
-   .laptop-camera-icon {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background-color: white;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+
    .laptop-user-details {
     text-align: center;
     width: 100%;
@@ -137,37 +121,40 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-top: 20px;
-  }
+    margin: 0;
+    margin-top: -30px;
+  } 
    .laptop-form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
    .laptop-form-label {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
   }
    .laptop-form-input {
     background-color: rgb(255, 255, 255);
     border: none;
     border-radius: 10px;
-    padding: 12px 15px;
+    padding: 8px 15px;
     color: rgb(0, 0, 0);
-    font-size: 16px;
+    font-size: 14px;
   }
    .laptop-button {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #204160;
     border: none;
     border-radius: 10px;
-    padding: 12px;
+    padding: 8px;
     color: white;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-top: 10px;
+    width: 40%;
+    margin: 0 auto;
   }
+
    .laptop-button:hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
@@ -179,14 +166,21 @@
   }
    .laptop-profile-options {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+    margin-top: -30px;
+    height: 55px;
   }
+
+
+  .laptop-profile-options span {
+    font-size: 11px;
+  }
+
    .laptop-option-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 12px 15px;
+    gap: 5px;
+    padding: 0px 20px;
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -197,7 +191,7 @@
     background-color: rgba(255, 255, 255, 0.1);
   }
    .laptop-option-icon {
-    font-size: 20px;
+    font-size: 18px;
   }
    .laptop-notification-option {
     display: flex;
@@ -218,9 +212,10 @@
    .laptop-toggle {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 25px;
-  }
+    width: 30px;
+    height: 18px;
+    margin: 5px;
+  } 
    .laptop-toggle input {
     opacity: 0;
     width: 0;
@@ -240,27 +235,29 @@
    .laptop-slider:before {
     position: absolute;
     content: "";
-    height: 19px;
-    width: 19px;
+    height: 12px;
+    width: 12px;
     left: 3px;
     bottom: 3px;
     background-color: white;
     transition: 0.4s;
     border-radius: 50%;
-  }
+  } 
    input:checked + .laptop-slider {
     background-color: #2196F3;
   }
    input:checked + .laptop-slider:before {
-    transform: translateX(25px);
+    transform: translateX(12px);
   }
    /* Manage Users page specific styling */
   .laptop-manage-users {
     width: 60%;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 25px;
     padding: 30px;
     overflow: hidden;
+
+    /* border: 5px solid red; */
   }
    .laptop-manage-header {
     display: flex;
@@ -350,7 +347,7 @@
     justify-content: center;
     font-size: 24px;
     font-weight: 500;
-  }
+  } 
    .laptop-user-name {
     font-size: 18px;
     font-weight: 500;
@@ -439,7 +436,7 @@
 /* Laptop View - Add Home and Log Out */
 .laptop-action-buttons {
 margin-top: 20px;
-padding-top: 16px;
+padding-top: 5px;
 border-top: 1px solid #e0e0e0;
 }
 
@@ -460,7 +457,7 @@ transition: background-color 0.2s;
 
 
 .laptop-add-home-button {
-color: #4285F4;
+color: #96D0F2;
 margin-bottom: 8px;
 }
 
@@ -471,7 +468,7 @@ background-color: #F0F7FF;
 
 
 .laptop-log-out-button {
-color: #EA4335;
+color: #FB8181;
 }
 
 
@@ -482,8 +479,12 @@ background-color: #FEF2F2;
 
 .laptop-button-icon {
 margin-right: 12px;
-font-size: 18px;
+font-size: 16px;
 }
+
+.laptop-action-buttons span {
+  font-size: 14px;
+  }
 
 
 /* Switch Home Modal Styles - Both Views */

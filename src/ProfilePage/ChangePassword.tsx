@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { FaArrowLeft } from "react-icons/fa";
 import "./ChangePassword.css";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
+import { IoIosArrowBack } from "react-icons/io";
 
 // Debug log to check if environment variables are loaded
 console.log("API URL:", import.meta.env.VITE_API_URL);
@@ -10,13 +10,13 @@ console.log("API URL:", import.meta.env.VITE_API_URL);
 // Window size hook
 const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
   });
 
   useEffect(() => {
     const handleResize = () => {
       setWindowSize({
-        width: window.innerWidth
+        width: window.innerWidth,
       });
     };
 
@@ -102,19 +102,25 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
     <>
       <div className="cp-container-fluid p-3 pb-2">
         <div className="cp-row align-items-center cp-mb-3">
-          <div className="cp-col-4 text-start">
+          <div className="cp-header">
             <button className="cp-btn p-0" onClick={onBack}>
-              <FaArrowLeft />
+              <IoIosArrowBack size={22} />
+              Back
             </button>
-          </div>
-          <div className="cp-col-4 text-center">
-            <h3 className="cp-header-change-password">Change Password</h3>
+            <h3
+              className="cp-header-change-password fw-bold"
+              style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+            >
+              Change Password
+            </h3>
           </div>
           <div className="cp-col-4" />
         </div>
       </div>
 
-      <div className={`cp-content-container ${isLaptop ? 'cp-laptop-view' : ''}`}>
+      <div
+        className={`cp-content-container ${isLaptop ? "cp-laptop-view" : ""}`}
+      >
         <form onSubmit={handleSubmit} className="cp-password-form">
           {error && <div className="cp-alert cp-alert-danger">{error}</div>}
           {success && (
@@ -153,13 +159,15 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
             />
           </div>
 
-          <button
-            type="submit"
-            className="cp-btn cp-btn-primary w-100"
-            disabled={isLoading}
-          >
-            {isLoading ? "Changing Password..." : "Change Password"}
-          </button>
+          <div className="ep-change-password-container">
+            <button
+              type="submit"
+              className="cp-btn-primary w-100"
+              disabled={isLoading}
+            >
+              {isLoading ? "Changing Password..." : "Change Password"}
+            </button>
+          </div>
         </form>
       </div>
     </>
