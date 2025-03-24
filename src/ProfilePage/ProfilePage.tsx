@@ -985,7 +985,7 @@ const ProfilePage = () => {
             className="profile-page"
             style={{
               height: "100vh",
-              overflow: "hidden",
+              overflowY: "hidden",
               position: "relative",
             }}
           >
@@ -1231,55 +1231,72 @@ const ProfilePage = () => {
               {/* Manage Users Section */}
               <div className="laptop-manage-users">
                 <div className="laptop-manage-header">
-                  <h2 className="laptop-manage-title">Manage Users</h2>
+                  <h3 className="laptop-manage-title">Manage Users</h3>
                 </div>
 
-                <div className="laptop-user-header-row">
-                  <div className="laptop-total-users">Total {users.length}</div>
-                  <button
-                    className="laptop-add-user-btn"
-                    onClick={() => setShowInvite(true)}
-                  >
-                    <FaPlus />
-                  </button>
-                </div>
-
-                <ul className="laptop-user-list">
-                  {users.map((user) => (
-                    <li
-                      key={user.id}
-                      className="laptop-user-item"
-                      onContextMenu={(e) => handleUserContextMenu(e, user.id)}
-                      onClick={() => handleUserClick(user)}
-                      style={{ cursor: "pointer" }}
+                <div className="user-border-div">
+                  <div className="col-4 text-start laptop-user-header-row">
+                    <h5 className="mb-0 ms-3 total-title">
+                      Total{" "}
+                      <span
+                        className="px-2"
+                        style={{
+                          backgroundColor: "#4C7380",
+                          borderRadius: "4px",
+                          color: "white",
+                          fontSize: "16px",
+                          paddingBottom: "2px",
+                          paddingTop: "2px",
+                        }}
+                      >
+                        {users.length}
+                      </span>
+                    </h5>
+                    <button
+                      className="laptop-add-user-btn"
+                      onClick={() => setShowInvite(true)}
                     >
-                      <div className="laptop-user-profile">
-                        {user.profilePic ? (
-                          <div className="laptop-user-pic">
-                            <img src={user.profilePic} alt={user.name} />
-                          </div>
-                        ) : (
-                          <div className="laptop-default-avatar">
-                            {user.name.charAt(0)}
+                      <FaPlus />
+                    </button>
+                  </div>
+
+                  <ul className="laptop-user-list">
+                    {users.map((user) => (
+                      <li
+                        key={user.id}
+                        className="laptop-user-item"
+                        onContextMenu={(e) => handleUserContextMenu(e, user.id)}
+                        onClick={() => handleUserClick(user)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <div className="laptop-user-profile">
+                          {user.profilePic ? (
+                            <div className="laptop-user-pic">
+                              <img src={user.profilePic} alt={user.name} />
+                            </div>
+                          ) : (
+                            <div className="laptop-default-avatar">
+                              {user.name.charAt(0)}
+                            </div>
+                          )}
+                          <div className="laptop-user-name">{user.name}</div>
+                        </div>
+                        {user.id !== 1 && (
+                          <div
+                            className="laptop-delete-indicator"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent opening devices modal
+                              deleteUser(user.id);
+                            }}
+                          >
+                            <FaTrash />
+                            <span>Delete</span>
                           </div>
                         )}
-                        <div className="laptop-user-name">{user.name}</div>
-                      </div>
-                      {user.id !== 1 && (
-                        <div
-                          className="laptop-delete-indicator"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent opening devices modal
-                            deleteUser(user.id);
-                          }}
-                        >
-                          <FaTrash />
-                          <span>Delete</span>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </OwnerGuard>
           </div>

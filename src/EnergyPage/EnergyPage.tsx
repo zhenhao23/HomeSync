@@ -5,7 +5,6 @@ import LampImage from "../assets/devices/lamp.svg";
 import AirCondImage from "../assets/devices/aircond1.svg";
 import PetFeederImage from "../assets/devices/petfeeder.svg";
 import IrrigationImage from "../assets/devices/irrigation.svg";
-import EnergyUploadImage from "../assets/energy/energy-upload-button.svg";
 import styles from "./EnergyPage.module.css"; // Import the CSS module
 
 type TimeRange = "week" | "month" | "year";
@@ -36,6 +35,44 @@ interface ProcessedDevice {
   hours: string;
   trend: number;
 }
+
+const ResponsiveUI: React.FC<{
+  timeRange: TimeRange;
+  setTimeRange: (newTimeRange: TimeRange) => void;
+  energyData: AggregatedData;
+}> = ({ timeRange, setTimeRange, energyData }) => {
+  return (
+    <>
+      <div
+        style={{
+          width: "90%",
+          backgroundColor: "rgba(255, 255, 255, 0.2)",
+          height: "100%",
+          borderRadius: "30px",
+          margin: "8% 5%",
+        }}
+      >
+        <div
+          style={{
+            width: "40%",
+            height: "60%",
+            position: "absolute",
+            marginTop: "6%",
+            marginLeft: "5%",
+            backgroundColor: "#204160",
+            borderRadius: "30px",
+          }}
+        >
+          <SwipeableCharts
+            timeRange={timeRange}
+            setTimeRange={setTimeRange}
+            energyData={energyData}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
 
 const EnergyPage: React.FC = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
@@ -226,115 +263,244 @@ const EnergyPage: React.FC = () => {
 
   const processedDevices = processDeviceData(aggregatedData.deviceTotals);
 
+  const useWindowSize = () => {
+    const [windowSize, setWindowSize] = useState({
+      width: typeof window !== "undefined" ? window.innerWidth : 0,
+    });
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+        });
+      };
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return windowSize;
+  };
+
+  // Get window size for responsive layout
+  const { width } = useWindowSize();
+  const isLaptop = width >= 1024;
+
   return (
     <>
-      <SwipeableCharts
-        timeRange={timeRange}
-        setTimeRange={handleTimeRangeChange}
-        energyData={aggregatedData}
-      />
-      <div className={styles.slidingPanel}>
-        <div className="container-fluid p-3 pb-0">
-          <div className="row align-items-center mb-3">
-            <div className="col-4 text-start">
-              <h5 className="mb-0 ms-3">
-                Total{" "}
-                <span
-                  className="px-2"
-                  style={{
-                    backgroundColor: "#4C7380",
-                    borderRadius: "4px",
-                    color: "white",
-                    fontSize: "16px",
-                    paddingBottom: "2px",
-                    paddingTop: "2px",
-                  }}
-                >
-                  {processedDevices.length}
-                </span>
-              </h5>
+      {isLaptop ? (
+        <>
+          <ResponsiveUI
+            timeRange={timeRange}
+            setTimeRange={handleTimeRangeChange}
+            energyData={aggregatedData}
+          />
+          <div
+            className={styles.slidingPanel}
+            style={{
+              backgroundColor: "#204160",
+              width: "35%",
+              marginTop: "-10%",
+              height: "80%",
+              borderRadius: "30px 30px 0 0",
+              marginLeft: "22%",
+            }}
+          >
+            <div className="container-fluid p-3 pb-0">
+              <div className="row align-items-center mb-3">
+                <div className="col-4 text-start p-3">
+                  <h5 className="mb-0 ms-3" style={{ color: "#ffffff" }}>
+                    Total{" "}
+                    <span
+                      className="px-2"
+                      style={{
+                        backgroundColor: "#4C7380",
+                        borderRadius: "4px",
+                        color: "white",
+                        fontSize: "16px",
+                        paddingBottom: "2px",
+                        paddingTop: "2px",
+                      }}
+                    >
+                      {processedDevices.length}
+                    </span>
+                  </h5>
+                </div>
+                <div className="col-4 text-center"></div>
+              </div>
             </div>
-            <div className="col-4 text-center"></div>
-            <div className="col-4 text-end d-flex justify-content-end">
-              <button className="me-2 btn rounded-circle p-1 d-flex align-items-center justify-content-center">
-                <img
-                  src={EnergyUploadImage}
-                  style={{ backgroundColor: "white" }}
-                  alt="Upload"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
 
-        <div className={`container-fluid px-4 ${styles.deviceContainer}`}>
-          <div className="row g-3 pb-5">
-            {processedDevices.map((device, index) => (
-              <div key={index} className="col-12 mt-3">
-                <div
-                  className="p-3"
-                  style={{
-                    backgroundColor: "#D8E4E8",
-                    borderRadius: "8px",
-                    height: "100%",
-                  }}
-                >
-                  <div className="row align-items-center">
-                    <div className="col-2 ps-3">
-                      <div
-                        className="d-flex align-items-center justify-content-center"
-                        style={{
-                          backgroundColor: "white",
-                          borderRadius: "100%",
-                          padding: "15px",
-                          height: "60px",
-                          width: "60px",
-                        }}
-                      >
-                        <img
-                          src={device.image}
-                          alt={device.title}
-                          className="img-fluid"
-                          style={{ maxHeight: "30px" }}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-6 ps-5">
-                      <h6 className="mb-0">{device.title}</h6>
-                      <div className="text-muted small">{device.hours}</div>
-                    </div>
-                    <div className="col-4 text-end d-flex flex-column align-items-end ps-0">
-                      <div className="mb-1" style={{ fontSize: "14px" }}>
-                        {device.usage}
-                      </div>
-                      <div className="d-flex align-items-center">
-                        {device.trend > 0 ? (
-                          <FaCaretUp
-                            className="me-1"
-                            style={{ color: "#4CAF50" }}
-                          />
-                        ) : (
-                          <FaCaretDown
-                            className="me-1"
-                            style={{ color: "#FF5252" }}
-                          />
-                        )}
-                        <small
-                          style={{
-                            color: device.trend > 0 ? "#4CAF50" : "#FF5252",
-                          }}
-                        >
-                          {Math.abs(device.trend)}%
-                        </small>
+            <div className={"container-fluid px-4"} style={{ height: "90%" }}>
+              <div className="row g-3 pb-5">
+                {processedDevices.map((device, index) => (
+                  <div key={index} className="col-12 mt-3">
+                    <div
+                      className="p-3"
+                      style={{
+                        backgroundColor: "#D8E4E8",
+                        borderRadius: "8px",
+                        height: "100%",
+                      }}
+                    >
+                      <div className="row align-items-center">
+                        <div className="col-2 ps-3">
+                          <div
+                            className="d-flex align-items-center justify-content-center"
+                            style={{
+                              backgroundColor: "white",
+                              borderRadius: "100%",
+                              padding: "15px",
+                              height: "60px",
+                              width: "60px",
+                            }}
+                          >
+                            <img
+                              src={device.image}
+                              alt={device.title}
+                              className="img-fluid"
+                              style={{ maxHeight: "30px" }}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-6 ps-5">
+                          <h6 className="mb-0">{device.title}</h6>
+                          <div className="text-muted small">{device.hours}</div>
+                        </div>
+                        <div className="col-4 text-end d-flex flex-column align-items-end ps-0">
+                          <div className="mb-1" style={{ fontSize: "14px" }}>
+                            {device.usage}
+                          </div>
+                          <div className="d-flex align-items-center">
+                            {device.trend > 0 ? (
+                              <FaCaretUp
+                                className="me-1"
+                                style={{ color: "#4CAF50" }}
+                              />
+                            ) : (
+                              <FaCaretDown
+                                className="me-1"
+                                style={{ color: "#FF5252" }}
+                              />
+                            )}
+                            <small
+                              style={{
+                                color: device.trend > 0 ? "#4CAF50" : "#FF5252",
+                              }}
+                            >
+                              {Math.abs(device.trend)}%
+                            </small>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      ) : (
+        <>
+          <SwipeableCharts
+            timeRange={timeRange}
+            setTimeRange={handleTimeRangeChange}
+            energyData={aggregatedData}
+          />
+          <div className={styles.slidingPanel}>
+            <div className="container-fluid p-3 pb-0">
+              <div className="row align-items-center mb-3">
+                <div className="col-4 text-start">
+                  <h5 className="mb-0 ms-3">
+                    Total{" "}
+                    <span
+                      className="px-2"
+                      style={{
+                        backgroundColor: "#4C7380",
+                        borderRadius: "4px",
+                        color: "white",
+                        fontSize: "16px",
+                        paddingBottom: "2px",
+                        paddingTop: "2px",
+                      }}
+                    >
+                      {processedDevices.length}
+                    </span>
+                  </h5>
+                </div>
+                <div className="col-4 text-center"></div>
+              </div>
+            </div>
+
+            <div className={`container-fluid px-4 ${styles.deviceContainer}`}>
+              <div className="row g-3 pb-5">
+                {processedDevices.map((device, index) => (
+                  <div key={index} className="col-12 mt-3">
+                    <div
+                      className="p-3"
+                      style={{
+                        backgroundColor: "#D8E4E8",
+                        borderRadius: "8px",
+                        height: "100%",
+                      }}
+                    >
+                      <div className="row align-items-center">
+                        <div className="col-2 ps-3">
+                          <div
+                            className="d-flex align-items-center justify-content-center"
+                            style={{
+                              backgroundColor: "white",
+                              borderRadius: "100%",
+                              padding: "15px",
+                              height: "60px",
+                              width: "60px",
+                            }}
+                          >
+                            <img
+                              src={device.image}
+                              alt={device.title}
+                              className="img-fluid"
+                              style={{ maxHeight: "30px" }}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-6 ps-5">
+                          <h6 className="mb-0">{device.title}</h6>
+                          <div className="text-muted small">{device.hours}</div>
+                        </div>
+                        <div className="col-4 text-end d-flex flex-column align-items-end ps-0">
+                          <div className="mb-1" style={{ fontSize: "14px" }}>
+                            {device.usage}
+                          </div>
+                          <div className="d-flex align-items-center">
+                            {device.trend > 0 ? (
+                              <FaCaretUp
+                                className="me-1"
+                                style={{ color: "#4CAF50" }}
+                              />
+                            ) : (
+                              <FaCaretDown
+                                className="me-1"
+                                style={{ color: "#FF5252" }}
+                              />
+                            )}
+                            <small
+                              style={{
+                                color: device.trend > 0 ? "#4CAF50" : "#FF5252",
+                              }}
+                            >
+                              {Math.abs(device.trend)}%
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };

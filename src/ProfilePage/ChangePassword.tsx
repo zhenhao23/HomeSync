@@ -100,22 +100,20 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ onBack }) => {
 
   return (
     <>
-      <div className="cp-container-fluid p-3 pb-2">
-        <div className="cp-row align-items-center cp-mb-3">
-          <div className="cp-header">
-            <button className="cp-btn p-0" onClick={onBack}>
-              <IoIosArrowBack size={22} />
-              Back
-            </button>
-            <h3
-              className="cp-header-change-password fw-bold"
-              style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
-            >
-              Change Password
-            </h3>
-          </div>
-          <div className="cp-col-4" />
+      <div className="cp-container-fluid">
+        <div className="cp-header">
+          <button className="cp-btn" onClick={onBack}>
+            <IoIosArrowBack size={22} />
+            Back
+          </button>
+          <h3
+            className="cp-header-change-password fw-bold"
+            style={{ color: "#FFFFFF", fontSize: "1.5rem" }}
+          >
+            Change Password
+          </h3>
         </div>
+        <div className="cp-col-4" />
       </div>
 
       <div
