@@ -47,7 +47,7 @@ interface SmartFeatureProps {
 const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
   getSelectedDeviceToggle,
   addFeature,
-  handleAddFeature,
+  // handleAddFeature,
   handleAddFeatureToggle,
   getDevice,
   setDevicesState,
@@ -55,8 +55,8 @@ const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
   setActiveContent,
   repeat,
   handleRepeatChange,
-  hasSelect,
-  setHasSelect,
+  // hasSelect,
+  // setHasSelect,
   turnOn,
   turnOff,
   handleTurnOnChange,
@@ -381,13 +381,7 @@ const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
                       className="d-flex justify-content-center align-items-center me-2 done-cancel-button"
                       onClick={() => {
                         if (label === "Done") {
-                          if (!hasSelect) {
-                            handleRepeatChange();
-                            return;
-                          } else {
-                            setHasSelect(false);
-                            handleAddFeature(getDevice().device_id);
-                          }
+                          handleCancelAddFeature();
                         } else {
                           // Handle cancel action
                           handleCancelAddFeature();
