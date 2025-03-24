@@ -1607,9 +1607,7 @@ const HomePage: React.FC = () => {
                               height: "40%",
                             }}
                           >
-                            <p className="mb-0 text-center">
-                              <h5>{r.title}</h5>
-                            </p>
+                            <h5 className="mb-2 text-center">{r.title}</h5>
                             <p className="mb-0 text-center device-count">
                               <span
                                 className="px-1"

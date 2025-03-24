@@ -543,7 +543,7 @@ const SolarPage: React.FC = () => {
           className="progress-circle"
           viewBox="0 0 256 256"
           width="100%"
-          height="auto"
+          height="100%"
         >
           {/* Background and progress circles */}
           <circle
