@@ -426,7 +426,7 @@ const HomePage: React.FC = () => {
   const todayDay = days.find((day) => day.name === todayName) || null;
 
   // state to track the selected day by user
-  const [activeDay, setActiveDay] = useState<Day | null>(todayDay);
+  const [activeDay] = useState<Day | null>(todayDay);
 
   // function to handle room clicked by user
   const handleRoomClick = (selectedRoom: {
@@ -973,8 +973,6 @@ const HomePage: React.FC = () => {
     setAddFeature((prev) => !prev);
   };
 
-  // ...existing code...
-
   // Function to handle adding smart feature schedule
   const handleAddFeature = async (deviceId: number) => {
     try {
@@ -986,37 +984,13 @@ const HomePage: React.FC = () => {
       // Ensure selected device exists
       if (!selectedDevice) return;
 
-      // Create a more descriptive feature name based on device type and schedule
-      let featureName = "";
-      if (repeatOption === "Never") {
-        featureName = `One-time Schedule`;
-      } else if (repeatOption === "Daily") {
-        featureName = `Daily Schedule`;
-      } else if (repeatOption === "Weekly") {
-        featureName = `${activeDay ? activeDay.name : "Weekly"} Schedule`;
-      } else {
-        featureName = `Custom Schedule`;
-      }
-
-      // Determine the correct triggerType based on repeat option
-      let triggerType = "";
-
-      if (repeatOption === "Never") {
-        triggerType = "Once";
-      } else if (repeatOption === "Daily") {
-        triggerType = "Daily";
-      } else if (repeatOption === "Weekly") {
-        // For weekly, include the specific day name
-        triggerType = activeDay ? `Every ${activeDay.name}` : "Every Monday";
-      } else {
-        // Default case if no repeat option is selected
-        triggerType = activeDay ? `Every ${activeDay.name}` : "Daily";
-      }
-
       // Format feature details based on device type
       const isTimeBasedDevice = ["aircond", "light"].includes(
         selectedDevice.deviceType
       );
+      const triggerType = isTimeBasedDevice
+        ? "Auto Schedule"
+        : "Auto Feeding/Irrigation";
       const conditionOperator = isTimeBasedDevice
         ? "Time-based"
         : "Time-based Slot";
@@ -1044,8 +1018,8 @@ const HomePage: React.FC = () => {
                 content: [
                   ...device.content,
                   {
-                    feature_id: newFeature.id,
-                    feature: featureName, // Use the more descriptive name
+                    feature_id: newFeature.id, // Use the real ID returned by the backend
+                    feature: triggerType,
                     label: timeLabel,
                     status: true,
                     isUserAdded: true,
@@ -1706,8 +1680,6 @@ const HomePage: React.FC = () => {
               turnOffPeriod={turnOffPeriod}
               toggleTime={toggleTime}
               setAddFeature={setAddFeature}
-              activeDay={activeDay} // Add this
-              setActiveDay={setActiveDay} // Add this
             />
           ) : null}
         </>
@@ -1763,8 +1735,6 @@ const HomePage: React.FC = () => {
           turnOffPeriod={turnOffPeriod}
           toggleTime={toggleTime}
           setAddFeature={setAddFeature}
-          activeDay={activeDay} // Add this
-          setActiveDay={setActiveDay} // Add this
         />
       )}
 
