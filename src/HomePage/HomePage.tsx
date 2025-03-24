@@ -986,6 +986,18 @@ const HomePage: React.FC = () => {
       // Ensure selected device exists
       if (!selectedDevice) return;
 
+      // Create a more descriptive feature name based on device type and schedule
+      let featureName = "";
+      if (repeatOption === "Never") {
+        featureName = `One-time Schedule`;
+      } else if (repeatOption === "Daily") {
+        featureName = `Daily Schedule`;
+      } else if (repeatOption === "Weekly") {
+        featureName = `${activeDay ? activeDay.name : "Weekly"} Schedule`;
+      } else {
+        featureName = `Custom Schedule`;
+      }
+
       // Determine the correct triggerType based on repeat option
       let triggerType = "";
 
@@ -1032,8 +1044,8 @@ const HomePage: React.FC = () => {
                 content: [
                   ...device.content,
                   {
-                    feature_id: newFeature.id, // Use the real ID returned by the backend
-                    feature: triggerType,
+                    feature_id: newFeature.id,
+                    feature: featureName, // Use the more descriptive name
                     label: timeLabel,
                     status: true,
                     isUserAdded: true,
