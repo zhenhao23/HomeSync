@@ -300,7 +300,7 @@ const EnergyPage: React.FC = () => {
             style={{
               backgroundColor: "#204160",
               width: "35%",
-              marginTop: "-15%",
+              marginTop: "-160px",
               height: "80%",
               borderRadius: "30px 30px 0 0",
               marginLeft: "22%",
