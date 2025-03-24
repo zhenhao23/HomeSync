@@ -426,7 +426,7 @@ const HomePage: React.FC = () => {
   const todayDay = days.find((day) => day.name === todayName) || null;
 
   // state to track the selected day by user
-  const [activeDay] = useState<Day | null>(todayDay);
+  const [activeDay, setActiveDay] = useState<Day | null>(todayDay);
 
   // function to handle room clicked by user
   const handleRoomClick = (selectedRoom: {
@@ -1694,6 +1694,8 @@ const HomePage: React.FC = () => {
               turnOffPeriod={turnOffPeriod}
               toggleTime={toggleTime}
               setAddFeature={setAddFeature}
+              activeDay={activeDay} // Add this
+              setActiveDay={setActiveDay} // Add this
             />
           ) : null}
         </>
@@ -1749,6 +1751,8 @@ const HomePage: React.FC = () => {
           turnOffPeriod={turnOffPeriod}
           toggleTime={toggleTime}
           setAddFeature={setAddFeature}
+          activeDay={activeDay} // Add this
+          setActiveDay={setActiveDay} // Add this
         />
       )}
 

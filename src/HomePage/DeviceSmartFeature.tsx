@@ -42,6 +42,8 @@ interface SmartFeatureProps {
   turnOffPeriod: string;
   toggleTime: (time: string, type: "turnOn" | "turnOff") => void;
   setAddFeature: React.Dispatch<React.SetStateAction<boolean>>;
+  activeDay: Day | null;
+  setActiveDay: React.Dispatch<React.SetStateAction<Day | null>>;
 }
 
 const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
@@ -65,6 +67,8 @@ const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
   turnOffPeriod,
   toggleTime,
   setAddFeature,
+  activeDay,
+  setActiveDay,
 }) => {
   // Predefined days
   const days = [
@@ -82,9 +86,6 @@ const DeviceSmartFeature: React.FC<SmartFeatureProps> = ({
 
   // Find the corresponding day object
   const todayDay = days.find((day) => day.name === todayName) || null;
-
-  // state to track the selected day by user
-  const [activeDay, setActiveDay] = useState<Day | null>(todayDay);
 
   // function to handle day click by user
   const handleDayClick = (day: { name: string; letter: string }) => {

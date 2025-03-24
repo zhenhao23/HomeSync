@@ -1,4 +1,4 @@
-import { Device, Room } from "./HomePage";
+import { Day, Device, Room } from "./HomePage";
 import DeviceOverview from "./DeviceOverview";
 import DeviceSmartFeature from "./DeviceSmartFeature";
 
@@ -32,6 +32,8 @@ interface ManageDeviceProps {
   turnOffPeriod: string;
   toggleTime: (time: string, type: "turnOn" | "turnOff") => void;
   setAddFeature: React.Dispatch<React.SetStateAction<boolean>>;
+  activeDay: Day | null;
+  setActiveDay: React.Dispatch<React.SetStateAction<Day | null>>;
 }
 
 const ManageDevice: React.FC<ManageDeviceProps> = ({
@@ -60,6 +62,8 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
   turnOffPeriod,
   toggleTime,
   setAddFeature,
+  activeDay,
+  setActiveDay,
 }) => {
   return (
     <>
@@ -97,6 +101,8 @@ const ManageDevice: React.FC<ManageDeviceProps> = ({
           turnOffPeriod={turnOffPeriod}
           toggleTime={toggleTime}
           setAddFeature={setAddFeature}
+          activeDay={activeDay} // Add this
+          setActiveDay={setActiveDay} // Add this
         />
       ) : null}
     </>
