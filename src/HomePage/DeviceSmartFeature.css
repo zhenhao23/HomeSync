@@ -1,11 +1,56 @@
 .dev-smart-feature-container {
   background-color: white;
   position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
   overflow: auto;
-  top: 50%;
-  height: 45%;
+  height: 100%;
   border-radius: 18px;
   padding-bottom: 15%;
+  /* Default for desktop */
+  top: 38%;
+}
+
+/* Medium sized devices */
+@media (max-height: 850px) {
+  .dev-smart-feature-container {
+    top: 50% !important;
+    height: 45% !important;
+  }
+}
+
+/* Small sized devices */
+@media (max-height: 700px) {
+  .dev-smart-feature-container {
+    top: 60% !important;
+    height: 45% !important;
+  }
+}
+
+/* iPhone 14 Pro Max specific fix - simplified and more targeted */
+@media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3),
+  only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) {
+  .dev-smart-feature-container {
+    top: 60% !important;
+    height: 50% !important;
+  }
+}
+
+/* iPhone 14/15 Pro/Pro Max general fix */
+@media only screen and (min-device-width: 390px) and (max-device-width: 430px) and (min-device-height: 844px) and (max-device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
+  .dev-smart-feature-container {
+    top: 60% !important;
+    height: 50% !important;
+  }
+}
+
+/* iOS Safari general fix - this should execute after the iPhone specific queries */
+@supports (-webkit-touch-callout: none) and
+  (not (-webkit-device-pixel-ratio: 3)) {
+  .dev-smart-feature-container {
+    top: 60% !important;
+  }
 }
 
 .schedule,
