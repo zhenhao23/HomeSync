@@ -973,6 +973,8 @@ const HomePage: React.FC = () => {
     setAddFeature((prev) => !prev);
   };
 
+  // ...existing code...
+
   // Function to handle adding smart feature schedule
   const handleAddFeature = async (deviceId: number) => {
     try {
@@ -984,13 +986,25 @@ const HomePage: React.FC = () => {
       // Ensure selected device exists
       if (!selectedDevice) return;
 
+      // Determine the correct triggerType based on repeat option
+      let triggerType = "";
+
+      if (repeatOption === "Never") {
+        triggerType = "Once";
+      } else if (repeatOption === "Daily") {
+        triggerType = "Daily";
+      } else if (repeatOption === "Weekly") {
+        // For weekly, include the specific day name
+        triggerType = activeDay ? `Every ${activeDay.name}` : "Every Monday";
+      } else {
+        // Default case if no repeat option is selected
+        triggerType = activeDay ? `Every ${activeDay.name}` : "Daily";
+      }
+
       // Format feature details based on device type
       const isTimeBasedDevice = ["aircond", "light"].includes(
         selectedDevice.deviceType
       );
-      const triggerType = isTimeBasedDevice
-        ? "Auto Schedule"
-        : "Auto Feeding/Irrigation";
       const conditionOperator = isTimeBasedDevice
         ? "Time-based"
         : "Time-based Slot";
